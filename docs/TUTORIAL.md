@@ -37,7 +37,8 @@ directly. Confirmed on the Hound 9G's MW3 files.
 
 The page warns if a file goes in the wrong slot.
 
-1. Open `tools/smap-texture-converter.html` in your browser.
+1. Open `tools/smap-texture-converter.html` in your browser. The same steps are in its
+   "How to use" box at the top.
 2. **Color** slot: the colour DDS. Under **Base color alpha**, pick **MW fused colour (spec/albedo)**.
    The Metallic slot then says "Not needed".
 3. **NOG** slot: the purple-ish "normals" DDS. It fills **Roughness** (gloss), **Normal** and **AO**

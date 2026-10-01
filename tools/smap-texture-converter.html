@@ -103,6 +103,13 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
 .status.err{color:var(--warn)}
 .empty{color:var(--muted);border:2px dashed var(--line);border-radius:6px;padding:40px 16px;text-align:center}
 .slotmap{color:var(--muted);font-size:.85rem;margin-top:14px}
+details.howto{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 18px;margin-top:20px}
+details.howto summary{font:600 1.2rem var(--display);letter-spacing:.02em;cursor:pointer}
+details.howto ol{padding-left:1.3em;margin:10px 0 0}
+details.howto li{margin:6px 0}
+details.howto table{border-collapse:collapse;width:100%;font-size:.92rem;margin:10px 0}
+details.howto th,details.howto td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+details.howto .tablewrap{overflow-x:auto}
 .slotmap code{color:var(--ink)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -111,6 +118,28 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
 <main>
   <h1>SMap Texture Converter</h1>
   <p class="lede">Drop in your ripped maps (DDS or PNG), or for MW2019/MW2022/MW3 rips just the colour image (pick "MW fused colour") and the NOG image. You get the three textures Tarkov's Bumped Specular SMap shader wants: diffuse with specular in its alpha, gloss, and normal.</p>
+
+  <details class="howto" open>
+    <summary>How to use: from ripped DDS to Tarkov textures</summary>
+    <p class="hint">MW2019 / MW2022 / MW3 rips come as three DDS files per material. Names vary by ripper, so go by how they look:</p>
+    <div class="tablewrap"><table>
+      <tr><th>File looks like</th><th>What it really is</th><th>Where it goes</th></tr>
+      <tr><td>Dark or grey colour, partly see-through in image viewers</td><td>Colour (albedo + specular fused, alpha = metal)</td><td><b>Color</b></td></tr>
+      <tr><td>Purple-ish, often named "normals"</td><td>NOG: gloss, packed normal, occlusion. Not a finished normal map</td><td><b>NOG</b> (not Normal)</td></tr>
+      <tr><td>Bright green with hard black/white shapes</td><td>Material/wear masks</td><td>Nowhere. Not needed</td></tr>
+    </table></div>
+    <ol>
+      <li>Drop the <b>colour</b> DDS on the <b>Color</b> slot.</li>
+      <li>Under <b>Base color alpha</b>, pick <b>MW fused colour (spec/albedo)</b>. The Metallic slot then says "Not needed".</li>
+      <li>Drop the purple-ish <b>"normals"</b> DDS on the <b>NOG</b> slot. It fills Roughness, Normal and AO for you and turns on Flip green.</li>
+      <li>Leave <b>Metal keeps diffuse</b> at about 25% and <b>Diffuse brightness</b> on Auto.</li>
+      <li>Check the previews: <b>Normal</b> must be lavender-blue with visible relief (never teal or pink). The page warns you if a file is in the wrong slot.</li>
+      <li>Type a name under <b>Output name</b> (e.g. <i>houndgrip_rail</i>) and click <b>Download all (zip)</b>.</li>
+      <li>In Unity, on the <b>p0/Reflective/Bumped Specular SMap</b> material: <b>_diffuse</b> → Base (RGB) Specular (A), <b>_gloss</b> → GlossMap, <b>_normal</b> → Normalmap. Import settings: _normal as Normal map with <b>Flip Green Channel off</b> (already flipped here); all Aniso 5.</li>
+      <li>Repeat for each material (e.g. grip and rail).</li>
+    </ol>
+    <p class="hint">Already split them with GameImageUtil? Click the <b>MW3 / MW2022 (GameImageUtil PNGs)</b> preset under Settings and drop the _c, _s, _g, _n and _o files all at once instead.</p>
+  </details>
 
   <div class="grid">
     <div>
