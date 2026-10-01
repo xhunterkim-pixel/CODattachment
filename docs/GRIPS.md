@@ -227,6 +227,11 @@ icon upside down/end-on). Bounds Scale 0.9.
     - **Normals still inverted**: "normals agree with faces" 0% on grip and rail (vanilla 100%). The
       hand-flip of faces in Blender (history 24) flipped winding and normals together, so they still
       disagree; the grip is lit inside-out. Probably behind the glow (27) and the visible edges (30).
+      Checked which half is wrong (direction from the mesh centre): faces/winding point outward
+      78–87% (fine, RK-1 79%), stored normals point outward only 13–22% (RK-1 79%). So the faces are
+      right and only the normals are inward, on the Hound grip, its rail **and the DL grip**. Blender's
+      Face Orientation overlay only shows faces, so it looks all blue even when normals are inward;
+      see them with Overlays → Normals → "Display split normals".
       Fix: normals only (`tools/blender_flip_custom_normals.py`, don't flip faces), or FBX Normals:
       Calculate.
     - Grip material in the bundle still has Main Color 192 and Vals 1, 0.5, 0, 0 (the 221 / 1, 1, 0, 0

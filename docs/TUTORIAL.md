@@ -89,8 +89,11 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
    baked against, which causes blotches and seams. Instead, in Blender select the mesh, run
    `tools/blender_flip_custom_normals.py` (Scripting tab → paste → Run Script), export the FBX again,
    and in Unity set **Normals: Import**. That keeps COD's normals and only turns them the right way.
-   Alternatives in Blender: Edit Mode, select all, **Mesh → Normals → Recalculate Outside**; or turn on
-   the **Face Orientation** overlay and flip faces until none show red (what we did on the Hound 9G).
+   Alternatives in Blender: Edit Mode, select all, **Mesh → Normals → Recalculate Outside**.
+   **Don't rely on the Face Orientation overlay**: it only shows which way the faces point, not the
+   stored normals. COD rips have correct faces (all blue) and inward normals, and flipping faces
+   flips both. That's what went wrong on the Hound 9G and the DL grip (both 0% after the face flip).
+   To see the real normals: Overlays → Normals → "Display split normals" (lines must point out).
    Afterwards check in Unity (Normals: Import) for see-through holes or dark patches.
 3. **Texture import settings** (click each PNG, then **Apply**):
 
