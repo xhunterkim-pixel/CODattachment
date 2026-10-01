@@ -1,6 +1,6 @@
 {
   "6abe08f14fea21b38607a868": {
-    "itemTplToClone": "5c1bc5612e221602b5429350",
+    "itemTplToClone": "5c1cd46f2e22164bef5cfedb",
     "parentId": "55818af64bdc2d5b648b4570",
     "handbookParentId": "5b5f71de86f774093f2ecf13",
     "overrideProperties": {
@@ -24,8 +24,8 @@
     "modSlot": [
       "mod_foregrip"
     ],
-    "fleaPriceRoubles": 6500,
-    "handbookPriceRoubles": 5400,
+    "fleaPriceRoubles": 22000,
+    "handbookPriceRoubles": 18500,
     "addtoBots": false,
     "addtoStaticLootContainers": false,
     "staticLootContainers": [],

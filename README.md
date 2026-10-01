@@ -35,7 +35,7 @@ that takes the RK-1 B-25U.
 
 ## Things to check
 
-- **Clone ID.** `itemTplToClone` is `5c1bc5612e221602b5429350` (RK-1 on B-25U mount). If the
+- **Clone ID.** `itemTplToClone` is `5c1cd46f2e22164bef5cfedb` (RK-1 on B-25U mount). If the
   server says it can't find it, look up the right ID in `SPT_Data/database/templates/items.json`
   (search for `b25u`).
 - **Bundle path.** `Prefab.path` in the item JSON, the `key` in `bundles.json`, and the file's
