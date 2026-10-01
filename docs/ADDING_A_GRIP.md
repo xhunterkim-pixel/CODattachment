@@ -19,7 +19,12 @@ Get from it:
 1. Import the FBX and textures into their own folder, e.g. `Assets/Content/Weapons/<grip>/`.
 2. FBX import settings: normals must face outward. After a build, `tools/inspect_bundle.py` prints
    "normals agree with faces" per mesh: vanilla is 100%, our COD port was 0% (flagged INVERTED).
-   Fix with **Model tab → Normals: Calculate**.
+   Fix with **Model tab → Normals: Calculate** and **Tangents: Calculate Mikktspace** (select the FBX
+   file in the Project window, not the scene object, to see the Model tab). For COD ports, Calculate
+   is the sensible default. Import keeps the artist's hard/soft edges, so use it only when the check
+   says the normals are fine. After Calculate, adjust Smoothing Angle if curved parts crease (raise)
+   or sharp edges look rounded (lower). Inverted normals also kill the shine, so re-tune material
+   values afterwards.
 3. Texture import settings: normal maps → Texture Type **Normal map** (try **Flip Green Channel**
    for COD textures); data textures (gloss etc.) → untick **sRGB**; all → **Aniso Level 5**.
    Click **Apply**.

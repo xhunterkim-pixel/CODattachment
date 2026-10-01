@@ -16,8 +16,10 @@ Add a section for every new grip.
 **Prefab:** root `houndgrip` (rotation 0, scale 1) with children `grip` and `rail`,
 Rotation **0, 0, 0**, Scale 100.
 
-**FBX import:** Normals **Calculate** (Smoothing Angle 60). The ported mesh's normals all pointed
-inward (see history 11); not yet confirmed in game. The imported -90 left the grip running back along the gun
+**FBX import:** Normals **Calculate** (Smoothing Angle 60), Tangents **Calculate Mikktspace**. The
+ported mesh's normals all pointed inward (see history 11). In Unity the grip went from dull with no
+shine (Import) to shiny (Calculate); material values were tuned before this and may need lowering.
+Not yet confirmed in game. The imported -90 left the grip running back along the gun
 instead of out to the side like the RK-1. At 0, 0, 0 it lies in the same plane as the RK-1,
 about 23° shallower.
 
