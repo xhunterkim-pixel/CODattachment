@@ -124,6 +124,10 @@ icon upside down/end-on). Bounds Scale 0.9.
     isn't the metal mask. Diagnosis asked: untick AO, then set Base color alpha to Ignore. Safe
     route (GameImageUtil splits → converter) written into the tutorial.
 
+20. Added the converter's **MW3 / MW2022 (GameImageUtil PNGs)** preset for the safe route: one
+    click sets all options, and GameImageUtil's `_c/_s/_g/_n/_o` files route to the right slots.
+    Tested: routing, settings and all outputs correct.
+
 **Open:** try the Blender normal flip (then Normals: Import) and check with `inspect_bundle.py`.
 Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
 Confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right

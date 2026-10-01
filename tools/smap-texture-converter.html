@@ -129,6 +129,13 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
 
       <section class="panel" style="margin-top:22px">
         <h2>Settings</h2>
+        <fieldset style="margin:0 0 16px">
+          <legend>Preset</legend>
+          <div class="seg">
+            <button type="button" class="btn" id="presetMW3">MW3 / MW2022 (GameImageUtil PNGs)</button>
+          </div>
+          <p class="hint" id="presetHint">Split the colour DDS with GameImageUtil's "CoD Specular/Albedo (IW/MW)" and the green DDS with "CoD Normal/Gloss/Occlusion (IW/MW)" (output PNG), click the preset, then drop all the _c, _s, _g, _n and _o files at once.</p>
+        </fieldset>
         <label for="prefix" class="hint" style="display:block;margin:0 0 6px">Output name</label>
         <input type="text" id="prefix" value="item" spellcheck="false">
 
@@ -414,7 +421,7 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
       maps[key] = {...d, file:file.name, raw:file};
       if (key==="nog" && !splitNOG(d, file.name)) return;
       if (key==="base") $("prefix").value = guessPrefix(file.name);
-      if (key==="ao"){ $("useAO").disabled=false; $("aoStr").disabled=false; }
+      if (key==="ao"){ $("useAO").disabled=false; $("aoStr").disabled=false; if (gameImageUtilNames) $("useAO").checked = true; }
       refreshSlot(key);
       if (key==="metal"||key==="gloss"||key==="base") guessGloss();
       schedule();
@@ -461,8 +468,13 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
     return true;
   }
 
+  let gameImageUtilNames = false;
   function classify(name){
     const n = name.toLowerCase();
+    if (gameImageUtilNames){
+      const m = n.replace(/\.[^.]+$/,"").match(/_([csgno])$/);
+      if (m) return {c:"base", s:"metal", g:"gloss", n:"normal", o:"ao"}[m[1]];
+    }
     if (/metal/.test(n)) return "metal";
     if (/spec/.test(n)) { setSpecMode(true); return "metal"; }
     if (/(rough|gloss|smooth)/.test(n)) return "gloss";
@@ -542,10 +554,10 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
 
   function guessGloss(){
     const el = $("glossGuess");
-    if (maps.gloss && maps.gloss.fromNOG){
+    if (maps.gloss && (maps.gloss.fromNOG || gameImageUtilNames)){
       // NOG's red channel is gloss by definition (GameImageUtil); never guess or invert it.
       document.querySelector("input[name=gtype][value=gloss]").checked = true;
-      el.textContent = "From the NOG image: it's gloss, left as is."; el.className = "hint good"; return;
+      el.textContent = gameImageUtilNames ? "GameImageUtil's _g is gloss, left as is." : "From the NOG image: it's gloss, left as is."; el.className = "hint good"; return;
     }
     if (!maps.gloss || (needsMetal() ? !maps.metal : !maps.base)){ el.textContent=""; return; }
     const W = maps.gloss.w, H = maps.gloss.h;
@@ -757,6 +769,23 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
   document.querySelectorAll("input[name=alpha]").forEach(r => r.onchange = () => {
     SLOTS.forEach(sl => refreshSlot(sl.key)); guessGloss(); schedule(); });
   document.querySelectorAll("input[name=mtype]").forEach(r => r.onchange = () => { guessGloss(); schedule(); });
+
+  // MW3 / MW2022 preset: inputs are GameImageUtil's split PNGs (_c albedo, _s specular colour,
+  // _g gloss, _n normal, _o occlusion).
+  $("presetMW3").onclick = () => {
+    gameImageUtilNames = true;
+    setSpecMode(true);
+    document.querySelector("input[name=gtype][value=gloss]").checked = true;
+    document.querySelector("input[name=alpha][value=ignore]").checked = true;
+    $("flipG").checked = true;
+    $("auto").checked = true;
+    $("aoStr").value = 50; $("aoVal").textContent = "50%";
+    $("useAO").checked = !!maps.ao;
+    SLOTS.forEach(sl => refreshSlot(sl.key));
+    $("presetHint").textContent = "MW3 / MW2022 preset on: Specular map, gloss, alpha ignored, Flip green on, AO 50%. Drop the _c, _s, _g, _n and _o files (all at once is fine).";
+    $("presetHint").className = "hint good";
+    guessGloss(); schedule();
+  };
 
   if (claudeHost && window.claude.use){
     window.claude.use("downloads").then(ns => { downloads = ns; renderOutputs(!!result.diffuse && inputsReady());

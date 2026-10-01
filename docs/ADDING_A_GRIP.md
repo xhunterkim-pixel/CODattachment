@@ -43,7 +43,8 @@ Get from it:
 1. The converter opens DDS directly (BC1–BC5, BC7, uncompressed), **but on the Hound 9G's MW3 DDS
    its normal came out wrong (see `GRIPS.md` history 17)**. Until that's fixed, split with
    GameImageUtil's MW modes and give the converter the split PNGs, or compare its output with
-   GameImageUtil's: the normal map must look lavender-blue, never teal/green.
+   GameImageUtil's: the normal map must look lavender-blue, never teal/green. Easiest: split with
+   GameImageUtil and use the converter's **MW3 / MW2022 (GameImageUtil PNGs)** preset.
 2. Open `tools/smap-texture-converter.html` in a browser. Put the colour PNG in **Color** and set
    "Base color alpha" to **MW fused colour (spec/albedo)**; put the green image in **NOG**. That fills
    Roughness (gloss), Normal (reconstructed, Flip green on) and AO, using GameImageUtil's own

@@ -45,7 +45,7 @@ Write down what was wrong, how it showed up, and what fixed it, so it never has 
 | `tools/blender_flip_custom_normals.py` | Blender script: reverse inverted normals while keeping the original smoothing. |
 | `unity/AddSideGripHandPoses.cs` | Generated hand poses of the RK-1 B-25U side grip. |
 | `unity/GripPoseGizmos.cs` | Draws GripPose hands (palm box + finger bones) in Unity's Scene view. |
-| `tools/smap-texture-converter.html` | Browser page: COD textures → SMap diffuse (spec in alpha), gloss, normal. Reads DDS (BC1–5, BC7) or PNG. Includes GameImageUtil's MW fused-colour and NOG splits (GPL-3 port). |
+| `tools/smap-texture-converter.html` | Browser page: COD textures → SMap diffuse (spec in alpha), gloss, normal. Reads DDS (BC1–5, BC7) or PNG. Includes GameImageUtil's MW fused-colour and NOG splits (GPL-3 port; NOG route wrong on the MW3 DDS, open) and an MW3 preset for GameImageUtil-split PNGs. |
 
 ## Key facts
 

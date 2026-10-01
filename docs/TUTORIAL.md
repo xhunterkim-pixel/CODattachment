@@ -50,9 +50,11 @@ converter page does the whole translation, including GameImageUtil's MW splits.
 1. GameImageUtil, output PNG: colour DDS → **CoD Specular/Albedo (Infinite Warfare/Modern Warfare)**
    (gives `_c` and `_s`); green DDS → **CoD Normal/Gloss/Occlusion (Infinite Warfare/Modern Warfare)**
    (gives `_n`, `_g`, `_o`).
-2. Converter: **Color** = `_c`; "Metallic slot holds" = **Specular map** and **Metallic** = `_s`;
-   **Roughness** = `_g` (must say gloss); **Normal** = `_n` with **Flip green** on; NOG empty;
-   AO empty or about 50% with `_o`; "Base color alpha" = **Ignore it**; brightness **Auto**.
+2. Converter: click the **MW3 / MW2022 (GameImageUtil PNGs)** preset, then drop all five files
+   (`_c`, `_s`, `_g`, `_n`, `_o`) onto "Or drop them all here at once". The preset puts each file in
+   its slot and sets: Metallic slot holds **Specular map**, **Gloss**, Base color alpha **Ignore**,
+   **Flip green** on, AO **50%**, brightness **Auto**. (By hand: Color `_c`, Metallic `_s`,
+   Roughness `_g`, Normal `_n`, AO `_o`, with those settings.)
 3. Download and use `_diffuse`, `_gloss`, `_normal`.
 
 ## Part 3: The model in Blender
