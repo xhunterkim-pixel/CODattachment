@@ -94,6 +94,10 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
    stored normals. COD rips have correct faces (all blue) and inward normals, and flipping faces
    flips both. That's what went wrong on the Hound 9G and the DL grip (both 0% after the face flip).
    To see the real normals: Edit Mode (Tab) → Mesh Edit Mode overlay (dropdown next to Viewport Overlays) → Normals → split-normals icon (middle), Size ~0.02 (lines must point out).
+   What inward normals look like there (DL grip, before the fix): the faces are all blue, the long
+   body shows **no** pink lines (they point inside and are hidden), and only thin parts like the
+   clamp show pink lines poking out through the other side. After the fix the whole body is covered
+   in short pink lines standing straight out.
    Afterwards check in Unity (Normals: Import) for see-through holes or dark patches.
 3. **Texture import settings** (click each PNG, then **Apply**):
 
