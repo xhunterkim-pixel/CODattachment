@@ -214,3 +214,20 @@ icon upside down/end-on). Bounds Scale 0.9.
   mounts (`MATERIALS.md`): "Specularness" ~1.46, "Glossness" 1, Main ~213, Vals 1, 1, 0, 0,
   `patron_cubemap_metall`. Not changed yet.
 - Not sold by any trader (`addtoTraders: false`); only `spt give` / flea.
+
+## dlgrip (second side grip, name to come)
+
+| | |
+|---|---|
+| Item ID | not made yet |
+| Cloned from | not decided (RK-1 B-25U `5c1cd46f2e22164bef5cfedb` likely) |
+| Bundle | `assets/content/items/mods/foregrips/dlgrip.bundle` (planned), dependencies `shaders`, `cubemaps` |
+| Unity prefab | `Assets/Content/Weapons/Tarkov Double Sidegrip/dlgrip/dlgrip.prefab` |
+
+**History:**
+
+1. Hand poses added under the `dlgrip` root (`Base HumanLPalm`, `Base HumanLPalm 1`). The prefab
+   had no mesh child yet in the user's screenshot; the grip mesh still has to go under the root.
+
+**Open:** grip mesh under the root (rotation as the Hound 9G: 0, 0, 0, Scale 100), material, PreviewPivot,
+fit the palms, AssetBundle label `dlgrip` + `bundle` on the `dlgrip` folder only, server item.
