@@ -12,13 +12,13 @@ Hound9GSideGrip/
 ├── Hound9GSideGrip.cs       mod metadata + loader (hands the JSON to WTT-CommonLib)
 ├── db/CustomItems/Hound9GSideGrip.json   the item definition
 ├── bundles.json             tells SPT which bundle to serve
-└── bundles/assets/content/items/mods/foregrips/hound9gsidegrip.bundle   <- your bundle goes here
+└── bundles/assets/content/items/mods/foregrips/houndgrip.bundle   <- your bundle goes here
 ```
 
 ## Build
 
 1. Install the **.NET 10 SDK**.
-2. Copy `hound9gsidegrip.bundle` into `Hound9GSideGrip/bundles/assets/content/items/mods/foregrips/`.
+2. Copy `houndgrip.bundle` into `Hound9GSideGrip/bundles/assets/content/items/mods/foregrips/`.
    You don't need the `.manifest` file.
 3. Build (NuGet downloads the SPT 4.1.6 and CommonLib references automatically):
    ```

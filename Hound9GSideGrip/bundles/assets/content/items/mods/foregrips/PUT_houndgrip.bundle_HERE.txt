@@ -1,2 +1,2 @@
-Copy your built hound9gsidegrip.bundle into this folder.
+Copy your built houndgrip.bundle into this folder.
 The .manifest file Unity writes next to it is not needed.

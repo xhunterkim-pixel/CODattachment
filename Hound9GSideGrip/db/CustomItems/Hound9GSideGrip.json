@@ -8,7 +8,7 @@
       "ShortName": "foregrip_all_hound_9g_sidegrip",
       "Description": "foregrip_all_hound_9g_sidegrip",
       "Prefab": {
-        "path": "assets/content/items/mods/foregrips/hound9gsidegrip.bundle",
+        "path": "assets/content/items/mods/foregrips/houndgrip.bundle",
         "rcid": ""
       }
     },
