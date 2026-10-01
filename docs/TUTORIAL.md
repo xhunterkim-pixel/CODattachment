@@ -116,8 +116,8 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
    |---|---|---|
    | Main Color | 193, 193, 193 | 193, 193, 193 |
    | Specular Color | 217, 217, 217 | 217, 217, 217 |
-   | "Specularness" | 2 (lower to ~1.5 if too shiny) | 2 |
-   | "Glossness" | 0.6 | 1.08 |
+   | "Specularness" | **1** (converted COD polymer is twice as shiny as Tarkov's; 2 glows) | 2 |
+   | "Glossness" | 1.08 | 1.08 |
    | Reflection Color | 80, 80, 80, alpha 128 | 154, 154, 154, alpha 128 |
    | Specular Vals / Diffuse Vals | 1, 0.5, 0, 0 | 1, 0.5, 0, 0 |
    | _StencilType | Hands | Hands |

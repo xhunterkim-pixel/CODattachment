@@ -204,6 +204,12 @@ darker diffuse plus strong specular in the diffuse's alpha; specular colour → 
 gloss → `_gloss` (COD already stores gloss, the inverse of roughness); normal → `_normal`;
 occlusion → multiplied into the diffuse.
 
+**Non-metal shine is higher than Tarkov's.** GameImageUtil's split gives every non-metal pixel a
+specular of at least 0.21 (54/255); the vanilla RK-1's polymer averages 27, half that. MW3 gloss is
+also lower than Tarkov's (94 vs 156 on the grips compared), which spreads the highlight. Together
+they make converted polymer look like it glows. Compensate on the material: "Specularness" about 1
+instead of 2, "Glossness" at vanilla's 1.08.
+
 **MW3 (2023)**, checked on the Hound 9G's files: same packing as MW2022. Its rip had three BC7 DDS per
 material: the fused colour; a NOG named "normals" (it looks purple-ish raw because R gloss ≈ 94,
 G ≈ 127, B occlusion ≈ 249, but the normal is still packed in G and A); and a "green" image whose B

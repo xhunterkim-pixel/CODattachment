@@ -29,8 +29,8 @@ about 23° shallower.
 |---|---|---|
 | Main Color | 193, 193, 193 | 193, 193, 193 |
 | Specular Color | 217, 217, 217 | 217, 217, 217 |
-| "Specularness" | 2 | 2 |
-| "Glossness" | 0.6 | 1.08 |
+| "Specularness" | 1 (was 2: glowed, history 27) | 2 |
+| "Glossness" | 1.08 (was 0.6) | 1.08 |
 | Reflection Color | 80, 80, 80, alpha 128 | 154, 154, 154, alpha 128 |
 | Reflection Cubemap | `dots small` | `patron_cubemap_metall` |
 | Spec / Diffuse Vals | 1, 0.5, 0, 0 | 1, 0.5, 0, 0 |
@@ -151,6 +151,13 @@ icon upside down/end-on). Bounds Scale 0.9.
 
 26. In game the hand uses `Base HumanLPalm 1` (GripType Common), the normal hold. `Base HumanLPalm`
     (Alternative) is kept like vanilla; when the game switches to it is not known yet.
+
+27. In game the grip looked like it glowed and didn't react to light like the RK-1. Measured: the
+    converted grip's specular (diffuse alpha) averages 54 vs the RK-1's 27 (GameImageUtil's non-metal
+    floor of 0.21 is twice Tarkov's polymer), and its gloss averages 94 vs 156, so the shine is broad
+    and covers the whole grip; the "Glossness" slider at 0.6 spread it further. The cubemap is not the
+    cause (`dots small` averages 12/255). Fix: grip material "Specularness" 2 → 1, "Glossness"
+    0.6 → 1.08; Main Color 193 → ~160 if still bright. Not yet confirmed in game.
 
 **Open:** in game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
 RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).
