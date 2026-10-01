@@ -434,9 +434,11 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
   // GameImageUtil CoDNOGImageProcessor: R = gloss, B = occlusion, G/A = hemi-octahedron normal.
   // A tangent-space normal map is mostly lavender-blue: blue high, red and green around the middle.
   function normalProblem(d){
-    const N = d.w*d.h; let r=0, g=0, b=0;
-    for (let i=0;i<N;i++){ r+=d.data[i*4]; g+=d.data[i*4+1]; b+=d.data[i*4+2]; }
+    const N = d.w*d.h; let r=0, g=0, b=0, opaque=0;
+    for (let i=0;i<N;i++){ r+=d.data[i*4]; g+=d.data[i*4+1]; b+=d.data[i*4+2]; if (d.data[i*4+3] > 250) opaque++; }
     r/=N; g/=N; b/=N;
+    if (opaque/N < 0.9)
+      return "this has data in its alpha, so it's probably a packed NOG image (COD rips sometimes name it \"normals\"). Put it in the NOG slot instead.";
     if (b < 170 || Math.abs(r-128) > 50 || Math.abs(g-128) > 50)
       return `this doesn't look like a normal map (average colour ${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}; a normal map is mostly lavender-blue, about 128, 128, 255). If it's the green/NOG image, put it in the NOG slot, or use GameImageUtil's _n.`;
     return null;
@@ -444,9 +446,10 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
 
   // A packed NOG has real data in alpha (half the normal). Catch files that aren't one.
   function nogProblem(d){
-    const N = d.w*d.h; let a=0, b=0, opaque=0;
-    for (let i=0;i<N;i++){ const A=d.data[i*4+3]; a+=A; b+=d.data[i*4+2]; if (A===255) opaque++; }
+    const N = d.w*d.h; let a=0, b=0, opaque=0, hard=0;
+    for (let i=0;i<N;i++){ const A=d.data[i*4+3]; a+=A; b+=d.data[i*4+2]; if (A===255) opaque++; if (A<6 || A>249) hard++; }
     a/=N; b/=N;
+    if (hard/N > 0.9 && opaque/N <= 0.98) return "This image's alpha is a hard black/white mask, not half of a normal map, so it isn't a NOG. (MW3 rips also include a mask image like this; SMap doesn't need it.) The NOG is usually the file that looks purple-ish.";
     if (opaque/N > 0.98 && b > 190) return "This looks like an already-decoded normal map (blue/purple). Put it in the Normal slot, not NOG.";
     if (opaque/N > 0.98) return "This image has no alpha data, so it can't be a packed NOG image (the normal is half in alpha). Use the individual slots instead.";
     if (a < 8) return "This image's alpha is almost empty, so it isn't a packed NOG image. Use the individual slots instead.";

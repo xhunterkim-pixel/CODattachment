@@ -40,11 +40,9 @@ Get from it:
 
 ## 2. Textures (COD rips)
 
-1. The converter opens DDS directly (BC1–BC5, BC7, uncompressed), **but on the Hound 9G's MW3 DDS
-   its normal came out wrong (see `GRIPS.md` history 17)**. Until that's fixed, split with
-   GameImageUtil's MW modes and give the converter the split PNGs, or compare its output with
-   GameImageUtil's: the normal map must look lavender-blue, never teal/green. Easiest: split with
-   GameImageUtil and use the converter's **MW3 / MW2022 (GameImageUtil PNGs)** preset.
+1. The converter opens DDS directly (BC1–BC5, BC7, uncompressed). MW3 rips have three DDS per
+   material: the fused **colour**, a purple-ish one often named "normals" that is really the
+   **NOG**, and a bright green **mask** image that SMap doesn't use.
 2. Open `tools/smap-texture-converter.html` in a browser. Put the colour PNG in **Color** and set
    "Base color alpha" to **MW fused colour (spec/albedo)**; put the green image in **NOG**. That fills
    Roughness (gloss), Normal (reconstructed, Flip green on) and AO, using GameImageUtil's own
@@ -139,8 +137,8 @@ Get from it:
 | Inspect view off-centre | No PreviewPivot / not re-applied after moving the model | Apply Default Settings again |
 | Icon renders but faces the wrong way | SDK default icon rotation | Copy the vanilla item's Icon rotation; delete the icon cache |
 | Hand in the right pose but beside/past the grip | Palm markers offset along the grip | Move both palms along the grip axis (a few cm at a time) |
-| Normal preview is pink/green/teal | The raw green (NOG) image is in the Normal slot | Put it in NOG, or use GameImageUtil's `_n` (the slot now warns) |
-| Normal map comes out teal/green instead of lavender-blue | The image wasn't decoded as a real NOG (wrong file, or the converter misread the DDS) | Compare with GameImageUtil's NOG split; send the DDS for checking |
+| Normal map comes out teal/green | The green **mask** file went into NOG | Put the purple-ish "normals" file (the real NOG) in NOG; the page warns |
+| Normal preview is pink or the raw purple file | A NOG went into the Normal slot | Put it in NOG instead; the page warns |
 | Converted colour is very dark | AO from a misread NOG multiplied in, or the colour alpha wrongly treated as metal | Untick AO; set Base color alpha to Ignore; use the tutorial's safe route |
 | Black patches on metal parts | Metal converted to black diffuse without the metal's shine in the specular mask | Converter: alpha is the metal mask, Metal keeps diffuse 20–35% |
 | Ripped texture looks grainy/low-res | Source texture (check it in the original game) or a low-res rip | Re-rip with high-res images; lower Normal intensity |

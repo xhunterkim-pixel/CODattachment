@@ -197,6 +197,12 @@ How MW2019/MW2022 pack their textures (as split by Scobalula's GameImageUtil):
 
 The WW2 mode splits a different layout and puts the wrong data into "AO" and "roughness".
 
+**MW3 (2023)**, checked on the Hound 9G's files: same packing as MW2022. Its rip had three BC7 DDS per
+material: the fused colour; a NOG named "normals" (it looks purple-ish raw because R gloss ≈ 94,
+G ≈ 127, B occlusion ≈ 249, but the normal is still packed in G and A); and a "green" image whose B
+and A are exact complements (B + A = 255) with one grayscale map split between R and G by those
+masks, a material/wear mask that SMap doesn't use.
+
 GameImageUtil's formulas (ported into `tools/smap-texture-converter.html`), with channels 0–1:
 
 - **Fused colour:** metal `m = clamp((A − 0.1) / 0.9)`, insulator reflectance `r = min(A, 0.1)`;

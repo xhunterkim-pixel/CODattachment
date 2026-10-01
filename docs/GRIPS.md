@@ -133,6 +133,13 @@ icon upside down/end-on). Bounds Scale 0.9.
     warns when an image isn't mostly lavender-blue. The earlier teal normal may have had the same
     cause. The chat won't accept .dds attachments; rename to .bin, zip, or upload to `samples/`.
 
+22. Solved, with the real MW3 DDS files: the converter and its DDS reader were right all along
+    (decodes identical to Pillow). The rip's names were misleading: **`normals.dds` is the NOG**
+    (R gloss, G/A packed normal, B occlusion), and **`green.dds` is a mask image** (R and G hold one
+    grayscale map split by complementary B/A masks; not used by SMap). Putting green.dds in NOG gave
+    the teal normal. With color.dds → Color (MW fused) and normals.dds → NOG, all outputs are correct.
+    MW3 packing confirmed same as MW2022. The page now warns about both mix-ups.
+
 **Open:** try the Blender normal flip (then Normals: Import) and check with `inspect_bundle.py`.
 Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
 Confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right

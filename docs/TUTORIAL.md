@@ -24,38 +24,37 @@ Your attachment copies a vanilla item's stats, hand pose, icon framing and mater
 ## Part 2: Textures
 
 COD packs several maps into each image, and Tarkov's SMap shader wants a different packing. The
-converter page does the whole translation, including GameImageUtil's MW splits.
+converter page does the whole translation, including GameImageUtil's MW splits, and reads DDS
+directly. Confirmed on the Hound 9G's MW3 files.
 
-1. **Known issue:** on the Hound 9G's MW3 DDS files the converter's NOG route gave a flat teal
-   normal map and a very dark colour (its AO, taken from the misread NOG, darkens the diffuse).
-   Until fixed, use the **safe route** at the end of this part. A correct normal map is
-   lavender-blue. Open `tools/smap-texture-converter.html` in your browser. It reads the ripped **DDS files
-   directly** (if one uses an unusual format it tells you; then convert that one to PNG with
-   GameImageUtil's **Direct Convert (Global)**).
-2. You need two images per material: the **colour** image and the **green (NOG)** image. This works
-   for MW2019, MW2022 and (assumed, same engine) MW3.
-3. **Color** slot: the colour DDS. Under **Base color alpha**, pick **MW fused colour (spec/albedo)**.
+**Which ripped file is which** (MW3 rips come as three DDS per material; names vary by ripper):
+
+| File looks like | What it really is | Goes in |
+|---|---|---|
+| Dark/grey colour, partly see-through in viewers | Fused colour (albedo + specular, alpha = metal) | **Color**, with "MW fused colour" |
+| Purple-ish, often named "normals" | **NOG**: gloss (R), packed normal (G and A), occlusion (B). Not a finished normal map | **NOG** (not Normal!) |
+| Bright green, hard black/white shapes | Material/wear masks (B and A are opposites) | Nothing. SMap doesn't use it |
+
+The page warns if a file goes in the wrong slot.
+
+1. Open `tools/smap-texture-converter.html` in your browser.
+2. **Color** slot: the colour DDS. Under **Base color alpha**, pick **MW fused colour (spec/albedo)**.
    The Metallic slot then says "Not needed".
-4. **NOG** slot: the green DDS. It fills **Roughness** (gloss), **Normal** and **AO** by itself and
-   turns on **Flip green** and **AO**.
-5. Settings:
+3. **NOG** slot: the purple-ish "normals" DDS. It fills **Roughness** (gloss), **Normal** and **AO**
+   by itself and turns on **Flip green** and **AO**.
+4. Settings:
    - **Metal keeps diffuse: 25%** (20–35%). At 0% metal parts show as black patches.
    - **Diffuse brightness:** leave **Auto** on.
    - **Flip green:** leave it on (COD normals are DirectX, Unity wants OpenGL).
+5. Check the four previews: Normal must be **lavender-blue with visible relief** (never teal or pink);
+   Diffuse is the real colour (polymer is dark grey; the vanilla RK-1 is darker still).
 6. **Download all (zip)**. You get `<name>_diffuse.png`, `<name>_gloss.png`, `<name>_normal.png`.
 7. Do this once per material (e.g. once for the grip, once for the rail).
 
-**Safe route (use this until the DDS issue is fixed):**
-
-1. GameImageUtil, output PNG: colour DDS → **CoD Specular/Albedo (Infinite Warfare/Modern Warfare)**
-   (gives `_c` and `_s`); green DDS → **CoD Normal/Gloss/Occlusion (Infinite Warfare/Modern Warfare)**
-   (gives `_n`, `_g`, `_o`).
-2. Converter: click the **MW3 / MW2022 (GameImageUtil PNGs)** preset, then drop all five files
-   (`_c`, `_s`, `_g`, `_n`, `_o`) onto "Or drop them all here at once". The preset puts each file in
-   its slot and sets: Metallic slot holds **Specular map**, **Gloss**, Base color alpha **Ignore**,
-   **Flip green** on, AO **50%**, brightness **Auto**. (By hand: Color `_c`, Metallic `_s`,
-   Roughness `_g`, Normal `_n`, AO `_o`, with those settings.)
-3. Download and use `_diffuse`, `_gloss`, `_normal`.
+**Alternative: GameImageUtil first.** Split the colour DDS with **CoD Specular/Albedo
+(Infinite Warfare/Modern Warfare)** and the NOG with **CoD Normal/Gloss/Occlusion (Infinite
+Warfare/Modern Warfare)** (output PNG), click the converter's **MW3 / MW2022 (GameImageUtil PNGs)**
+preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same result.
 
 ## Part 3: The model in Blender
 
