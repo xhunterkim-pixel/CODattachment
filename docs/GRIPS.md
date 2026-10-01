@@ -205,10 +205,12 @@ icon upside down/end-on). Bounds Scale 0.9.
     Suggested to finish it: Specular/Diffuse Vals 1,1,0,0 (41 of 59 foregrips), Specular Color 255,
     Reflection Color 129,129,129,128. Not yet confirmed in game.
 
-**Open:** edge/facet look in dark light (history 30). In game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
-RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).
-Optional: `inspect_bundle.py` on the new bundle (normals agree with faces ~100%).
-Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
-Confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right
-in game), confirm in game the recalculated normals, the halfway hand poses, the icon rotation,
-and the re-converted rail texture.
+**Open** (cleaned up; solved items removed):
+- Rebuild with the cubemaps left on label `cubemaps` (history 33) and check: manifest `Dependencies:`
+  `shaders`, `cubemaps`, no cubemap under `Assets:`; `inspect_bundle.py` shows `_Cube: CAB-4d8a...`.
+- In game: hand poses (halfway values; `Base HumanLPalm 1`), icon rotation 0, 245, 180, shine next
+  to the RK-1 with the new grip values (history 36), edges in dark light (history 30).
+- Rail material still has the old values (Main 193, "Specularness" 1.5, Vals 1, 0.5, 0, 0). Vanilla
+  mounts (`MATERIALS.md`): "Specularness" ~1.46, "Glossness" 1, Main ~213, Vals 1, 1, 0, 0,
+  `patron_cubemap_metall`. Not changed yet.
+- Not sold by any trader (`addtoTraders: false`); only `spt give` / flea.
