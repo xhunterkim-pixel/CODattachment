@@ -38,8 +38,8 @@ Get from it:
 
 ## 2. Textures (COD rips)
 
-1. Convert each DDS to PNG with **GameImageUtil → "Direct Convert (Global)"** (browsers can't read
-   DDS). Don't split them; the converter does that.
+1. No pre-conversion needed: the converter opens DDS directly (BC1–BC5, BC7, uncompressed). If a
+   DDS uses another format it says so; then convert it to PNG with GameImageUtil's "Direct Convert".
 2. Open `tools/smap-texture-converter.html` in a browser. Put the colour PNG in **Color** and set
    "Base color alpha" to **MW fused colour (spec/albedo)**; put the green image in **NOG**. That fills
    Roughness (gloss), Normal (reconstructed, Flip green on) and AO, using GameImageUtil's own

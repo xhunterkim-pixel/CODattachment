@@ -10,7 +10,7 @@ Add a section for every new grip.
 | Item ID | `6abe08f14fea21b38607a868` |
 | Cloned from | Zenit RK-1 tactical foregrip on B-25U mount, `5c1cd46f2e22164bef5cfedb` (vanilla bundle `foregrip_all_zenit_b25u_rk_1.bundle`) |
 | Bundle | `assets/content/items/mods/foregrips/houndgrip.bundle`, dependency `shaders` |
-| Source | Call of Duty: Modern Warfare II (2022), ported via Blender → FBX |
+| Source | Call of Duty: Modern Warfare III (2023), ported via Blender → FBX |
 | Unity prefab | `Assets/Content/Weapons/Tarkov Double Sidegrip/houndgrip/houndgrip.prefab` |
 
 **Prefab:** root `houndgrip` (rotation 0, scale 1) with children `grip` and `rail`,
@@ -102,5 +102,12 @@ icon upside down/end-on). Bounds Scale 0.9.
     Channel must stay off; and vanilla's gloss texture is sRGB, so gloss keeps sRGB on.
     Full workflow written up in `docs/TUTORIAL.md`.
 
-**Open:** confirm in game the recalculated normals, the halfway hand poses, the icon rotation,
+16. The converter now opens DDS files itself (BC1–BC5, BC7, uncompressed), so GameImageUtil isn't
+    needed at all. The decoder is a port of bcdec; checked against Pillow on random blocks of every
+    format (BC7 exact, BC1–3 within 1/255) and the DDS route gives identical outputs to the PNG route.
+    Source corrected to MW3 (2023); its texture packing is assumed to match MW2022 (same engine),
+    not yet confirmed.
+
+**Open:** confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right
+in game), confirm in game the recalculated normals, the halfway hand poses, the icon rotation,
 and the re-converted rail texture.

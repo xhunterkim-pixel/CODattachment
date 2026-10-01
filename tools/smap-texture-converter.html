@@ -1,6 +1,7 @@
 <!doctype html>
 <!--
-  SMap Texture Converter. The "MW fused colour" and "NOG" processing is ported from Scobalula's
+  SMap Texture Converter. DDS decoding is ported from bcdec (https://github.com/iOrange/bcdec, MIT,
+  Copyright (c) 2022 Sergii Kudlai). The "MW fused colour" and "NOG" processing is ported from Scobalula's
   GameImageUtil (CoDFusedCSProcessor, CoDNOGImageProcessor), https://github.com/Scobalula/GameImageUtil,
   licensed under the GNU General Public License v3.0; this file is distributed under the same license.
 -->
@@ -109,7 +110,7 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
 <body>
 <main>
   <h1>SMap Texture Converter</h1>
-  <p class="lede">Drop in your ripped maps, or for MW2019/MW2022 rips just the colour PNG (pick "MW fused colour") and the NOG image. You get the three textures Tarkov's Bumped Specular SMap shader wants: diffuse with specular in its alpha, gloss, and normal.</p>
+  <p class="lede">Drop in your ripped maps (DDS or PNG), or for MW2019/MW2022/MW3 rips just the colour image (pick "MW fused colour") and the NOG image. You get the three textures Tarkov's Bumped Specular SMap shader wants: diffuse with specular in its alpha, gloss, and normal.</p>
 
   <div class="grid">
     <div>
@@ -123,7 +124,7 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
           <strong>Or drop them all here at once</strong>
           <span>Sorted by file name (color, metal, rough, ao, normal).</span>
         </div>
-        <input type="file" id="multi" accept="image/*" multiple hidden>
+        <input type="file" id="multi" accept="image/*,.dds" multiple hidden>
       </section>
 
       <section class="panel" style="margin-top:22px">
@@ -155,7 +156,7 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
             <label><input type="radio" name="alpha" value="ignore" checked> Ignore it</label>
             <label><input type="radio" name="alpha" value="metal"> MW fused colour (spec/albedo)</label>
           </div>
-          <p class="hint">For MW2019 / MW2022 / IW colour images: the alpha is metalness (up to 10% it's the non-metal reflectance), split exactly like GameImageUtil's "CoD Specular/Albedo (IW/MW)". The Metallic slot isn't needed. Use a PNG: convert the DDS with GameImageUtil's "Direct Convert" mode first.</p>
+          <p class="hint">For MW2019 / MW2022 / MW3 / IW colour images: the alpha is metalness (up to 10% it's the non-metal reflectance), split exactly like GameImageUtil's "CoD Specular/Albedo (IW/MW)". The Metallic slot isn't needed. Drop the DDS straight in, or a PNG made with GameImageUtil's "Direct Convert".</p>
         </fieldset>
 
         <fieldset>
@@ -235,7 +236,7 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
       <div class="talt">${s.alt}</div>
       <div class="tfile ${s.req?"need":""}" data-f>${s.req ? "Click or drop" : "Click or drop"}</div>
       ${s.chan ? `<label class="tchan">Channel <select data-ch><option value="0">R</option><option value="1">G</option><option value="2">B</option><option value="3">A</option></select></label>` : ""}
-      <input type="file" accept="image/*" hidden>`;
+      <input type="file" accept="image/*,.dds" hidden>`;
     const input = tile.querySelector("input");
     const sel = tile.querySelector("[data-ch]");
     if (sel){
@@ -267,8 +268,131 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
   }
 
   // ---------- file loading ----------
+  const BC7_P2 = new Uint8Array([128,0,1,1,0,0,1,1,0,0,1,1,0,0,1,129,128,0,0,1,0,0,0,1,0,0,0,1,0,0,0,129,128,1,1,1,0,1,1,1,0,1,1,1,0,1,1,129,128,0,0,1,0,0,1,1,0,0,1,1,0,1,1,129,128,0,0,0,0,0,0,1,0,0,0,1,0,0,1,129,128,0,1,1,0,1,1,1,0,1,1,1,1,1,1,129,128,0,0,1,0,0,1,1,0,1,1,1,1,1,1,129,128,0,0,0,0,0,0,1,0,0,1,1,0,1,1,129,128,0,0,0,0,0,0,0,0,0,0,1,0,0,1,129,128,0,1,1,0,1,1,1,1,1,1,1,1,1,1,129,128,0,0,0,0,0,0,1,0,1,1,1,1,1,1,129,128,0,0,0,0,0,0,0,0,0,0,1,0,1,1,129,128,0,0,1,0,1,1,1,1,1,1,1,1,1,1,129,128,0,0,0,0,0,0,0,1,1,1,1,1,1,1,129,128,0,0,0,1,1,1,1,1,1,1,1,1,1,1,129,128,0,0,0,0,0,0,0,0,0,0,0,1,1,1,129,128,0,0,0,1,0,0,0,1,1,1,0,1,1,1,129,128,1,129,1,0,0,0,1,0,0,0,0,0,0,0,0,128,0,0,0,0,0,0,0,129,0,0,0,1,1,1,0,128,1,129,1,0,0,1,1,0,0,0,1,0,0,0,0,128,0,129,1,0,0,0,1,0,0,0,0,0,0,0,0,128,0,0,0,1,0,0,0,129,1,0,0,1,1,1,0,128,0,0,0,0,0,0,0,129,0,0,0,1,1,0,0,128,1,1,1,0,0,1,1,0,0,1,1,0,0,0,129,128,0,129,1,0,0,0,1,0,0,0,1,0,0,0,0,128,0,0,0,1,0,0,0,129,0,0,0,1,1,0,0,128,1,129,0,0,1,1,0,0,1,1,0,0,1,1,0,128,0,129,1,0,1,1,0,0,1,1,0,1,1,0,0,128,0,0,1,0,1,1,1,129,1,1,0,1,0,0,0,128,0,0,0,1,1,1,1,129,1,1,1,0,0,0,0,128,1,129,1,0,0,0,1,1,0,0,0,1,1,1,0,128,0,129,1,1,0,0,1,1,0,0,1,1,1,0,0,128,1,0,1,0,1,0,1,0,1,0,1,0,1,0,129,128,0,0,0,1,1,1,1,0,0,0,0,1,1,1,129,128,1,0,1,1,0,129,0,0,1,0,1,1,0,1,0,128,0,1,1,0,0,1,1,129,1,0,0,1,1,0,0,128,0,129,1,1,1,0,0,0,0,1,1,1,1,0,0,128,1,0,1,0,1,0,1,129,0,1,0,1,0,1,0,128,1,1,0,1,0,0,1,0,1,1,0,1,0,0,129,128,1,0,1,1,0,1,0,1,0,1,0,0,1,0,129,128,1,129,1,0,0,1,1,1,1,0,0,1,1,1,0,128,0,0,1,0,0,1,1,129,1,0,0,1,0,0,0,128,0,129,1,0,0,1,0,0,1,0,0,1,1,0,0,128,0,129,1,1,0,1,1,1,1,0,1,1,1,0,0,128,1,129,0,1,0,0,1,1,0,0,1,0,1,1,0,128,0,1,1,1,1,0,0,1,1,0,0,0,0,1,129,128,1,1,0,0,1,1,0,1,0,0,1,1,0,0,129,128,0,0,0,0,1,129,0,0,1,1,0,0,0,0,0,128,1,0,0,1,1,129,0,0,1,0,0,0,0,0,0,128,0,129,0,0,1,1,1,0,0,1,0,0,0,0,0,128,0,0,0,0,0,129,0,0,1,1,1,0,0,1,0,128,0,0,0,0,1,0,0,129,1,1,0,0,1,0,0,128,1,1,0,1,1,0,0,1,0,0,1,0,0,1,129,128,0,1,1,0,1,1,0,1,1,0,0,1,0,0,129,128,1,129,0,0,0,1,1,1,0,0,1,1,1,0,0,128,0,129,1,1,0,0,1,1,1,0,0,0,1,1,0,128,1,1,0,1,1,0,0,1,1,0,0,1,0,0,129,128,1,1,0,0,0,1,1,0,0,1,1,1,0,0,129,128,1,1,1,1,1,1,0,1,0,0,0,0,0,0,129,128,0,0,1,1,0,0,0,1,1,1,0,0,1,1,129,128,0,0,0,1,1,1,1,0,0,1,1,0,0,1,129,128,0,129,1,0,0,1,1,1,1,1,1,0,0,0,0,128,0,129,0,0,0,1,0,1,1,1,0,1,1,1,0,128,1,0,0,0,1,0,0,0,1,1,1,0,1,1,129]);
+const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129,0,0,1,1,130,2,1,1,2,2,2,1,128,0,0,0,2,0,0,1,130,2,1,1,2,2,1,129,128,2,2,130,0,0,2,2,0,0,1,1,0,1,1,129,128,0,0,0,0,0,0,0,129,1,2,2,1,1,2,130,128,0,1,129,0,0,1,1,0,0,2,2,0,0,2,130,128,0,2,130,0,0,2,2,1,1,1,1,1,1,1,129,128,0,1,1,0,0,1,1,130,2,1,1,2,2,1,129,128,0,0,0,0,0,0,0,129,1,1,1,2,2,2,130,128,0,0,0,1,1,1,1,129,1,1,1,2,2,2,130,128,0,0,0,1,1,129,1,2,2,2,2,2,2,2,130,128,0,1,2,0,0,129,2,0,0,1,2,0,0,1,130,128,1,1,2,0,1,129,2,0,1,1,2,0,1,1,130,128,1,2,2,0,129,2,2,0,1,2,2,0,1,2,130,128,0,1,129,0,1,1,2,1,1,2,2,1,2,2,130,128,0,1,129,2,0,0,1,130,2,0,0,2,2,2,0,128,0,0,129,0,0,1,1,0,1,1,2,1,1,2,130,128,1,1,129,0,0,1,1,130,0,0,1,2,2,0,0,128,0,0,0,1,1,2,2,129,1,2,2,1,1,2,130,128,0,2,130,0,0,2,2,0,0,2,2,1,1,1,129,128,1,1,129,0,1,1,1,0,2,2,2,0,2,2,130,128,0,0,129,0,0,0,1,130,2,2,1,2,2,2,1,128,0,0,0,0,0,129,1,0,1,2,2,0,1,2,130,128,0,0,0,1,1,0,0,130,2,129,0,2,2,1,0,128,1,2,130,0,129,2,2,0,0,1,1,0,0,0,0,128,0,1,2,0,0,1,2,129,1,2,2,2,2,2,130,128,1,1,0,1,2,130,1,129,2,2,1,0,1,1,0,128,0,0,0,0,1,129,0,1,2,130,1,1,2,2,1,128,0,2,2,1,1,0,2,129,1,0,2,0,0,2,130,128,1,1,0,0,129,1,0,2,0,0,2,2,2,2,130,128,0,1,1,0,1,2,2,0,1,130,2,0,0,1,129,128,0,0,0,2,0,0,0,130,2,1,1,2,2,2,129,128,0,0,0,0,0,0,2,129,1,2,2,1,2,2,130,128,2,2,130,0,0,2,2,0,0,1,2,0,0,1,129,128,0,1,129,0,0,1,2,0,0,2,2,0,2,2,130,128,1,2,0,0,129,2,0,0,1,130,0,0,1,2,0,128,0,0,0,1,1,129,1,2,2,130,2,0,0,0,0,128,1,2,0,1,2,0,1,130,0,129,2,0,1,2,0,128,1,2,0,2,0,1,2,129,130,0,1,0,1,2,0,128,0,1,1,2,2,0,0,1,1,130,2,0,0,1,129,128,0,1,1,1,1,130,2,2,2,0,0,0,0,1,129,128,1,0,129,0,1,0,1,2,2,2,2,2,2,2,130,128,0,0,0,0,0,0,0,130,1,2,1,2,1,2,129,128,0,2,2,1,129,2,2,0,0,2,2,1,1,2,130,128,0,2,130,0,0,1,1,0,0,2,2,0,0,1,129,128,2,2,0,1,2,130,1,0,2,2,0,1,2,2,129,128,1,0,1,2,2,130,2,2,2,2,2,0,1,0,129,128,0,0,0,2,1,2,1,130,1,2,1,2,1,2,129,128,1,0,129,0,1,0,1,0,1,0,1,2,2,2,130,128,2,2,130,0,1,1,1,0,2,2,2,0,1,1,129,128,0,0,2,1,129,1,2,0,0,0,2,1,1,1,130,128,0,0,0,2,129,1,2,2,1,1,2,2,1,1,130,128,2,2,2,0,129,1,1,0,1,1,1,0,2,2,130,128,0,0,2,1,1,1,2,129,1,1,2,0,0,0,130,128,1,1,0,0,129,1,0,0,1,1,0,2,2,2,130,128,0,0,0,0,0,0,0,2,1,129,2,2,1,1,130,128,1,1,0,0,129,1,0,2,2,2,2,2,2,2,130,128,0,2,2,0,0,1,1,0,0,129,1,0,0,2,130,128,0,2,2,1,1,2,2,129,1,2,2,0,0,2,130,128,0,0,0,0,0,0,0,0,0,0,0,2,129,1,130,128,0,0,130,0,0,0,1,0,0,0,2,0,0,0,129,128,2,2,2,1,2,2,2,0,2,2,2,129,2,2,130,128,1,0,129,2,2,2,2,2,2,2,2,2,2,2,130,128,1,1,129,2,0,1,1,130,2,0,1,2,2,2,0]);
+
+  // ---------- DDS decoding (BC1-BC5, BC7, uncompressed). BC decoders ported from bcdec
+  // (https://github.com/iOrange/bcdec, MIT licence, Copyright (c) 2022 Sergii Kudlai). ----------
+  function bcColorBlock(b, o, out, onlyOpaque){
+    const c0 = b[o] | b[o+1]<<8, c1 = b[o+2] | b[o+3]<<8;
+    const r0=(c0>>11)&31, g0=(c0>>5)&63, b0=c0&31, r1=(c1>>11)&31, g1=(c1>>5)&63, b1=c1&31;
+    const ref = [
+      [(r0*527+23)>>6, (g0*259+33)>>6, (b0*527+23)>>6, 255],
+      [(r1*527+23)>>6, (g1*259+33)>>6, (b1*527+23)>>6, 255]];
+    if (c0 > c1 || onlyOpaque){
+      ref[2] = [((2*r0+r1)*351+61)>>7, ((2*g0+g1)*2763+1039)>>11, ((2*b0+b1)*351+61)>>7, 255];
+      ref[3] = [((r0+r1*2)*351+61)>>7, ((g0+g1*2)*2763+1039)>>11, ((b0+b1*2)*351+61)>>7, 255];
+    } else {
+      ref[2] = [((r0+r1)*1053+125)>>8, ((g0+g1)*4145+1019)>>11, ((b0+b1)*1053+125)>>8, 255];
+      ref[3] = [0,0,0,0];
+    }
+    let idx = (b[o+4] | b[o+5]<<8 | b[o+6]<<16 | b[o+7]<<24) >>> 0;
+    for (let p=0;p<16;p++){ const c = ref[idx & 3]; idx >>>= 2; out[p*4]=c[0]; out[p*4+1]=c[1]; out[p*4+2]=c[2]; out[p*4+3]=c[3]; }
+  }
+  function bcSmoothAlpha(b, o, out, ch){
+    const a = [b[o], b[o+1]];
+    if (a[0] > a[1]) for (let k=1;k<=6;k++) a.push(Math.floor(((7-k)*a[0] + k*a[1])/7));
+    else { for (let k=1;k<=4;k++) a.push(Math.floor(((5-k)*a[0] + k*a[1])/5)); a.push(0,255); }
+    let lo = (b[o+2] | b[o+3]<<8 | b[o+4]<<16) >>> 0, hi = (b[o+5] | b[o+6]<<8 | b[o+7]<<16) >>> 0;
+    for (let p=0;p<16;p++){ const v = p<8 ? (lo>>>(3*p))&7 : (hi>>>(3*(p-8)))&7; out[p*4+ch] = a[v]; }
+  }
+  function bcSharpAlpha(b, o, out){
+    for (let p=0;p<16;p++){ const v = (b[o+(p>>1)] >> ((p&1)*4)) & 15; out[p*4+3] = v*17; }
+  }
+  const BC7_BITS = [[4,6,5,7,5,7,7,5],[0,0,0,0,6,8,7,5]];
+  const BC7_W2=[0,21,43,64], BC7_W3=[0,9,18,27,37,46,55,64], BC7_W4=[0,4,9,13,17,21,26,30,34,38,43,47,51,55,60,64];
+  function bc7Block(b, o, out){
+    let pos = 0;
+    const read = n => { let v=0; for (let k=0;k<n;k++,pos++) v |= ((b[o+(pos>>3)] >> (pos&7)) & 1) << k; return v; };
+    let mode = 0; while (mode < 8 && read(1) === 0) mode++;
+    if (mode >= 8){ out.fill(0); return; }
+    let partition=0, nParts=1, rotation=0, isb=0;
+    if (mode===0||mode===1||mode===2||mode===3||mode===7){ nParts = (mode===0||mode===2) ? 3 : 2; partition = read(mode===0 ? 4 : 6); }
+    const nEnd = nParts*2;
+    if (mode===4||mode===5){ rotation = read(2); if (mode===4) isb = read(1); }
+    const ep = [...Array(6)].map(() => [0,0,0,0]);
+    for (let i=0;i<3;i++) for (let j=0;j<nEnd;j++) ep[j][i] = read(BC7_BITS[0][mode]);
+    if (BC7_BITS[1][mode]) for (let j=0;j<nEnd;j++) ep[j][3] = read(BC7_BITS[1][mode]);
+    const hasP = (0b11001011 >> mode) & 1;
+    if (mode===0||mode===1||mode===3||mode===6||mode===7){
+      for (let i=0;i<nEnd;i++) for (let j=0;j<4;j++) ep[i][j] <<= 1;
+      if (mode===1){ const p0=read(1), p1=read(1); for (let k=0;k<3;k++){ ep[0][k]|=p0; ep[1][k]|=p0; ep[2][k]|=p1; ep[3][k]|=p1; } }
+      else if (hasP) for (let i=0;i<nEnd;i++){ const p=read(1); for (let k=0;k<4;k++) ep[i][k] |= p; }
+    }
+    for (let i=0;i<nEnd;i++){
+      let j = BC7_BITS[0][mode] + hasP;
+      for (let k=0;k<3;k++){ ep[i][k] = (ep[i][k] << (8-j)) & 255; ep[i][k] |= ep[i][k] >> j; }
+      j = BC7_BITS[1][mode] + hasP;
+      ep[i][3] = (ep[i][3] << (8-j)) & 255; ep[i][3] |= ep[i][3] >> j;
+    }
+    if (!BC7_BITS[1][mode]) for (let j=0;j<nEnd;j++) ep[j][3] = 255;
+    const ib = (mode===0||mode===1) ? 3 : (mode===6 ? 4 : 2);
+    const ib2 = mode===4 ? 3 : (mode===5 ? 2 : 0);
+    const w = ib===2 ? BC7_W2 : (ib===3 ? BC7_W3 : BC7_W4), w2 = ib2===2 ? BC7_W2 : BC7_W3;
+    const table = nParts===2 ? BC7_P2 : BC7_P3;
+    const set = p => nParts===1 ? (p ? 0 : 128) : table[partition*16 + p];
+    const idx = new Array(16);
+    for (let p=0;p<16;p++) idx[p] = read((set(p) & 0x80) ? ib-1 : ib);
+    const lerp = (a, c, wt, i) => (a*(64-wt[i]) + c*wt[i] + 32) >> 6;
+    for (let p=0;p<16;p++){
+      const s = set(p) & 3, e0 = ep[s*2], e1 = ep[s*2+1], i1 = idx[p];
+      let r,g,bl,a;
+      if (!ib2){ r=lerp(e0[0],e1[0],w,i1); g=lerp(e0[1],e1[1],w,i1); bl=lerp(e0[2],e1[2],w,i1); a=lerp(e0[3],e1[3],w,i1); }
+      else {
+        const i2 = read(p ? ib2 : ib2-1);
+        if (!isb){ r=lerp(e0[0],e1[0],w,i1); g=lerp(e0[1],e1[1],w,i1); bl=lerp(e0[2],e1[2],w,i1); a=lerp(e0[3],e1[3],w2,i2); }
+        else { r=lerp(e0[0],e1[0],w2,i2); g=lerp(e0[1],e1[1],w2,i2); bl=lerp(e0[2],e1[2],w2,i2); a=lerp(e0[3],e1[3],w,i1); }
+      }
+      if (rotation===1) [a,r] = [r,a]; else if (rotation===2) [a,g] = [g,a]; else if (rotation===3) [a,bl] = [bl,a];
+      out[p*4]=r; out[p*4+1]=g; out[p*4+2]=bl; out[p*4+3]=a;
+    }
+  }
+  function decodeDDS(buf){
+    const v = new DataView(buf), b = new Uint8Array(buf);
+    if (v.getUint32(0,true) !== 0x20534444) throw new Error("not a DDS file");
+    const h = v.getUint32(12,true), w = v.getUint32(16,true);
+    const fourcc = String.fromCharCode(b[84],b[85],b[86],b[87]), bpp = v.getUint32(88,true);
+    let off = 128, fmt = null;
+    const FOURCC = {DXT1:"bc1", DXT2:"bc2", DXT3:"bc2", DXT4:"bc3", DXT5:"bc3", ATI1:"bc4", BC4U:"bc4", ATI2:"bc5", BC5U:"bc5"};
+    const DXGI = {71:"bc1",72:"bc1",74:"bc2",75:"bc2",77:"bc3",78:"bc3",80:"bc4",83:"bc5",98:"bc7",99:"bc7",28:"rgba",29:"rgba",87:"bgra",91:"bgra",88:"bgrx",93:"bgrx"};
+    if (fourcc === "DX10"){ const d = v.getUint32(128,true); fmt = DXGI[d]; off = 148; if (!fmt) throw new Error(`DDS format DXGI ${d} isn't supported`); }
+    else if (FOURCC[fourcc]) fmt = FOURCC[fourcc];
+    else if (bpp === 32){
+      const rm = v.getUint32(92,true);
+      fmt = rm === 0x000000ff ? "rgba" : (rm === 0x00ff0000 ? (v.getUint32(104,true) ? "bgra" : "bgrx") : null);
+      if (!fmt) throw new Error("this uncompressed DDS layout isn't supported");
+    } else throw new Error(`DDS format "${fourcc.replace(/\0/g,"")}" isn't supported`);
+    const data = new Uint8ClampedArray(w*h*4);
+    if (fmt==="rgba"||fmt==="bgra"||fmt==="bgrx"){
+      for (let i=0;i<w*h;i++){
+        const s = off + i*4, d = i*4;
+        if (fmt==="rgba"){ data[d]=b[s]; data[d+1]=b[s+1]; data[d+2]=b[s+2]; data[d+3]=b[s+3]; }
+        else { data[d]=b[s+2]; data[d+1]=b[s+1]; data[d+2]=b[s]; data[d+3]= fmt==="bgra" ? b[s+3] : 255; }
+      }
+      return {w, h, data};
+    }
+    const bs = (fmt==="bc1"||fmt==="bc4") ? 8 : 16, bw = Math.ceil(w/4), bh = Math.ceil(h/4);
+    const px = new Uint8Array(64);
+    for (let by=0;by<bh;by++) for (let bx=0;bx<bw;bx++){
+      const o = off + (by*bw + bx)*bs;
+      if (fmt==="bc1") bcColorBlock(b, o, px, false);
+      else if (fmt==="bc2"){ bcColorBlock(b, o+8, px, true); bcSharpAlpha(b, o, px); }
+      else if (fmt==="bc3"){ bcColorBlock(b, o+8, px, true); bcSmoothAlpha(b, o, px, 3); }
+      else if (fmt==="bc4"){ bcSmoothAlpha(b, o, px, 0); for (let p=0;p<16;p++){ px[p*4+1]=px[p*4+2]=px[p*4]; px[p*4+3]=255; } }
+      else if (fmt==="bc5"){ bcSmoothAlpha(b, o, px, 0); bcSmoothAlpha(b, o+8, px, 1); for (let p=0;p<16;p++){ px[p*4+2]=0; px[p*4+3]=255; } }
+      else bc7Block(b, o, px);
+      for (let p=0;p<16;p++){
+        const x = bx*4 + (p&3), y = by*4 + (p>>2);
+        if (x>=w || y>=h) continue;
+        const d = (y*w + x)*4; data[d]=px[p*4]; data[d+1]=px[p*4+1]; data[d+2]=px[p*4+2]; data[d+3]=px[p*4+3];
+      }
+    }
+    return {w, h, data};
+  }
+
   async function decode(file){
     const buf = await file.arrayBuffer();
+    if (buf.byteLength > 128 && new DataView(buf).getUint32(0,true) === 0x20534444) return decodeDDS(buf);
     const isPng = /\.png$/i.test(file.name) || new Uint8Array(buf.slice(0,4))[1] === 0x50;
     if (isPng && window.UPNG){
       try {
@@ -295,7 +419,7 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
       if (key==="metal"||key==="gloss"||key==="base") guessGloss();
       schedule();
     } catch(e){
-      setStatus(`Couldn't read ${file.name}. Save it as PNG and try again.`, true);
+      setStatus(`Couldn't read ${file.name}${e && e.message ? ` (${e.message})` : ""}. Convert it to PNG with GameImageUtil's Direct Convert and try again.`, true);
     }
   }
 

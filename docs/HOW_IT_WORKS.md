@@ -205,8 +205,9 @@ GameImageUtil's formulas (ported into `tools/smap-texture-converter.html`), with
 - **NOG:** gloss = R, occlusion = B; normal from G and A (hemi-octahedron):
   `nx = 2G − 1, ny = 2A − 1; x = (nx + ny)/2, y = (nx − ny)/2, z = 1 − |x| − |y|`, then normalise.
 
-GameImageUtil reads DDS through DirectXTex (a native Windows library), so its "Direct Convert"
-mode is the way to turn COD DDS files into PNGs for the browser converter.
+GameImageUtil reads DDS through DirectXTex (a native Windows library). The browser converter has
+its own DDS reader instead (BC1–BC5, BC7 and uncompressed; ported from bcdec), so DDS files can be
+dropped in directly. MW3 (2023) runs on the same engine as MW2022 and is assumed to pack the same way.
 
 Converting to SMap (specular/gloss): metal has (almost) no diffuse colour and gets its colour as
 specular; non-metal gets a low specular around 56/255 (4% reflectance). COD stores **gloss**, which is

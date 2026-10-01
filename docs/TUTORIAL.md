@@ -4,7 +4,7 @@ Every click, in order, with every fix we found on the Hound 9G. Follow it top to
 attachment, or to redo one. Why each step matters is explained in `HOW_IT_WORKS.md`; if something
 goes wrong, check the troubleshooting table in `ADDING_A_GRIP.md`.
 
-**You need:** your COD rip (model + DDS textures), Blender, GameImageUtil, the
+**You need:** your COD rip (model + DDS textures), Blender, the
 EscapeFromTushonka-SDK in Unity 2022.3.43f1, this repo, and (for the checks) Python 3 with
 `pip install UnityPy`.
 
@@ -26,12 +26,14 @@ Your attachment copies a vanilla item's stats, hand pose, icon framing and mater
 COD packs several maps into each image, and Tarkov's SMap shader wants a different packing. The
 converter page does the whole translation, including GameImageUtil's MW splits.
 
-1. **DDS → PNG.** Open GameImageUtil, choose **Direct Convert (Global)**, output **PNG**, and drag
-   in the colour DDS and the green (NOG) DDS. Don't use the split modes; the converter does that.
-2. Open `tools/smap-texture-converter.html` in your browser.
-3. **Color** slot: the colour PNG. Under **Base color alpha**, pick **MW fused colour (spec/albedo)**.
+1. Open `tools/smap-texture-converter.html` in your browser. It reads the ripped **DDS files
+   directly** (if one uses an unusual format it tells you; then convert that one to PNG with
+   GameImageUtil's **Direct Convert (Global)**).
+2. You need two images per material: the **colour** image and the **green (NOG)** image. This works
+   for MW2019, MW2022 and (assumed, same engine) MW3.
+3. **Color** slot: the colour DDS. Under **Base color alpha**, pick **MW fused colour (spec/albedo)**.
    The Metallic slot then says "Not needed".
-4. **NOG** slot: the green PNG. It fills **Roughness** (gloss), **Normal** and **AO** by itself and
+4. **NOG** slot: the green DDS. It fills **Roughness** (gloss), **Normal** and **AO** by itself and
    turns on **Flip green** and **AO**.
 5. Settings:
    - **Metal keeps diffuse: 25%** (20–35%). At 0% metal parts show as black patches.
