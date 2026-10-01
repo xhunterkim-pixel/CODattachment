@@ -197,6 +197,10 @@ icon upside down/end-on). Bounds Scale 0.9.
     54 / 94, so "Specularness" 1 matches it in strength (history 27 confirmed by the data). The
     common cubemap for polymer and coated metal is `patron_cubemap_metall`, already in the SDK.
 
+35. Every vanilla item's values added (`data/vanilla_materials.csv`). Foregrips use "Specularness"
+    1.0 (half of them) to 2.0, "Glossness" ~1.0, cubemap metall_matte or metall. Our grip's
+    1 / 1.08 / metall_matte is in range. The SDK's six cubemaps cover 99% of vanilla attachments.
+
 **Open:** edge/facet look in dark light (history 30). In game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
 RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).
 Optional: `inspect_bundle.py` on the new bundle (normals agree with faces ~100%).
