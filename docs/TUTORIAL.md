@@ -64,6 +64,11 @@ converter page does the whole translation, including GameImageUtil's MW splits.
 
    If a curved part shows a hard crease, raise the Smoothing Angle; if a sharp edge looks rounded,
    lower it.
+
+   **Better fix (no artifacts):** Calculate replaces the original smoothing that the normal map was
+   baked against, which causes blotches and seams. Instead, in Blender select the mesh, run
+   `tools/blender_flip_custom_normals.py` (Scripting tab → paste → Run Script), export the FBX again,
+   and in Unity set **Normals: Import**. That keeps COD's normals and only turns them the right way.
 3. **Texture import settings** (click each PNG, then **Apply**):
 
    | Texture | Texture Type | sRGB | Flip Green Channel | Aniso Level |

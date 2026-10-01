@@ -61,6 +61,7 @@ Python 3 with `pip install UnityPy`:
 | `tools/inspect_bundle.py` | Show what's in a bundle (shader references, hierarchy, hand poses, material values). Compare yours with the vanilla item. |
 | `tools/fix_eft_shaders.py` | Point materials at the game's shaders when an item is purple or white. |
 | `tools/make_handpose_script.py` | Turn a vanilla item's hand poses into a Unity editor script. |
+| `tools/blender_flip_custom_normals.py` | Blender script that reverses inverted normals without losing the original smoothing. |
 | `unity/AddSideGripHandPoses.cs` | Unity editor script with the RK-1 B-25U side-grip hand poses. |
 | `unity/GripPoseGizmos.cs` | Unity editor script that draws the hand poses in the Scene view. |
 | `tools/smap-texture-converter.html` | Open in a browser: converts COD textures (DDS or PNG) into SMap's diffuse/gloss/normal. |

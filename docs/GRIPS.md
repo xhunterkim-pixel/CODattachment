@@ -115,7 +115,12 @@ icon upside down/end-on). Bounds Scale 0.9.
     image after the NOG could re-guess the NOG's gloss as roughness and invert it; NOG gloss is now
     always gloss. The NOG slot now warns when a file doesn't look like a packed NOG.
 
-**Open:** fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
+18. Normals: Calculate gave visible artifacts in Unity: the normal map was baked against the
+    original normals, which Calculate replaces. Added `tools/blender_flip_custom_normals.py` to
+    reverse the original normals in Blender instead (then Normals: Import). Not yet tested.
+
+**Open:** try the Blender normal flip (then Normals: Import) and check with `inspect_bundle.py`.
+Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
 Confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right
 in game), confirm in game the recalculated normals, the halfway hand poses, the icon rotation,
 and the re-converted rail texture.

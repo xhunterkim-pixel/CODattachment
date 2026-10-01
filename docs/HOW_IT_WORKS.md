@@ -228,4 +228,7 @@ fully black metal looks like black patches; keep 20–35% of the colour on metal
   the **winding order** of each triangle decides which side is drawn (the back is culled). A port
   can end up with correct winding (looks solid) but inverted normals (lit inside-out: dark where it
   should be lit, highlights and seams in the wrong places). The Hound 9G had exactly that. Rotating
-  can't fix it; recalculate normals (Unity FBX import → Normals: Calculate).
+  can't fix it. Unity's Normals: Calculate fixes the direction but replaces the original smoothing,
+  and a baked normal map only matches the normals it was baked against, so Calculate causes
+  artifacts. Reversing the original normals (Blender, `tools/blender_flip_custom_normals.py`) keeps
+  them matched.
