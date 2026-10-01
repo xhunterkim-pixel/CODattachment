@@ -289,6 +289,11 @@ icon upside down/end-on). Bounds Scale 0.9.
    script; worked): split-normal overlay went from no lines on the body (inward) to lines standing
    out everywhere. Re-export and rebuild pending; then `inspect_bundle.py` should show ~100%.
 
+7. The FBX couldn't be overwritten, so the prefab was rebuilt from scratch with the fixed FBX (mesh
+   child now named `dlgrip`). The new mesh and palms showed a green + (not applied to the prefab);
+   Overrides → Apply All. Rebuilt from scratch means the palms are back at the RK-1 values and the
+   PreviewPivot icon rotation, material and stencil need setting again.
+
 **Open:** cubemap PathID entry, rebuild to confirm normals, Stencil → Hands, icon rotation 0, 245, 180; fit the palms (`Base HumanLPalm 1` first); material values
 (foregrip row in `MATERIALS.md`, Specular Color 255); size vs RK-1 after build; server item (name,
 clone, trader).
