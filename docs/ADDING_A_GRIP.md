@@ -149,6 +149,7 @@ Get from it:
 | Doge box in game | Game can't load the prefab: path mismatch, or a dependency missing from `bundles.json` | Check `Prefab.path` = `bundles.json` key = file location; add `"shaders"` |
 | Purple | Shader still points at the SDK's `shaders` bundle | PathID Replacer entry for the PathID your build used, or `fix_eft_shaders.py` |
 | White / washed out | SDK shader built into the bundle, or no Reflection Cubemap | Don't label the shader; assign a cubemap |
+| Console: "Unable to find custom UI for the shader 'p0/Reflective/Bumped Specular SMap' ... 'CustomEditor = FresnelMaterialEditor'" | The shader names BSG's own Inspector class, which the SDK doesn't include | Harmless: Unity shows the default material Inspector instead. Ignore it |
 | Cubemap built into every grip bundle (manifest `Assets:` lists it) | Cubemap relabelled with the grip's name, or one not in the SDK's table (e.g. `dots small`) | Use one from `Assets/Cubemaps/`, set its label back to `cubemaps` (no variant), add `"cubemaps"` to `dependencyKeys` |
 | Icon spins forever | No PreviewPivot | Add it, Apply Default Settings |
 | Inspect view off-centre | No PreviewPivot / not re-applied after moving the model | Apply Default Settings again |

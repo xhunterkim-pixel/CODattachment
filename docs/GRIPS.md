@@ -205,6 +205,10 @@ icon upside down/end-on). Bounds Scale 0.9.
     Suggested to finish it: Specular/Diffuse Vals 1,1,0,0 (41 of 59 foregrips), Specular Color 255,
     Reflection Color 129,129,129,128. Not yet confirmed in game.
 
+37. Cubemap labels checked (user screenshot): all six in `Assets/Cubemaps/` on AssetBundle `cubemaps`,
+    variant None, as the SDK ships them. The Console's "custom UI ... FresnelMaterialEditor" warning
+    for SMap is harmless.
+
 **Open** (cleaned up; solved items removed):
 - Rebuild with the cubemaps left on label `cubemaps` (history 33) and check: manifest `Dependencies:`
   `shaders`, `cubemaps`, no cubemap under `Assets:`; `inspect_bundle.py` shows `_Cube: CAB-4d8a...`.
