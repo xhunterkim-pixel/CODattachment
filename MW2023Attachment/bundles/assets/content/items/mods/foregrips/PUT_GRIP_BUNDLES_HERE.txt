@@ -1,0 +1,1 @@
+Put houndgrip.bundle, dlgrip.bundle (and every future grip bundle) in this folder.

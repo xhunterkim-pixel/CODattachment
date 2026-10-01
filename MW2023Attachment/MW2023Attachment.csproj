@@ -4,8 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>Hound9GSideGrip</AssemblyName>
-    <RootNamespace>Hound9GSideGrip</RootNamespace>
+    <AssemblyName>MW2023Attachment</AssemblyName>
+    <RootNamespace>MW2023Attachment</RootNamespace>
     <Version>1.0.0</Version>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
@@ -24,7 +24,7 @@
     <None Include="bundles\**\*.bundle" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <!-- After building, lay the mod out ready to drop into SPT: dist\user\mods\Hound9GSideGrip -->
+  <!-- After building, lay the mod out ready to drop into SPT: dist\user\mods\MW2023Attachment -->
   <Target Name="PackageMod" AfterTargets="Build">
     <PropertyGroup>
       <ModOut>$(MSBuildProjectDirectory)\..\dist\user\mods\$(AssemblyName)\</ModOut>

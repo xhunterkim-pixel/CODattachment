@@ -110,6 +110,15 @@ like `CAB-56d919bd5479d38f741da52a6beef92f`), each holding objects identified by
   `Assets/Systems/Effects/ParticleSystems/Cubemap/`) aren't in the table, so they'd have to be built
   into your bundle; avoid them. If you ever need your own cubemap, put it in one shared bundle of
   your own (one label, e.g. `cod_cubemaps`, shipped once) instead of a copy per attachment.
+- **Catch (found on the first real build):** the CAB was remapped, but the cubemaps came out with
+  **this project's own PathIDs** (`4870518337489161011`, `4963929626472855650`), not the game's.
+  The SDK's table assumes its build gives the game's PathIDs; in this project it doesn't, exactly
+  like SMap (3868700100545724512 instead of 6014991791773097075). So each cubemap you use needs a
+  **PathID Replacer** entry (your build's PathID → the game's), or the material points at nothing in
+  the game's cubemaps bundle. Read your build's PathIDs from the built `cubemaps` file (or
+  `inspect_bundle.py` on your grip bundle, `_Cube:` line). Game PathIDs: `patron_cubemap_metall`
+  -2064706391146893937, `_metall_matte` 972550011776207695, `_brass` -8157818093283795528,
+  `_brass_matte` -2724550323162632021, `_full` 2874837729527942464, `_red` 490386796788369950.
 - **More game cubemaps than the SDK's six.** The game's `cubemaps` bundle may hold more. To use one:
   rip it from the game's `cubemaps` file, import it into `Assets/Cubemaps/` with label `cubemaps`,
   then add a **PathID Replacer** entry (the PathID your build gives it → the game's PathID for it),

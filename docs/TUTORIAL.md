@@ -203,7 +203,8 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
      shader replacer, giving purple items.
    - The output folder must not have the same name as your bundle.
 4. One-time SDK fix: **PathID Replacer** tab: add **SDK PathID 3868700100545724512 → EFT PathID
-   6014991791773097075** (SMap), then **SAVE DATA TO FILE**.
+   6014991791773097075** (SMap), plus one entry per cubemap you use (your build's PathID → the
+   game's; see `HOW_IT_WORKS.md`), then **SAVE DATA TO FILE**.
 5. Build. The Console should show no `DirectoryNotFoundException`.
 6. Check the result:
    - `AssetBundles/StandaloneWindows/<attachment>.bundle.manifest`: `Dependencies:` shows only

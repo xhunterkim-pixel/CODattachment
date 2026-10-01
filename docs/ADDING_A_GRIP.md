@@ -121,7 +121,7 @@ Get from it:
 
 1. New item ID: 24 random hex characters, e.g.
    `python -c "import secrets,time;print('%08x'%int(time.time())+secrets.token_hex(8))"`.
-2. Add a JSON entry in `Hound9GSideGrip/db/CustomItems/` (copy `Hound9GSideGrip.json`): set
+2. Add a JSON entry in `MW2023Attachment/db/CustomItems/` (copy `Hound9GSideGrip.json` or `DLGrip.json`): set
    `itemTplToClone` to the vanilla ID, `Prefab.path` to
    `assets/content/items/mods/foregrips/<grip>.bundle`, names in `locales`, prices.
    Leave out stats you want copied from vanilla.
@@ -152,6 +152,8 @@ Get from it:
 | Console: "Unable to find custom UI for the shader 'p0/Reflective/Bumped Specular SMap' ... 'CustomEditor = FresnelMaterialEditor'" | The shader names BSG's own Inspector class, which the SDK doesn't include | Harmless: Unity shows the default material Inspector instead. Ignore it |
 | Mesh Filter / Mesh Renderer on the prefab root instead of a child | Mesh dropped onto the root or the root made from the mesh | Vanilla roots hold only LODGroup + PreviewPivot. Drag the FBX in as a child, set its rotation, remove the mesh components (and any Box Collider) from the root |
 | Build error: `AssetBundle names "cubemaps.bundle" and "cubemaps" can't exist in the same build as "cubemaps.bundle" has the variant` | Some asset (or folder) is labelled `cubemaps` **with** variant `bundle`, while the SDK's cubemaps are `cubemaps` with no variant | AssetBundles window → Configure tab → click `cubemaps.bundle` to see what's in it. Set those assets' variant to None (or their label to None if they aren't one of the six game cubemaps). Check folders too: a labelled folder passes its label down |
+| `_Cube: CAB-4d8a… object <number>` where the number isn't one of the game's cubemap PathIDs (see `HOW_IT_WORKS.md`) | The SDK remapped the bundle but your build gave the cubemaps different PathIDs (same as SMap) | PathID Replacer: add your build's PathID → the game's for each cubemap used, SAVE DATA TO FILE, rebuild |
+| `_StencilType: 0.0` on a material | Stencil left at None | Set `_StencilType` to **Hands** (2), as 2052 of 2058 vanilla SMap materials |
 | Cubemap built into every grip bundle (manifest `Assets:` lists it) | Cubemap relabelled with the grip's name, or one not in the SDK's table (e.g. `dots small`) | Use one from `Assets/Cubemaps/`, set its label back to `cubemaps` (no variant), add `"cubemaps"` to `dependencyKeys` |
 | Icon spins forever | No PreviewPivot | Add it, Apply Default Settings |
 | Inspect view off-centre | No PreviewPivot / not re-applied after moving the model | Apply Default Settings again |

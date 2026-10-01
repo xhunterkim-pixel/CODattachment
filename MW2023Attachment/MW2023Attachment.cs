@@ -5,12 +5,12 @@ using SPTarkov.Server.Core.Models.Spt.Mod;
 using Range = SemanticVersioning.Range;
 using Version = SemanticVersioning.Version;
 
-namespace Hound9GSideGrip;
+namespace MW2023Attachment;
 
 public record ModMetadata : IModMetadata
 {
-    public string ModGuid { get; init; } = "com.hound.hound9gsidegrip";
-    public string Name { get; init; } = "Hound9GSideGrip";
+    public string ModGuid { get; init; } = "com.hound.mw2023attachment";
+    public string Name { get; init; } = "MW2023Attachment";
     public string Author { get; init; } = "Hound";
     public List<string>? Contributors { get; init; }
     public Version Version { get; init; } = new("1.0.0");
@@ -27,7 +27,7 @@ public record ModMetadata : IModMetadata
 
 // Runs after the database has loaded, and after WTT-CommonLib is ready.
 [Injectable(TypePriority = OnLoadOrder.Preload + 2)]
-public class Hound9GSideGrip(WTTServerCommonLib.WTTServerCommonLib wttCommon) : IOnLoad
+public class MW2023Attachment(WTTServerCommonLib.WTTServerCommonLib wttCommon) : IOnLoad
 {
     public async Task OnLoadAsync(CancellationToken cancellationToken)
     {

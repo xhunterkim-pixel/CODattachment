@@ -27,13 +27,13 @@ about 23° shallower.
 
 | | `houndgrip_grip` (polymer) | `houndgrip_rail` (metal) |
 |---|---|---|
-| Main Color | 221, 221, 221 (foregrip median; was 193) | 193, 193, 193 |
+| Main Color | 221 planned, **192 in the built bundle** (history 39) | 213 |
 | Specular Color | 217, 217, 217 | 217, 217, 217 |
-| "Specularness" | 1 (was 2: glowed, history 27) | 1.5 set (~1.2 suggested; was 2, history 28) |
-| "Glossness" | 1 (was 1.08, before that 0.6) | 1.08 |
-| Reflection Color | 80, 80, 80, alpha 128 | 154, 154, 154, alpha 128 |
+| "Specularness" | 1 (was 2: glowed, history 27) | 1.46 (mount median; was 1.5, before that 2) |
+| "Glossness" | 1 (was 1.08, before that 0.6) | 1 |
+| Reflection Color | 80, 80, 80, alpha 128 (129 suggested) | 154, 154, 154, alpha 128 |
 | Reflection Cubemap | `patron_cubemap_metall_matte` (was `dots small`, history 33) | `patron_cubemap_metall` |
-| Spec / Diffuse Vals | 1, 0.5, 0, 0 | 1, 0.5, 0, 0 |
+| Spec / Diffuse Vals | 1, 0.5, 0, 0 (1, 1, 0, 0 suggested) | 1, 1, 0, 0 |
 
 **Hand poses** (from `unity/AddSideGripHandPoses.cs`, then moved to fit the grip at rotation
 0, 0, 0). The first positions (0.176, -0.023, 0.003 and 0.139, 0.038, -0.100) put the hand past
@@ -44,7 +44,7 @@ confirmed in game**:
 | Object | Position | Rotation |
 |---|---|---|
 | `Base HumanLPalm` (Alternative) | 0.157, -0.030, 0.003 | 51.9, 268.0, 250.2 |
-| `Base HumanLPalm 1` (Common) | 0.120, 0.031, -0.100 | 12.3, 242.7, 157.7 |
+| `Base HumanLPalm 1` (Common) | 0.097, 0.028, -0.102 (user moved it; was 0.120, 0.031, -0.100) | 14.8, 249.2, 159.3 |
 
 `unity/GripPoseGizmos.cs` draws these hands in the Scene view, so they can be lined up by eye.
 
@@ -214,6 +214,24 @@ icon upside down/end-on). Bounds Scale 0.9.
     from relabelling cubemaps, history 33). Fix: find it in the AssetBundles window → Configure →
     `cubemaps.bundle` and set its variant to None.
 
+39. First build of both grips into the renamed mod `MW2023Attachment` (was `Hound9GSideGrip`; same item
+    IDs, new mod GUID `com.hound.mw2023attachment`). Checked with `inspect_bundle.py`:
+    - Good: dependencies `shaders` + `cubemaps` only; no cubemap copied in; SMap points at the game's
+      shader; `_Cube` points at the game's cubemaps bundle `CAB-4d8a...`; rail values updated.
+    - **Cubemap PathIDs not remapped**: rail `_Cube` object 4870518337489161011, grip
+      4963929626472855650. The game's are -2064706391146893937 (metall) and 972550011776207695
+      (metall_matte). Same cause as SMap: this project builds different PathIDs than the SDK table
+      expects. Effect in game: cubemap not found (likely white/no reflection). Fix: PathID Replacer
+      entries; which build PathID is which cubemap to be confirmed from the built `cubemaps` file
+      (asked for it).
+    - **Normals still inverted**: "normals agree with faces" 0% on grip and rail (vanilla 100%). The
+      hand-flip of faces in Blender (history 24) flipped winding and normals together, so they still
+      disagree; the grip is lit inside-out. Probably behind the glow (27) and the visible edges (30).
+      Fix: normals only (`tools/blender_flip_custom_normals.py`, don't flip faces), or FBX Normals:
+      Calculate.
+    - Grip material in the bundle still has Main Color 192 and Vals 1, 0.5, 0, 0 (the 221 / 1, 1, 0, 0
+      edit wasn't saved or was on the other grip).
+
 **Open** (cleaned up; solved items removed):
 - Rebuild with the cubemaps left on label `cubemaps` (history 33) and check: manifest `Dependencies:`
   `shaders`, `cubemaps`, no cubemap under `Assets:`; `inspect_bundle.py` shows `_Cube: CAB-4d8a...`.
@@ -228,9 +246,10 @@ icon upside down/end-on). Bounds Scale 0.9.
 
 | | |
 |---|---|
-| Item ID | not made yet |
-| Cloned from | not decided (RK-1 B-25U `5c1cd46f2e22164bef5cfedb` likely) |
-| Bundle | `assets/content/items/mods/foregrips/dlgrip.bundle` (planned), dependencies `shaders`, `cubemaps` |
+| Item ID | `6abedf70d13bed42e615da72` (`db/CustomItems/DLGrip.json`) |
+| Name | **placeholder** "DL Side Grip" / "DL Side" until the user names it |
+| Cloned from | RK-1 B-25U `5c1cd46f2e22164bef5cfedb` (assumed, like the Hound 9G) |
+| Bundle | `assets/content/items/mods/foregrips/dlgrip.bundle`, dependencies `shaders`, `cubemaps` |
 | Unity prefab | `Assets/Content/Weapons/Tarkov Double Sidegrip/dlgrip/dlgrip.prefab` |
 
 **History:**
@@ -253,6 +272,14 @@ icon upside down/end-on). Bounds Scale 0.9.
    `dlgrip` / `bundle`. PreviewPivot icon Rotation still 0, 245, 0: set 0, 245, 180. The palms still
    sit at the RK-1 values and don't wrap the grip yet.
 
-**Open:** icon rotation 0, 245, 180; fit the palms (`Base HumanLPalm 1` first); material values
+5. First build checked (`inspect_bundle.py`): structure like vanilla; size 13 × 6 × 3 cm, same
+   orientation as the Hound 9G (RK-1 about 11 × 5 × 9 cm incl. mount). Problems: normals agree with
+   faces **0%** (inverted, like the Hound); `_Cube` PathID 4963929626472855650 not remapped (see
+   Hound history 39); **`_StencilType` 0** (vanilla: Hands, 2); Vals 1, 0.5, 0, 0. `Base HumanLPalm`
+   still exactly the RK-1 value; `Base HumanLPalm 1` at 0.092, 0.049, -0.103 rot 14.0, 254.2, 152.3.
+   Good: Main Color 221, Specular Color 255, Reflection 128/128, Specularness 1 / Glossness 1,
+   textures 1024 aniso 5, normal map linear.
+
+**Open:** cubemap PathID entry, normals, Stencil → Hands, icon rotation 0, 245, 180; fit the palms (`Base HumanLPalm 1` first); material values
 (foregrip row in `MATERIALS.md`, Specular Color 255); size vs RK-1 after build; server item (name,
 clone, trader).

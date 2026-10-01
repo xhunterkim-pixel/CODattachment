@@ -1,0 +1,50 @@
+{
+  "6abedf70d13bed42e615da72": {
+    "itemTplToClone": "5c1cd46f2e22164bef5cfedb",
+    "parentId": "55818af64bdc2d5b648b4570",
+    "handbookParentId": "5b5f71de86f774093f2ecf13",
+    "overrideProperties": {
+      "Name": "foregrip_all_dl_sidegrip",
+      "ShortName": "foregrip_all_dl_sidegrip",
+      "Description": "foregrip_all_dl_sidegrip",
+      "Prefab": {
+        "path": "assets/content/items/mods/foregrips/dlgrip.bundle",
+        "rcid": ""
+      }
+    },
+    "locales": {
+      "en": {
+        "name": "DL Side Grip",
+        "shortName": "DL Side",
+        "description": "A side-mounted grip for rail-equipped handguards. (Placeholder name and text.)"
+      }
+    },
+    "addtoInventorySlots": [],
+    "addtoModSlots": true,
+    "modSlot": [
+      "mod_foregrip"
+    ],
+    "fleaPriceRoubles": 22000,
+    "handbookPriceRoubles": 18500,
+    "addtoBots": false,
+    "addtoStaticLootContainers": false,
+    "staticLootContainers": [],
+    "addtoHallOfFame": false,
+    "hallOfFameSlots": [],
+    "addtoSpecialSlots": false,
+    "addtoHideoutPosterSlots": false,
+    "addPosterToMaps": false,
+    "posterSpawnProbability": 0,
+    "addtoStatuetteSlots": false,
+    "addCaliberToAllCloneLocations": false,
+    "addtoStaticAmmo": false,
+    "staticAmmoProbability": 0,
+    "addtoSecureFilters": false,
+    "masteries": false,
+    "masterySections": [],
+    "addWeaponPreset": false,
+    "weaponPresets": [],
+    "addtoTraders": false,
+    "traders": {}
+  }
+}

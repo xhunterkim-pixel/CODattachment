@@ -6,6 +6,13 @@
         "shaders",
         "cubemaps"
       ]
+    },
+    {
+      "key": "assets/content/items/mods/foregrips/dlgrip.bundle",
+      "dependencyKeys": [
+        "shaders",
+        "cubemaps"
+      ]
     }
   ]
 }

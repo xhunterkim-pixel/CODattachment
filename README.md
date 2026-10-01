@@ -1,36 +1,46 @@
-# Hound 9G Side Grip (SPT 4.1)
+# MW2023Attachment (SPT 4.1)
 
-Adds a new side grip cloned from the **Zenit RK-1 foregrip on B-25U mount**. It has the same stats and fits the same weapons.
+Adds attachments ported from Call of Duty: Modern Warfare III (2023). One mod for all of them:
+
+| Item | ID | Cloned from |
+|---|---|---|
+| Hound 9G Side Grip | `6abe08f14fea21b38607a868` | Zenit RK-1 on B-25U mount |
+| DL Side Grip (placeholder name) | `6abedf70d13bed42e615da72` | Zenit RK-1 on B-25U mount |
+
+Each has the same stats as the item it's cloned from and fits the same weapons.
+
+Was called `Hound9GSideGrip`; delete `user/mods/Hound9GSideGrip` when installing this, or both mods
+add the same item.
 
 Requires **WTT-ServerCommonLib 3.0.6+** (and the WTT client CommonLib it ships with).
 
 ## Layout
 
 ```
-Hound9GSideGrip/
-├── Hound9GSideGrip.csproj   build settings (SPT + CommonLib come from NuGet)
-├── Hound9GSideGrip.cs       mod metadata + loader (hands the JSON to WTT-CommonLib)
-├── db/CustomItems/Hound9GSideGrip.json   the item definition
+MW2023Attachment/
+├── MW2023Attachment.csproj   build settings (SPT + CommonLib come from NuGet)
+├── MW2023Attachment.cs       mod metadata + loader (hands the JSON to WTT-CommonLib)
+├── db/CustomItems/*.json   one item definition per attachment
 ├── bundles.json             tells SPT which bundle to serve
-└── bundles/assets/content/items/mods/foregrips/houndgrip.bundle   <- your bundle goes here
+└── bundles/assets/content/items/mods/foregrips/<grip>.bundle   <- the bundles go here
 ```
 
 ## Build
 
 1. Install the **.NET 10 SDK**.
-2. Copy `houndgrip.bundle` into `Hound9GSideGrip/bundles/assets/content/items/mods/foregrips/`.
+2. Copy `houndgrip.bundle`, `dlgrip.bundle` into `MW2023Attachment/bundles/assets/content/items/mods/foregrips/`.
    You don't need the `.manifest` file.
 3. Build (NuGet downloads the SPT 4.1.6 and CommonLib references automatically):
    ```
-   dotnet build Hound9GSideGrip -c Release
+   dotnet build MW2023Attachment -c Release
    ```
    Or open the project in Visual Studio or Rider and build it there.
-4. Copy `dist/user/mods/Hound9GSideGrip` into your SPT `user/mods` folder.
+4. Copy `dist/user/mods/MW2023Attachment` into your SPT `user/mods` folder.
 
 ## Testing
 
 Start the server and check the log for errors from WTT-CommonLib. In game, open the chat with
-the SPT bot and send `spt give 6abe08f14fea21b38607a868 1`, then attach the grip to a weapon
+the SPT bot and send `spt give <item ID> 1` (IDs above), then attach the grip to a weapon
 that takes the RK-1 B-25U.
 
 ## Things to check
