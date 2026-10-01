@@ -89,6 +89,13 @@ Get from it:
    where vanilla's sits relative to its grip.
    Move or rotate the palm object, not the finger bones (adjust fingers only for much thicker or
    thinner grips). Compare positions with the vanilla inspect output.
+   **Each grip gets its own palms**, under its own root (several grips can sit in one scene; select
+   only the one you're working on, never a mesh child at Scale 100). The script refuses a root that
+   already has `Base HumanLPalm`. Shortcut for a grip shaped like one already fitted: copy both
+   `Base HumanLPalm` objects from the fitted grip (Ctrl+C), select the new root, Ctrl+V, drag them
+   under the new root if needed, then fine-tune; positions are relative to the root.
+   The hand only follows the palms if the grip points the same way as the vanilla one (TUTORIAL
+   Part 6 step 3), so fix the mesh rotation first.
 4. **Overrides → Apply All** on the prefab.
 
 ## 5. Build the bundle
