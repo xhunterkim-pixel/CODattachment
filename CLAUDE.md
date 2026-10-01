@@ -39,7 +39,7 @@ Write down what was wrong, how it showed up, and what fixed it, so it never has 
 
 | Tool | Use |
 |---|---|
-| `tools/inspect_bundle.py <bundle>` | Dump dependencies, hierarchy + components, materials (shader references), textures, mesh bounds, inverted-normals check. |
+| `tools/inspect_bundle.py <bundle>` | Dump dependencies, hierarchy + components, materials (shader references), textures, mesh bounds, inverted-normals check, triangle count and flat-shaded share. |
 | `tools/fix_eft_shaders.py <bundle> [--game-shaders <game shaders bundle>]` | Repoint materials at the game's shaders (fixes purple/white) when the SDK's replacer can't. |
 | `tools/make_handpose_script.py <vanilla.bundle> <Name> <out.cs>` | Generate a Unity editor script that copies a vanilla item's hand poses. |
 | `tools/blender_flip_custom_normals.py` | Blender script: reverse inverted normals while keeping the original smoothing. |

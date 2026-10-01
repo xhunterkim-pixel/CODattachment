@@ -167,7 +167,7 @@ def normals_agreement(mesh_obj):
             faces.append([[int(x) if x else 0 for x in corner.split("/")] for corner in parts[1:4]])
     if not normals or not faces:
         return "no normals"
-    agree = total = 0
+    agree = total = flat = 0
     for face in faces:
         a, b, c = (verts[corner[0] - 1] for corner in face)
         u = [b[i] - a[i] for i in range(3)]
@@ -176,8 +176,13 @@ def normals_agreement(mesh_obj):
         stored = [sum(normals[corner[2] - 1][i] for corner in face) for i in range(3)]
         total += 1
         agree += sum(f * n for f, n in zip(face_normal, stored)) > 0
+        length = sum(x * x for x in face_normal) ** 0.5 or 1
+        flat += all(abs(sum(face_normal[i] * normals[corner[2] - 1][i] for i in range(3))) / length > 0.9995
+                    for corner in face)
     share = agree / total
-    return f"{share:.0%}" + ("  <-- INVERTED: recalculate normals" if share < 0.5 else "")
+    return (f"{share:.0%}" + ("  <-- INVERTED: recalculate normals" if share < 0.5 else "")
+            + f"\n  triangles: {total}, flat-shaded: {flat / total:.0%}"
+            + ("  <-- mostly flat: export with smooth shading / smoothing" if flat / total > 0.7 else ""))
 
 
 if __name__ == "__main__":

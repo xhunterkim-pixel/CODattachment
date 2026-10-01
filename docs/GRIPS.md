@@ -169,7 +169,15 @@ icon upside down/end-on). Bounds Scale 0.9.
     not marked as a normal map": imported as a plain texture, so the shader read the bumps wrongly
     (likely part of the flat/glowing look). Fix Now, then keep Flip Green Channel off.
 
-**Open:** in game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
+30. In dark light the grip's edges/facets were noticeable ("not super but noticeably"). Not low poly:
+    the grip has 3286 triangles and the rail 492, against the whole vanilla RK-1's 850 (measured on
+    the earlier bundle). Likely causes, in order: the unmarked normal map (29); smoothing lost when
+    the faces were flipped by hand in Blender (24), so the FBX's imported normals are flat or uneven;
+    SMap's reflection catching bevel edges. `inspect_bundle.py` now prints triangle count and the
+    share of flat-shaded triangles (vanilla RK-1: 40%). Test asked: Fix Now, then Normals → Calculate
+    (angle 60) to see whether the facets vanish; upload the new bundle to measure. Not yet resolved.
+
+**Open:** edge/facet look in dark light (history 30). In game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
 RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).
 Optional: `inspect_bundle.py` on the new bundle (normals agree with faces ~100%).
 Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).

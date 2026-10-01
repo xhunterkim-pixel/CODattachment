@@ -173,7 +173,8 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
      `shaders` (or nothing).
    - `python tools/inspect_bundle.py AssetBundles/StandaloneWindows/<attachment>.bundle`: each
      material's shader = `CAB-56d919bd5479d38f741da52a6beef92f object 6014991791773097075`, and each
-     mesh "normals agree with faces" close to 100%.
+     mesh "normals agree with faces" close to 100%. "triangles" should be in the same range as the
+     vanilla item or above (not low poly); "flat-shaded" near 100% means the smoothing was lost.
 
 ## Part 8: The mod and testing
 
