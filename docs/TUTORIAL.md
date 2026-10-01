@@ -26,8 +26,9 @@ Your attachment copies a vanilla item's stats, hand pose, icon framing and mater
 COD packs several maps into each image, and Tarkov's SMap shader wants a different packing. The
 converter page does the whole translation, including GameImageUtil's MW splits.
 
-1. **Known issue:** on the Hound 9G's MW3 DDS files the converter's normal map came out wrong
-   (flat teal). Until fixed, compare with GameImageUtil's output; a correct normal map is
+1. **Known issue:** on the Hound 9G's MW3 DDS files the converter's NOG route gave a flat teal
+   normal map and a very dark colour (its AO, taken from the misread NOG, darkens the diffuse).
+   Until fixed, use the **safe route** at the end of this part. A correct normal map is
    lavender-blue. Open `tools/smap-texture-converter.html` in your browser. It reads the ripped **DDS files
    directly** (if one uses an unusual format it tells you; then convert that one to PNG with
    GameImageUtil's **Direct Convert (Global)**).
@@ -43,6 +44,16 @@ converter page does the whole translation, including GameImageUtil's MW splits.
    - **Flip green:** leave it on (COD normals are DirectX, Unity wants OpenGL).
 6. **Download all (zip)**. You get `<name>_diffuse.png`, `<name>_gloss.png`, `<name>_normal.png`.
 7. Do this once per material (e.g. once for the grip, once for the rail).
+
+**Safe route (use this until the DDS issue is fixed):**
+
+1. GameImageUtil, output PNG: colour DDS → **CoD Specular/Albedo (Infinite Warfare/Modern Warfare)**
+   (gives `_c` and `_s`); green DDS → **CoD Normal/Gloss/Occlusion (Infinite Warfare/Modern Warfare)**
+   (gives `_n`, `_g`, `_o`).
+2. Converter: **Color** = `_c`; "Metallic slot holds" = **Specular map** and **Metallic** = `_s`;
+   **Roughness** = `_g` (must say gloss); **Normal** = `_n` with **Flip green** on; NOG empty;
+   AO empty or about 50% with `_o`; "Base color alpha" = **Ignore it**; brightness **Auto**.
+3. Download and use `_diffuse`, `_gloss`, `_normal`.
 
 ## Part 3: The model in Blender
 

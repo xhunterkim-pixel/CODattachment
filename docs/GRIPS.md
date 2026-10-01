@@ -119,6 +119,11 @@ icon upside down/end-on). Bounds Scale 0.9.
     original normals, which Calculate replaces. Added `tools/blender_flip_custom_normals.py` to
     reverse the original normals in Blender instead (then Normals: Import). Not yet tested.
 
+19. Using the converter's NOG route on the grip gave a very dark colour. Likely the NOG's AO
+    (misread, like the teal normal) multiplied into the diffuse at 100%; possibly MW3's colour alpha
+    isn't the metal mask. Diagnosis asked: untick AO, then set Base color alpha to Ignore. Safe
+    route (GameImageUtil splits → converter) written into the tutorial.
+
 **Open:** try the Blender normal flip (then Normals: Import) and check with `inspect_bundle.py`.
 Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
 Confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right
