@@ -150,6 +150,7 @@ Get from it:
 | Purple | Shader still points at the SDK's `shaders` bundle | PathID Replacer entry for the PathID your build used, or `fix_eft_shaders.py` |
 | White / washed out | SDK shader built into the bundle, or no Reflection Cubemap | Don't label the shader; assign a cubemap |
 | Console: "Unable to find custom UI for the shader 'p0/Reflective/Bumped Specular SMap' ... 'CustomEditor = FresnelMaterialEditor'" | The shader names BSG's own Inspector class, which the SDK doesn't include | Harmless: Unity shows the default material Inspector instead. Ignore it |
+| Mesh Filter / Mesh Renderer on the prefab root instead of a child | Mesh dropped onto the root or the root made from the mesh | Vanilla roots hold only LODGroup + PreviewPivot. Drag the FBX in as a child, set its rotation, remove the mesh components (and any Box Collider) from the root |
 | Cubemap built into every grip bundle (manifest `Assets:` lists it) | Cubemap relabelled with the grip's name, or one not in the SDK's table (e.g. `dots small`) | Use one from `Assets/Cubemaps/`, set its label back to `cubemaps` (no variant), add `"cubemaps"` to `dependencyKeys` |
 | Icon spins forever | No PreviewPivot | Add it, Apply Default Settings |
 | Inspect view off-centre | No PreviewPivot / not re-applied after moving the model | Apply Default Settings again |

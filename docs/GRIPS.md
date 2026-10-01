@@ -235,6 +235,12 @@ icon upside down/end-on). Bounds Scale 0.9.
 2. Single part (one mesh, one material, folder `dlgrip/grip`), unlike the Hound 9G's grip + rail.
    Fine: the prefab just needs that one mesh child. The RK-1 it replaces includes its B-25U rail
    mount, so check in game that the grip doesn't float off the rail without a mount part.
+3. The mesh ended up **on the root itself** (MeshFilter `DLGRIP`, Mesh Renderer, Box Collider on
+   `dlgrip`, Scale 1) instead of a child. Vanilla (RK-1): root has only LODGroup + PreviewPivot; the
+   meshes are children next to the palms. Asked to move it to a child (drag the FBX onto the root,
+   set Rotation 0, 0, 0, keep Scale 100) and remove the root's MeshFilter, Mesh Renderer and Box
+   Collider. Its material's Specular Color also looked black in the screenshot (kills all shine);
+   asked to set 255.
 
 **Open:** grip mesh under the root (rotation as the Hound 9G: 0, 0, 0, Scale 100), material, PreviewPivot,
 fit the palms, AssetBundle label `dlgrip` + `bundle` on the `dlgrip` folder only, server item.
