@@ -285,6 +285,10 @@ icon upside down/end-on). Bounds Scale 0.9.
    Good: Main Color 221, Specular Color 255, Reflection 128/128, Specularness 1 / Glossness 1,
    textures 1024 aniso 5, normal map linear.
 
-**Open:** cubemap PathID entry, normals, Stencil → Hands, icon rotation 0, 245, 180; fit the palms (`Base HumanLPalm 1` first); material values
+6. Normals fixed in Blender with `tools/blender_flip_custom_normals.py` (first real use of the
+   script; worked): split-normal overlay went from no lines on the body (inward) to lines standing
+   out everywhere. Re-export and rebuild pending; then `inspect_bundle.py` should show ~100%.
+
+**Open:** cubemap PathID entry, rebuild to confirm normals, Stencil → Hands, icon rotation 0, 245, 180; fit the palms (`Base HumanLPalm 1` first); material values
 (foregrip row in `MATERIALS.md`, Specular Color 255); size vs RK-1 after build; server item (name,
 clone, trader).

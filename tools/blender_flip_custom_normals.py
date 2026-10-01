@@ -9,6 +9,7 @@ reverses them.
 Use: in Blender select the mesh object(s), open the Scripting tab, paste this, click Run Script,
 then export the FBX again. In Unity set the FBX's Normals back to "Import".
 Check: tools/inspect_bundle.py on the built bundle should report "normals agree with faces" ~100%.
+Run it only once per mesh: a second run flips the normals back. Confirmed working on the DL grip.
 """
 
 import bpy
