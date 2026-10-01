@@ -148,6 +148,36 @@ def main(path):
         lo = [min(cc[i] for cc in corners) for i in range(3)]
         hi = [max(cc[i] for cc in corners) for i in range(3)]
         print(f"{go['m_Name']}: min {r(lo)} max {r(hi)} center {r([(a + b) / 2 for a, b in zip(lo, hi)])}")
+        print(f"  normals agree with faces: {normals_agreement(objs[mf['m_Mesh']['m_PathID']])}")
+
+
+def normals_agreement(mesh_obj):
+    """Share of triangles whose stored normals face the same way as the triangle itself.
+    Vanilla meshes are ~100%; ~0% means the normals are inverted (item lit inside-out)."""
+    verts, normals, faces = [], [], []
+    for line in mesh_obj.read().export().splitlines():
+        parts = line.split()
+        if not parts:
+            continue
+        if parts[0] == "v":
+            verts.append([float(x) for x in parts[1:4]])
+        elif parts[0] == "vn":
+            normals.append([float(x) for x in parts[1:4]])
+        elif parts[0] == "f":
+            faces.append([[int(x) if x else 0 for x in corner.split("/")] for corner in parts[1:4]])
+    if not normals or not faces:
+        return "no normals"
+    agree = total = 0
+    for face in faces:
+        a, b, c = (verts[corner[0] - 1] for corner in face)
+        u = [b[i] - a[i] for i in range(3)]
+        w = [c[i] - a[i] for i in range(3)]
+        face_normal = (u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0])
+        stored = [sum(normals[corner[2] - 1][i] for corner in face) for i in range(3)]
+        total += 1
+        agree += sum(f * n for f, n in zip(face_normal, stored)) > 0
+    share = agree / total
+    return f"{share:.0%}" + ("  <-- INVERTED: recalculate normals" if share < 0.5 else "")
 
 
 if __name__ == "__main__":

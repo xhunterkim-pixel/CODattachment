@@ -195,3 +195,8 @@ Vanilla RK-1 B-25U: Main Color 0.755 grey, Specular Color 0.849 grey, "Specularn
 - COD's packed metal/roughness maps don't map one-to-one onto SMap's specular/gloss inputs; tune
   the material values in game, starting from a vanilla part made of similar material.
 - If a texture looks scrambled, check the UVs. On this grip they were correct, not flipped.
+- **Normals** tell the shader which way each point of the surface faces, for lighting. Separately,
+  the **winding order** of each triangle decides which side is drawn (the back is culled). A port
+  can end up with correct winding (looks solid) but inverted normals (lit inside-out: dark where it
+  should be lit, highlights and seams in the wrong places). The Hound 9G had exactly that. Rotating
+  can't fix it; recalculate normals (Unity FBX import → Normals: Calculate).

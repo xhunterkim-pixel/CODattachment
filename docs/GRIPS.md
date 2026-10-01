@@ -13,10 +13,11 @@ Add a section for every new grip.
 | Source | Call of Duty: Modern Warfare II (2022), ported via Blender → FBX |
 | Unity prefab | `Assets/Content/Weapons/Tarkov Double Sidegrip/houndgrip/houndgrip.prefab` |
 
-**Prefab:** root `houndgrip` (rotation 0, scale 1) with children `grip` and `rail`, Scale 100.
-Rotation **0, 0, 0** fixed the direction; the latest step tries **0, 180, 139.9** (a half-turn
-around the grip's long axis, 0.939, 0.343, 0) because the grip showed its seam side to the player
-(not yet confirmed in game). The imported -90 left the grip running back along the gun
+**Prefab:** root `houndgrip` (rotation 0, scale 1) with children `grip` and `rail`,
+Rotation **0, 0, 0**, Scale 100.
+
+**FBX import:** Normals **Calculate** (Smoothing Angle 60). The ported mesh's normals all pointed
+inward (see history 11); not yet confirmed in game. The imported -90 left the grip running back along the gun
 instead of out to the side like the RK-1. At 0, 0, 0 it lies in the same plane as the RK-1,
 about 23° shallower.
 
@@ -70,9 +71,12 @@ icon upside down/end-on). Bounds Scale 0.9.
     Options: re-rip with high-res/streamed images, lower Normal intensity (~0.5), lower
     "Specularness" (~1.5).
 
-11. Grip looked "reversed": its seam side faced the player, unlike MW3 → half-turn around its long
-    axis, `grip` and `rail` Rotation 0, 180, 139.9 (rail back to 0, 0, 0 if the clamp no longer fits).
-    Apply Default Settings resets the icon rotation, so set it to 0, 245, 180 again afterwards.
+11. Grip looked "reversed"/inside-out, with a seam showing that MW3 hides. A half-turn rotation was
+    suggested first; that was wrong (rotation can't fix this). Comparing meshes with the vanilla RK-1
+    showed the real cause: the faces point outward but **every normal points inward** (vanilla:
+    faces and normals agree 100%; ours: 0%), so the lighting is inverted. Fix: FBX import
+    Normals → Calculate. Remember Apply Default Settings on PreviewPivot resets the icon rotation;
+    set it to 0, 245, 180 again afterwards.
 
-**Open:** confirm in game the moved hand poses, the icon rotation, and the half-turn. Optional: convert the COD
+**Open:** confirm in game the recalculated normals, the moved hand poses and the icon rotation. Optional: convert the COD
 textures for SMap (diffuse alpha is a flat specular mask right now, so the gloss detail isn't used).

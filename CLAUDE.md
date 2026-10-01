@@ -36,7 +36,7 @@ Write down what was wrong, how it showed up, and what fixed it, so it never has 
 
 | Tool | Use |
 |---|---|
-| `tools/inspect_bundle.py <bundle>` | Dump dependencies, hierarchy + components, materials (shader references), textures, mesh bounds. |
+| `tools/inspect_bundle.py <bundle>` | Dump dependencies, hierarchy + components, materials (shader references), textures, mesh bounds, inverted-normals check. |
 | `tools/fix_eft_shaders.py <bundle> [--game-shaders <game shaders bundle>]` | Repoint materials at the game's shaders (fixes purple/white) when the SDK's replacer can't. |
 | `tools/make_handpose_script.py <vanilla.bundle> <Name> <out.cs>` | Generate a Unity editor script that copies a vanilla item's hand poses. |
 | `unity/AddSideGripHandPoses.cs` | Generated hand poses of the RK-1 B-25U side grip. |

@@ -17,12 +17,15 @@ Get from it:
 ## 1. Model and textures in Unity (EscapeFromTushonka-SDK, Unity 2022.3.43f1)
 
 1. Import the FBX and textures into their own folder, e.g. `Assets/Content/Weapons/<grip>/`.
-2. Texture import settings: normal maps → Texture Type **Normal map** (try **Flip Green Channel**
+2. FBX import settings: normals must face outward. After a build, `tools/inspect_bundle.py` prints
+   "normals agree with faces" per mesh: vanilla is 100%, our COD port was 0% (flagged INVERTED).
+   Fix with **Model tab → Normals: Calculate**.
+3. Texture import settings: normal maps → Texture Type **Normal map** (try **Flip Green Channel**
    for COD textures); data textures (gloss etc.) → untick **sRGB**; all → **Aniso Level 5**.
    Click **Apply**.
-3. Build the prefab: an empty root GameObject (rotation 0, scale 1) named after the grip, with the
+4. Build the prefab: an empty root GameObject (rotation 0, scale 1) named after the grip, with the
    mesh objects as children. Imported meshes usually come in at Rotation X -90, Scale 100.
-4. **Orientation:** the root's origin is where the grip clamps onto the rail. Compare your mesh
+5. **Orientation:** the root's origin is where the grip clamps onto the rail. Compare your mesh
    bounds with the vanilla item's (`tools/inspect_bundle.py` on both bundles). The grip body must
    point the same way as vanilla's. For the Hound 9G that meant mesh rotation **0, 0, 0** instead
    of the imported -90.
@@ -72,7 +75,8 @@ Get from it:
 6. Check the bundle itself: `python tools/inspect_bundle.py AssetBundles/StandaloneWindows/<grip>.bundle`.
    Every SMap material must show `shader = CAB-56d919bd5479d38f741da52a6beef92f object 6014991791773097075`.
    If it shows another CAB or "inside this bundle", either add a PathID Replacer entry or run
-   `python tools/fix_eft_shaders.py <bundle>`.
+   `python tools/fix_eft_shaders.py <bundle>`. Also check every mesh says "normals agree with
+   faces" near 100%.
 
 ## 5. Server mod entry
 
@@ -114,6 +118,6 @@ Get from it:
 | Default hand grip instead of side grip | No GripPose objects | Add hand poses (step 3) |
 | Hand grips oddly/backwards | Palm markers don't match where the model is | Fix model orientation vs vanilla first, then move the palms |
 | Grip points the wrong way on the gun | Mesh rotation differs from vanilla | Compare bounds with vanilla, rotate the mesh children |
-| Grip points the right way but looks "reversed" (its back/seam faces the player) | Model is flipped over around its own length | Half-turn the mesh children around the grip's long axis; re-check the clamp |
+| Looks inside-out/"reversed", lit from the wrong side, seams showing | Normals point inward (common in COD → Blender → FBX ports) | FBX import Normals → Calculate, or in Blender clear custom split normals + Recalculate Outside |
 | Icon rotation reverts | PreviewPivot Apply Default Settings resets it | Set the vanilla Icon rotation again after every Apply Default |
 | Wrong stats or animation | Wrong `itemTplToClone` | Look the ID up, don't guess |
