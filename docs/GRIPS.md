@@ -27,10 +27,10 @@ about 23° shallower.
 
 | | `houndgrip_grip` (polymer) | `houndgrip_rail` (metal) |
 |---|---|---|
-| Main Color | 193, 193, 193 | 193, 193, 193 |
+| Main Color | 221, 221, 221 (foregrip median; was 193) | 193, 193, 193 |
 | Specular Color | 217, 217, 217 | 217, 217, 217 |
 | "Specularness" | 1 (was 2: glowed, history 27) | 1.5 set (~1.2 suggested; was 2, history 28) |
-| "Glossness" | 1.08 (was 0.6) | 1.08 |
+| "Glossness" | 1 (was 1.08, before that 0.6) | 1.08 |
 | Reflection Color | 80, 80, 80, alpha 128 | 154, 154, 154, alpha 128 |
 | Reflection Cubemap | `patron_cubemap_metall_matte` (was `dots small`, history 33) | `patron_cubemap_metall` |
 | Spec / Diffuse Vals | 1, 0.5, 0, 0 | 1, 0.5, 0, 0 |
@@ -200,6 +200,10 @@ icon upside down/end-on). Bounds Scale 0.9.
 35. Every vanilla item's values added (`data/vanilla_materials.csv`). Foregrips use "Specularness"
     1.0 (half of them) to 2.0, "Glossness" ~1.0, cubemap metall_matte or metall. Our grip's
     1 / 1.08 / metall_matte is in range. The SDK's six cubemaps cover 99% of vanilla attachments.
+
+36. Grip material set from the foregrip data: "Specularness" 1, "Glossness" 1, Main Color 221.
+    Suggested to finish it: Specular/Diffuse Vals 1,1,0,0 (41 of 59 foregrips), Specular Color 255,
+    Reflection Color 129,129,129,128. Not yet confirmed in game.
 
 **Open:** edge/facet look in dark light (history 30). In game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
 RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).

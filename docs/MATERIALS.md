@@ -60,6 +60,12 @@ HK Sturmgriff 2.0). "Glossness" 0.77–1.29, mostly 1.0. Reflection Color 89–2
 ~100–150. Specular Color 255 or ~200–220. The cubemap is always one of the SDK's: metall_matte or
 metall (one uses brass_matte).
 
+Foregrip counts (59): Specular Vals / Diffuse Vals pairs: **1,1,0,0 / 1,1,0,0 (41)**, 1,2,0,0 / 1,1,0,0
+(7), 1,0.5,0,0 / 1,0.5,0,0 (5, incl. the RK-1 B-25U), 1,2,0,0 / 0.8,0.4,0,0 (5, Tango Down).
+Specular Color: 255 (26), 221 (7), 204 (5), 128 (4); median 224. Reflection Color: median **129**
+(alpha 128), range 89–255. What the second Vals number does exactly is unverified; the two are
+nearly always set as a pair.
+
 **Cubemaps across all 2058 SMap materials:** `patron_cubemap_metall` 1525, `patron_cubemap_metall_matte`
 463, `brass_matte` 20, `brass` 9, none 19. Only 12 build their own (`patron_cubemap_studio`) and 10
 use two game cubemaps the SDK doesn't have (PathIDs -6042237392288980436, -152504514492450513). So the
