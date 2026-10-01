@@ -1,0 +1,194 @@
+# How it all fits together
+
+Background for adding attachments to SPT 4.1 (Tarkov) from ripped models. Read this once;
+`ADDING_A_GRIP.md` is the step-by-step checklist.
+
+## The three pieces
+
+A custom attachment is three things that have to agree with each other:
+
+| Piece | What it is | Where it lives |
+|---|---|---|
+| **Server mod** | A C# DLL plus JSON that tells the SPT server "this item exists": its ID, stats, name, price, which slots it fits, and which model file to show. | `SPT/user/mods/<ModName>/` |
+| **Bundle** | The 3D model, textures and materials, packed by Unity into a `.bundle` file. The game client loads it to draw the item. | `SPT/user/mods/<ModName>/bundles/...` |
+| **`bundles.json`** | Tells the SPT server which bundle files the mod has, so it can hand them to the game, and which other bundles must be loaded first. | `SPT/user/mods/<ModName>/bundles.json` |
+
+The server never looks inside the bundle. The game client never reads the item JSON directly.
+They meet through one string, the **prefab path**: the item's `Prefab.path` in the JSON, the
+`key` in `bundles.json`, and the file's location under `bundles/` must all be the same.
+
+## Tarkov and SPT
+
+- **SPT 4.x server mods are C# DLLs** targeting .NET 10 (4.0 dropped the old TypeScript mods).
+  SPT 4.1.6 publishes its reference packages on NuGet as `SPTushonka.Server.Core`,
+  `SPTushonka.DI` and `SPTushonka.Common` (the DLLs inside are still named `SPTarkov.*`).
+- **WTT-ServerCommonLib** (GUID `com.wtt.commonlib`) is a library mod that turns JSON files into
+  items. Our DLL only hands it the `db/CustomItems` folder; the item itself is pure JSON. Players
+  need WTT-CommonLib installed too.
+- **Items are cloned from vanilla items.** `itemTplToClone` copies every property of a vanilla
+  item; `overrideProperties` changes only what we list (name, prefab path, stats). Anything not
+  listed (ergonomics, recoil, weight, animation fields) comes from the clone.
+- **Item IDs are 24 hex characters** (MongoDB style). New items need a fresh random one. Vanilla
+  IDs must come from the SPT database (`SPT_Data/database/templates/items.json`) or the in-game
+  handbook. Never guess them from memory: we once cloned the wrong grip that way.
+- **Slots:** with `addtoModSlots: true` and `modSlot: ["mod_foregrip"]`, CommonLib adds the new
+  item everywhere the cloned item can be attached.
+- **Testing:** in game, send `spt give <itemId> 1` to the SPT bot in chat to receive the item.
+
+## Unity basics
+
+- **GameObject:** any object in a scene. On its own it's just a named point.
+- **Transform:** every GameObject's position, rotation and scale, relative to its parent.
+  Children move with their parent and inherit its scale.
+- **Component:** something attached to a GameObject that gives it behaviour: `MeshFilter` (which
+  mesh), `MeshRenderer` (draw it with which materials), `BoxCollider`, or a script.
+- **Prefab:** a saved GameObject with all its children and components. The game spawns the item
+  from the prefab in the bundle. Changes made in a scene only reach the prefab after
+  **Overrides > Apply All**.
+- **Mesh:** the 3D shape. **Material:** says how a mesh is drawn: which shader, which textures,
+  which values. **Shader:** the program on the graphics card that turns material + light into
+  pixels. **Texture:** an image the shader reads.
+- **Imported models:** Blender and other tools use Z as "up", Unity uses Y, so imported meshes
+  usually get Rotation X = -90. Models exported in centimetres get Scale 100. Both are normal.
+  What matters is which way the model ends up pointing compared with the vanilla item.
+
+## How Tarkov uses an attachment prefab
+
+Vanilla attachment prefabs (inspect one with `tools/inspect_bundle.py`) contain more than the mesh:
+
+| Object / component | What it does | Without it |
+|---|---|---|
+| Mesh objects with `MeshRenderer` | The visible model. | Nothing to see. |
+| **PreviewPivot** on the root | Centre point and rotation for the inspect view, and how the icon is framed. | Inspect view is off-centre; the icon may spin forever. |
+| **GripPose** on `Base HumanLPalm` objects (+ finger bones) | Where the left hand goes and how the fingers curl. | The game uses its default left-hand position. |
+| LODGroup | Swaps to a simpler mesh far away. | Fine for mods; always uses the full mesh. |
+| BoxCollider | Physical shape, e.g. when dropped. | Item may fall through things. |
+
+**Hand poses are not baked animations.** The game reads the palm markers while it runs and pulls
+the left hand there with IK (inverse kinematics), bending the fingers to the finger bones'
+rotations. Move the palm marker and the hand moves with it. Each vanilla grip has two:
+`GripType` **Common** (0) and **Alternative** (1). The arm can only reach so far, so markers must
+stay where a real hand could be.
+
+**The prefab's origin is the attachment point.** For a foregrip, (0, 0, 0) is where it clamps to
+the rail. The game puts that point on the weapon's `mod_foregrip` slot, so the model must point
+the same way as the vanilla item it replaces.
+
+## Bundles
+
+A `.bundle` is Unity's container format: one or more serialized files (each with an internal name
+like `CAB-56d919bd5479d38f741da52a6beef92f`), each holding objects identified by a **PathID** (a
+64-bit number).
+
+- **References between objects** are stored as (file, PathID). File 0 means "inside this
+  bundle"; other numbers point into an **external file** list (other bundles' CAB names).
+- **Dependencies:** if a material in your bundle points at a shader in another bundle, that
+  other bundle must be loaded first. SPT does this from `dependencyKeys` in `bundles.json`
+  (e.g. `"shaders"`).
+- **The game's shared bundles:** vanilla items don't carry their own shaders or reflection
+  cubemaps. They point into the game's shared bundles:
+
+  | Game bundle (key in `bundles.json`) | Internal name | Example object |
+  |---|---|---|
+  | `shaders` | `CAB-56d919bd5479d38f741da52a6beef92f` | `p0/Reflective/Bumped Specular SMap` = PathID `6014991791773097075` |
+  | `cubemaps` | `CAB-4d8a4131cf377709ee7c7e960f65d349` | cubemap used by the RK-1 = PathID `972550011776207695` |
+
+  These are from the SPT 4.1.6 game files and may change after a game update.
+- **Textures, materials and cubemaps** can safely be built into your own bundle.
+  **Shaders must point at the game's own copy**; see "Shaders" below.
+- **Tools:** `tools/inspect_bundle.py` prints everything above for any bundle. UnityPy (Python)
+  can read and edit bundles; AssetStudio and UABEA are Windows GUI tools for the same.
+
+## Building bundles in Unity
+
+- **AssetBundle labels** (bottom of the Inspector) decide which bundle each asset goes into. A label
+  on a folder applies to everything inside it, even though each file's own box still says None. A
+  label set on a file overrides its folder's label.
+- **Unlabelled assets** that a labelled prefab uses (materials, textures) are pulled into that
+  prefab's bundle automatically.
+- **An asset used from a different bundle** becomes a dependency, listed under `Dependencies:`
+  in the `.manifest` Unity writes next to each bundle. Always check the manifest after a build:
+  `Assets:` is what's inside, `Dependencies:` is what it needs.
+- **Label name and variant:** our bundles use name `houndgrip` + variant `bundle`, giving
+  `houndgrip.bundle`. Every asset in one bundle must use the same name *and* variant, or the build
+  fails ("can't exist in the same build as ... has the variant").
+- **Unity builds every labelled bundle in the project** on each build, including the SDK's
+  examples. Only copy your own `.bundle` into the mod.
+
+## The SDK (EscapeFromTushonka-SDK)
+
+<https://github.com/S3RAPH-1M/EscapeFromTushonka-SDK>: a Unity 2022.3.43f1 project preset for
+Tarkov. It contains look-alike copies of Tarkov's scripts (PreviewPivot, GripPose, ...) and
+shaders, so things look right in the editor, plus a custom AssetBundles window
+(Configure / Build / Inspect / PathID Replacer / CabID Replacer).
+
+**The replacer step.** Because the SDK's shaders are copies, a fresh build points at the SDK's
+`shaders` bundle, which doesn't exist in the game. After each build the SDK rewrites every
+reference using two lookup tables in `Assets/Packages/Custom AssetBundles-Browser/`:
+
+- `path_data.json`: SDK PathID -> game PathID. For SMap the SDK ships
+  `4203229473038756442 -> 6014991791773097075`.
+- `cab_data.json`: SDK CAB name -> game CAB name. For `shaders`:
+  `1dc8d26be8722a766953ce9d8a444e8c -> 56d919bd5479d38f741da52a6beef92f`.
+
+Quirks we hit:
+
+- **The output path must be relative to the SDK project** (e.g. `AssetBundles`). With an absolute
+  path like `C:/Users/...` the replacer crashes with `DirectoryNotFoundException` and the bundle
+  stays unconverted (purple in game).
+- **The output folder can't share its name with a bundle.** Unity names its index file after the
+  folder, so a folder called `HoundGrip` clashes with `houndgrip.bundle`.
+- **In this project, SMap builds with PathID `3868700100545724512`**, not the table's
+  `4203229473038756442`, so the replacer skipped it. We added the entry
+  `3868700100545724512 -> 6014991791773097075` in the PathID Replacer tab (ADD ENTRY, SAVE DATA TO
+  FILE). Any other shader that comes out purple needs the same treatment; `tools/inspect_bundle.py`
+  shows the PathID your build used.
+- **Adding PreviewPivot logs a NullReferenceException** (`PreviewPivot.OnValidate`) until you run
+  its **Apply Default Settings**. Harmless.
+- The SDK's SMap has its slider labels swapped: Inspector **"Specularness"** is `_Glossness`
+  (shine strength) and **"Glossness"** is `_Specularness` (highlight tightness).
+
+## Shaders: purple, white, right
+
+| What you see | Why |
+|---|---|
+| **Purple** | The material points at a shader the game can't find, usually the SDK's `shaders` bundle that the replacer didn't convert. |
+| **White / washed out** | The SDK's shader copy was built into your bundle (shader labelled into it). It runs but doesn't work with Tarkov's renderer. |
+| **Doge box** | The game couldn't load the bundle or the prefab at all: path mismatch, or a dependency not in `bundles.json`. |
+| **Textured, like vanilla** | Material points at the game's shader (`CAB-56d919bd...` / `6014991791773097075` for SMap) and `bundles.json` lists `"shaders"`. |
+
+If the SDK's replacer can't be made to work, `tools/fix_eft_shaders.py` does the same conversion
+by shader name, using the game's own `shaders` bundle.
+
+## SMap material values
+
+`p0/Reflective/Bumped Specular SMap` is the shader vanilla weapon parts use. It's a specular/gloss
+shader (older than the metal/roughness shaders modern games like MW2022 use), so ripped textures
+need these values tuned. Values are multipliers on the textures, not replacements for them.
+
+| Inspector label | Property | Effect |
+|---|---|---|
+| Main Color | `_Color` | Multiplies the diffuse texture (overall brightness/tint). |
+| Base (RGB) Specular (A) | `_MainTex` | Diffuse colour; **alpha is the specular mask**. |
+| GlossMap | `_SpecMap` | Gloss texture. |
+| Normalmap | `_BumpMap` | Normal map. |
+| Specular Color | `_SpecColor` | Tint/brightness of the shine. |
+| "Specularness" | `_Glossness` | Shine strength. |
+| "Glossness" | `_Specularness` | Highlight tightness (high = sharp metal, low = soft rubber). |
+| Reflection Color / Reflection Cubemap | `_ReflectColor` / `_Cube` | Reflection strength / what is reflected. **A cubemap must be assigned.** |
+| Specular Vals / Diffuse Vals | `_SpecVals` / `_DefVals` | Internal tuning; copy vanilla. |
+| _StencilType | `_StencilType` | Hands (2) for weapon parts. |
+
+Vanilla RK-1 B-25U: Main Color 0.755 grey, Specular Color 0.849 grey, "Specularness" 2,
+"Glossness" 1.08, Reflection Color 0.603 grey / alpha 0.5, Spec Vals and Diffuse Vals
+(1, 0.5, 0, 0), textures with Aniso Level 5.
+
+## Ripped textures (MW2022 / COD)
+
+- Normal maps: set Texture Type to **Normal map**. COD uses the DirectX convention, so try
+  **Flip Green Channel** if dents look like bumps.
+- Data textures (gloss, metal/roughness): untick **sRGB**.
+- Set **Aniso Level 5** like vanilla, and click Apply after changing import settings.
+- COD's packed metal/roughness maps don't map one-to-one onto SMap's specular/gloss inputs; tune
+  the material values in game, starting from a vanilla part made of similar material.
+- If a texture looks scrambled, check the UVs. On this grip they were correct, not flipped.

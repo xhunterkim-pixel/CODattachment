@@ -40,45 +40,24 @@ that takes the RK-1 B-25U.
   (search for `b25u`).
 - **Bundle path.** `Prefab.path` in the item JSON, the `key` in `bundles.json`, and the file's
   location under `bundles/` must be the same string, all lowercase.
-- **Prefab setup.** The prefab inside the bundle has to be built like a vanilla foregrip. If the
-  item shows up but is invisible, or the client logs errors when you attach it, open the vanilla
-  RK-1 B-25U bundle in AssetStudio and copy its hierarchy and components.
+- **Prefab setup.** The prefab needs PreviewPivot and hand poses like the vanilla grip, and its
+  materials must use the game's shaders. See [`docs/ADDING_A_GRIP.md`](docs/ADDING_A_GRIP.md).
 - **Stats/price.** To change stats, add fields such as `"Ergonomics"`, `"Recoil"` or `"Weight"`
   to `overrideProperties`. Any field you leave out is copied from the RK-1.
 
-## White or purple items: point materials at the game's shaders
+## Guides
 
-Bundles built with the SDK either embed the SDK's copy of an EFT shader (the item renders
-**white** in game) or point at the SDK's own `shaders` bundle (it renders **purple**). Vanilla
-items point at the game's `shaders` bundle. `tools/fix_eft_shaders.py` rewrites your materials to
-do the same.
+- [`docs/HOW_IT_WORKS.md`](docs/HOW_IT_WORKS.md): how SPT, Unity, bundles, the SDK and shaders fit together.
+- [`docs/ADDING_A_GRIP.md`](docs/ADDING_A_GRIP.md): step-by-step checklist for a new grip, and a troubleshooting table.
+- [`docs/GRIPS.md`](docs/GRIPS.md): what each grip is based on, the values that worked, and its history.
 
-One-time setup: install Python 3, then `pip install UnityPy`.
+## Tools
 
-```
-python tools/fix_eft_shaders.py "<path>\houndgrip.bundle" --game-shaders "C:\SPT\EscapeFromTarkov_Data\StreamingAssets\Windows\shaders"
-```
+Python 3 with `pip install UnityPy`:
 
-`--game-shaders` is only needed the first time and after a game update; the shader list is cached
-in `tools/game_shaders.json`. After that, run it on each bundle you build:
-
-```
-python tools/fix_eft_shaders.py "<path>\houndgrip.bundle"
-```
-
-Run it on the bundle in the SDK's output folder, so it can also resolve references to the SDK's
-`shaders` bundle sitting next to it. It keeps the original as `.bak`. The mod's `bundles.json` must
-list `"shaders"` in `dependencyKeys`.
-
-## Side-grip hand animation
-
-The hand pose for a grip comes from the prefab, not the item stats: vanilla grips have
-`Base HumanLPalm` objects with a `GripPose` component and finger bones. `unity/AddSideGripHandPoses.cs`
-adds the ones from the vanilla RK-1 B-25U:
-
-1. Copy it into the SDK project's `Assets/Editor/` folder (create the folder if needed).
-2. Open your grip prefab, select its root object, and click **Tools > Add RK-1 B-25U Side Grip Hand Poses**.
-3. Move the two `Base HumanLPalm` objects so the palm sits on your grip, apply the prefab, and rebuild.
-
-The root object also needs a `PreviewPivot` component (right-click it > **Apply Default Settings**)
-so the inspect view is centered and the icon renders.
+| Tool | Use |
+|---|---|
+| `tools/inspect_bundle.py` | Show what's in a bundle (shader references, hierarchy, hand poses, material values). Compare yours with the vanilla item. |
+| `tools/fix_eft_shaders.py` | Point materials at the game's shaders when an item is purple or white. |
+| `tools/make_handpose_script.py` | Turn a vanilla item's hand poses into a Unity editor script. |
+| `unity/AddSideGripHandPoses.cs` | Unity editor script with the RK-1 B-25U side-grip hand poses. |
