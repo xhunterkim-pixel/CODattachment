@@ -93,7 +93,7 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
    **Don't rely on the Face Orientation overlay**: it only shows which way the faces point, not the
    stored normals. COD rips have correct faces (all blue) and inward normals, and flipping faces
    flips both. That's what went wrong on the Hound 9G and the DL grip (both 0% after the face flip).
-   To see the real normals: Overlays → Normals → "Display split normals" (lines must point out).
+   To see the real normals: Edit Mode (Tab) → Mesh Edit Mode overlay (dropdown next to Viewport Overlays) → Normals → split-normals icon (middle), Size ~0.02 (lines must point out).
    Afterwards check in Unity (Normals: Import) for see-through holes or dark patches.
 3. **Texture import settings** (click each PNG, then **Apply**):
 
