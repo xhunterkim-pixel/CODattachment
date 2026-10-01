@@ -69,3 +69,16 @@ python tools/fix_eft_shaders.py "<path>\houndgrip.bundle"
 Run it on the bundle in the SDK's output folder, so it can also resolve references to the SDK's
 `shaders` bundle sitting next to it. It keeps the original as `.bak`. The mod's `bundles.json` must
 list `"shaders"` in `dependencyKeys`.
+
+## Side-grip hand animation
+
+The hand pose for a grip comes from the prefab, not the item stats: vanilla grips have
+`Base HumanLPalm` objects with a `GripPose` component and finger bones. `unity/AddSideGripHandPoses.cs`
+adds the ones from the vanilla RK-1 B-25U:
+
+1. Copy it into the SDK project's `Assets/Editor/` folder (create the folder if needed).
+2. Open your grip prefab, select its root object, and click **Tools > Add RK-1 B-25U Side Grip Hand Poses**.
+3. Move the two `Base HumanLPalm` objects so the palm sits on your grip, apply the prefab, and rebuild.
+
+The root object also needs a `PreviewPivot` component (right-click it > **Apply Default Settings**)
+so the inspect view is centered and the icon renders.
