@@ -26,7 +26,7 @@ public record ModMetadata : IModMetadata
 }
 
 // Runs after the database has loaded, and after WTT-CommonLib is ready.
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 2)]
+[Injectable(TypePriority = OnLoadOrder.Preload + 2)]
 public class Hound9GSideGrip(WTTServerCommonLib.WTTServerCommonLib wttCommon) : IOnLoad
 {
     public async Task OnLoadAsync(CancellationToken cancellationToken)

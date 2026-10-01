@@ -8,20 +8,14 @@
     <RootNamespace>Hound9GSideGrip</RootNamespace>
     <Version>1.0.0</Version>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-
-    <!-- Folder that contains SPTarkov.Server.Core.dll (your SPT server folder).
-         Override on the command line: dotnet build -p:SptPath="D:\Games\SPT\SPT" -->
-    <SptPath Condition="'$(SptPath)' == ''">C:\SPT\SPT</SptPath>
-    <CommonLibPath>$(SptPath)\user\mods\WTT-ServerCommonLib\WTT-ServerCommonLib.dll</CommonLibPath>
   </PropertyGroup>
 
-  <!-- Referenced from your SPT install, never copied: SPT and CommonLib load them at runtime. -->
+  <!-- Compile-time references only (ExcludeAssets=runtime): SPT and CommonLib supply these DLLs at runtime. -->
   <ItemGroup>
-    <Reference Include="SPTarkov.Server.Core"><HintPath>$(SptPath)\SPTarkov.Server.Core.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="SPTarkov.DI"><HintPath>$(SptPath)\SPTarkov.DI.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="SPTarkov.Common"><HintPath>$(SptPath)\SPTarkov.Common.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="SemanticVersioning"><HintPath>$(SptPath)\SemanticVersioning.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="WTT-ServerCommonLib"><HintPath>$(CommonLibPath)</HintPath><Private>false</Private></Reference>
+    <PackageReference Include="SPTushonka.Server.Core" Version="4.1.6" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="SPTushonka.DI" Version="4.1.6" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="SPTushonka.Common" Version="4.1.6" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="WTT-ServerCommonLib" Version="3.0.6" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

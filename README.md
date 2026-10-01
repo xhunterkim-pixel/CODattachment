@@ -8,7 +8,7 @@ Requires **WTT-ServerCommonLib 3.0.6+** (and the WTT client CommonLib it ships w
 
 ```
 Hound9GSideGrip/
-├── Hound9GSideGrip.csproj   build settings; set SptPath here
+├── Hound9GSideGrip.csproj   build settings (SPT + CommonLib come from NuGet)
 ├── Hound9GSideGrip.cs       mod metadata + loader (hands the JSON to WTT-CommonLib)
 ├── db/CustomItems/Hound9GSideGrip.json   the item definition
 ├── bundles.json             tells SPT which bundle to serve
@@ -20,11 +20,11 @@ Hound9GSideGrip/
 1. Install the **.NET 10 SDK**.
 2. Copy `hound9gsidegrip.bundle` into `Hound9GSideGrip/bundles/assets/content/items/mods/foregrips/`.
    You don't need the `.manifest` file.
-3. Build, pointing `SptPath` at the SPT folder that contains `SPTarkov.Server.Core.dll`:
+3. Build (NuGet downloads the SPT 4.1.6 and CommonLib references automatically):
    ```
-   dotnet build Hound9GSideGrip -c Release -p:SptPath="D:\Games\SPT\SPT"
+   dotnet build Hound9GSideGrip -c Release
    ```
-   Or edit the default `SptPath` in the `.csproj` and build in Visual Studio or Rider.
+   Or open the project in Visual Studio or Rider and build it there.
 4. Copy `dist/user/mods/Hound9GSideGrip` into your SPT `user/mods` folder.
 
 ## Testing
