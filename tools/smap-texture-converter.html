@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SMap Texture Converter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.11/pako.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/upng-js/2.1.0/UPNG.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  --bg:#262620; --panel:#33322a; --panel-2:#3d3c33; --line:#55533f;
+  --ink:#ebe5d2; --muted:#a39d86; --khaki:#c9b27c; --khaki-ink:#262620;
+  --warn:#d08a5c; --ok:#9fb67a;
+  --display:"Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+  --body:"Barlow", "Segoe UI", Arial, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#ece7d8; --panel:#f6f2e6; --panel-2:#e3ddca; --line:#c3bb9f;
+    --ink:#2a2922; --muted:#6c6650; --khaki:#8a7440; --khaki-ink:#f6f2e6;
+    --warn:#a5532a; --ok:#5d7a35;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#262620; --panel:#33322a; --panel-2:#3d3c33; --line:#55533f;
+  --ink:#ebe5d2; --muted:#a39d86; --khaki:#c9b27c; --khaki-ink:#262620;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
+main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+h1{font:700 clamp(2rem,5vw,3.1rem)/1 var(--display);margin:0;letter-spacing:.01em}
+.lede{color:var(--muted);max-width:62ch;margin:10px 0 0}
+h2{font:600 1.35rem/1.2 var(--display);margin:0 0 12px;letter-spacing:.02em}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:22px;margin-top:26px}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.drop{border:2px dashed var(--line);border-radius:6px;padding:26px 16px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--khaki);background:var(--panel-2)}
+.drop strong{font:600 1.25rem/1.2 var(--display);display:block;letter-spacing:.02em}
+.drop span{color:var(--muted);font-size:.92rem}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tiles.opt{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px}
+@media (max-width:480px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{border:2px dashed var(--line);border-radius:6px;padding:8px;cursor:pointer;background:var(--panel-2);transition:border-color .15s}
+.tile:hover,.tile.over{border-color:var(--khaki)}
+.tile.filled{border-style:solid}
+.tile canvas{display:block;width:100%;aspect-ratio:1;border-radius:3px;background:repeating-conic-gradient(#555 0 25%,#444 0 50%) 50%/12px 12px}
+.tile .tname{font:600 1.15rem/1.2 var(--display);letter-spacing:.02em;margin-top:8px}
+.tile .tchan{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.8rem;margin-top:6px}
+.tile .tchan select{font:600 .85rem var(--body);background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:3px;padding:2px 4px}
+.tile .talt{color:var(--muted);font-size:.8rem;line-height:1.3;margin-bottom:4px}
+.tile .tfile{color:var(--muted);font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile .tfile.need{color:var(--warn)}
+.tile:focus-visible{outline:2px solid var(--khaki);outline-offset:2px}
+.optlabel{color:var(--muted);font-size:.9rem;margin:16px 0 0}
+.drop.small{padding:12px;margin-top:16px}
+.drop.small strong{font-size:1.05rem}
+.slots{margin-top:16px;display:grid;gap:8px}
+.slot{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:5px;background:var(--panel-2)}
+.slot canvas{width:52px;height:52px;border-radius:3px;background:repeating-conic-gradient(#555 0 25%,#444 0 50%) 50%/12px 12px;image-rendering:pixelated}
+.slot .name{font-weight:600}
+.slot .file{color:var(--muted);font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot .req{color:var(--warn);font-size:.85rem}
+.slot button,.btn{font:600 .95rem var(--body);border-radius:4px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:6px 12px;cursor:pointer}
+.slot button:hover,.btn:hover{border-color:var(--khaki)}
+.btn.primary{background:var(--khaki);color:var(--khaki-ink);border-color:var(--khaki);padding:10px 18px;font-size:1rem}
+.btn.primary:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,label:focus-within{outline:2px solid var(--khaki);outline-offset:2px}
+fieldset{border:0;padding:0;margin:18px 0 0}
+legend{font:600 1.05rem var(--display);letter-spacing:.03em;margin-bottom:6px;padding:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:4px;padding:6px 10px;cursor:pointer;font-size:.95rem}
+.seg input{accent-color:var(--khaki)}
+.hint{color:var(--muted);font-size:.88rem;margin:6px 0 0}
+.hint.good{color:var(--ok)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 64px;gap:10px;align-items:center}
+input[type=range]{width:100%;accent-color:var(--khaki)}
+input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.num{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted)}
+.check{display:flex;gap:8px;align-items:center;margin-top:6px;cursor:pointer}
+.outs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.out{border:1px solid var(--line);border-radius:5px;overflow:hidden;background:var(--panel-2)}
+.out canvas{display:block;width:100%;aspect-ratio:1;background:repeating-conic-gradient(#555 0 25%,#444 0 50%) 50%/16px 16px;object-fit:contain}
+.out .cap{padding:8px 10px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.out .cap b{font:600 1.05rem var(--display);letter-spacing:.02em}
+.out .cap small{color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+.status{color:var(--muted);font-size:.92rem;min-height:1.4em;margin-top:10px}
+.status.err{color:var(--warn)}
+.empty{color:var(--muted);border:2px dashed var(--line);border-radius:6px;padding:40px 16px;text-align:center}
+.slotmap{color:var(--muted);font-size:.85rem;margin-top:14px}
+.slotmap code{color:var(--ink)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <h1>SMap Texture Converter</h1>
+  <p class="lede">Drop in your ripped base color, metallic and roughness/gloss maps. You get the three textures Tarkov's Bumped Specular SMap shader wants: diffuse with specular in its alpha, gloss, and normal.</p>
+
+  <div class="grid">
+    <div>
+      <section class="panel">
+        <h2>Your textures</h2>
+        <p class="hint" style="margin:0 0 10px">Click a slot to pick its file, or drag the file onto it.</p>
+        <div class="tiles" id="tilesReq"></div>
+        <p class="optlabel">Optional</p>
+        <div class="tiles opt" id="tilesOpt"></div>
+        <div class="drop small" id="drop" tabindex="0" role="button" aria-label="Choose several texture files at once">
+          <strong>Or drop them all here at once</strong>
+          <span>Sorted by file name (color, metal, rough, ao, normal).</span>
+        </div>
+        <input type="file" id="multi" accept="image/*" multiple hidden>
+      </section>
+
+      <section class="panel" style="margin-top:22px">
+        <h2>Settings</h2>
+        <label for="prefix" class="hint" style="display:block;margin:0 0 6px">Output name</label>
+        <input type="text" id="prefix" value="item" spellcheck="false">
+
+        <fieldset>
+          <legend>Metallic slot holds</legend>
+          <div class="seg">
+            <label><input type="radio" name="mtype" value="metal" checked> Metallic (metal = white)</label>
+            <label><input type="radio" name="mtype" value="spec"> Specular map</label>
+          </div>
+          <p class="hint">Older CoD rips can come as specular instead of metallic. With a specular map the colour is used as is and the spec goes straight into the diffuse alpha.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Roughness / gloss map is</legend>
+          <div class="seg">
+            <label><input type="radio" name="gtype" value="gloss" checked> Gloss (shiny = white)</label>
+            <label><input type="radio" name="gtype" value="rough"> Roughness (shiny = black)</label>
+          </div>
+          <p class="hint" id="glossGuess"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Base color alpha</legend>
+          <div class="seg">
+            <label><input type="radio" name="alpha" value="ignore" checked> Ignore it</label>
+            <label><input type="radio" name="alpha" value="cover"> Cover patches</label>
+          </div>
+          <p class="hint">Use Cover patches when the rip shows light grey blotches where the alpha was solid (like the rail). They get filled with the part's own average colour.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Diffuse brightness</legend>
+          <div class="row"><input type="range" id="white" min="24" max="255" value="255"><span class="num" id="whiteVal">255</span></div>
+          <label class="check"><input type="checkbox" id="auto" checked> Auto: lift near-black colours to dark grey</label>
+          <p class="hint">Lower the number to brighten. Tarkov blacks should be dark grey, not pure black.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Specular on non-metal</legend>
+          <div class="row"><input type="range" id="spec" min="0" max="128" value="56"><span class="num" id="specVal">56</span></div>
+          <p class="hint">56 (#383838) is a starting point. Fine-tune in Unity against a base-game item.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>AO</legend>
+          <label class="check"><input type="checkbox" id="useAO" disabled> Multiply AO into the diffuse</label>
+          <div class="row" style="margin-top:6px"><input type="range" id="aoStr" min="0" max="100" value="100" disabled><span class="num" id="aoVal">100%</span></div>
+          <p class="hint">Only for real AO: soft shading in creases. Leave off if it's hard shapes or speckles.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Normal</legend>
+          <label class="check"><input type="checkbox" id="flipG"> Flip green (DirectX to OpenGL)</label>
+          <p class="hint">Tick if engravings look raised instead of cut in.</p>
+        </fieldset>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>Tarkov textures</h2>
+      <div id="outsWrap"><div class="empty">Add base color, metallic and roughness/gloss to see the results.</div></div>
+      <div class="actions">
+        <button class="btn primary" id="saveZip" disabled>Download all (zip)</button>
+        <button class="btn" id="saveD" disabled>Diffuse</button>
+        <button class="btn" id="saveG" disabled>Gloss</button>
+        <button class="btn" id="saveN" disabled>Normal</button>
+      </div>
+      <p class="status" id="status"></p>
+      <p class="hint">The zip has two folders: <b>name tarkov ready</b> with the converted textures, and <b>name import</b> with your original files renamed to name_color, name_metallic, name_roughness, name_normal and name_ao.</p>
+      <p class="hint">In Unity: diffuse goes in <b>Base</b>, gloss in <b>Gloss</b>, normal in <b>Normal</b> on the Bumped Specular SMap material.</p>
+    </section>
+  </div>
+</main>
+
+<script>
+(() => {
+  const SLOTS = [
+    {key:"base",  name:"Color",     alt:"Albedo / base color / diffuse",  req:true},
+    {key:"metal", name:"Metallic",  alt:"Metalness / spec / specular",    req:true,  chan:true},
+    {key:"gloss", name:"Roughness", alt:"Gloss / glosso / smoothness",    req:true,  chan:true},
+    {key:"normal",name:"Normal",    alt:"Normal map / nrm",               req:false},
+    {key:"ao",    name:"AO",        alt:"Ambient occlusion / occlusion",  req:false, chan:true},
+  ];
+  const maps = {};       // key -> {w,h,data:Uint8ClampedArray RGBA, file}
+  const result = {};     // diffuse, gloss, normal -> {w,h,rgba:Uint8Array}
+  const $ = id => document.getElementById(id);
+  let downloads = null, claudeHost = !!window.claude;
+
+  // ---------- slots UI ----------
+  SLOTS.forEach(s => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.tabIndex = 0;
+    tile.setAttribute("role","button");
+    tile.setAttribute("aria-label", `Choose ${s.name} texture`);
+    tile.innerHTML = `<canvas width="160" height="160"></canvas>
+      <div class="tname">${s.name}</div>
+      <div class="talt">${s.alt}</div>
+      <div class="tfile ${s.req?"need":""}" data-f>${s.req ? "Click or drop" : "Click or drop"}</div>
+      ${s.chan ? `<label class="tchan">Channel <select data-ch><option value="0">R</option><option value="1">G</option><option value="2">B</option><option value="3">A</option></select></label>` : ""}
+      <input type="file" accept="image/*" hidden>`;
+    const input = tile.querySelector("input");
+    const sel = tile.querySelector("[data-ch]");
+    if (sel){
+      sel.closest("label").addEventListener("click", e => e.stopPropagation());
+      sel.addEventListener("keydown", e => e.stopPropagation());
+      sel.onchange = () => { if (s.key==="metal"||s.key==="gloss") guessGloss(); schedule(); };
+    }
+    tile.onclick = e => { if (e.target !== input) input.click(); };
+    tile.onkeydown = e => { if (e.key==="Enter"||e.key===" "){ e.preventDefault(); input.click(); } };
+    input.onchange = () => { if (input.files[0]) loadInto(s.key, input.files[0]); input.value=""; };
+    ["dragenter","dragover"].forEach(t => tile.addEventListener(t, e => { e.preventDefault(); e.stopPropagation(); tile.classList.add("over"); }));
+    tile.addEventListener("dragleave", () => tile.classList.remove("over"));
+    tile.addEventListener("drop", e => { e.preventDefault(); e.stopPropagation(); tile.classList.remove("over");
+      const f = e.dataTransfer.files[0]; if (f) loadInto(s.key, f); });
+    s.row = tile;
+    $(s.req ? "tilesReq" : "tilesOpt").appendChild(tile);
+  });
+
+  function refreshSlot(key){
+    const s = SLOTS.find(x=>x.key===key), m = maps[key];
+    const f = s.row.querySelector("[data-f]"), c = s.row.querySelector("canvas");
+    if (!m){ f.textContent = "Click or drop"; f.classList.toggle("need", s.req); s.row.classList.remove("filled"); c.getContext("2d").clearRect(0,0,160,160); return; }
+    f.textContent = m.file;
+    f.title = `${m.file} (${m.w}×${m.h})`;
+    f.classList.remove("need");
+    s.row.classList.add("filled");
+    drawThumb(c, m, 160, true);
+  }
+
+  // ---------- file loading ----------
+  async function decode(file){
+    const buf = await file.arrayBuffer();
+    const isPng = /\.png$/i.test(file.name) || new Uint8Array(buf.slice(0,4))[1] === 0x50;
+    if (isPng && window.UPNG){
+      try {
+        const img = UPNG.decode(buf);
+        const rgba = new Uint8ClampedArray(UPNG.toRGBA8(img)[0]);
+        return {w:img.width, h:img.height, data:rgba};
+      } catch(e){ /* fall through to browser decode */ }
+    }
+    const bmp = await createImageBitmap(new Blob([buf]), {premultiplyAlpha:"none", colorSpaceConversion:"none"});
+    const cv = document.createElement("canvas"); cv.width=bmp.width; cv.height=bmp.height;
+    const cx = cv.getContext("2d"); cx.drawImage(bmp,0,0);
+    return {w:bmp.width, h:bmp.height, data:cx.getImageData(0,0,bmp.width,bmp.height).data};
+  }
+
+  async function loadInto(key, file){
+    setStatus(`Reading ${file.name}…`);
+    try {
+      const d = await decode(file);
+      maps[key] = {...d, file:file.name, raw:file};
+      if (key==="base") $("prefix").value = guessPrefix(file.name);
+      if (key==="ao"){ $("useAO").disabled=false; $("aoStr").disabled=false; }
+      refreshSlot(key);
+      if (key==="metal"||key==="gloss"||key==="base") guessGloss();
+      schedule();
+    } catch(e){
+      setStatus(`Couldn't read ${file.name}. Save it as PNG and try again.`, true);
+    }
+  }
+
+  function classify(name){
+    const n = name.toLowerCase();
+    if (/metal/.test(n)) return "metal";
+    if (/spec/.test(n)) { setSpecMode(true); return "metal"; }
+    if (/(rough|gloss|smooth)/.test(n)) return "gloss";
+    if (/(normal|nrm)/.test(n)) return "normal";
+    if (/(^|[_\-. ])ao([_\-. ]|$)|occlusion|cavity/.test(n)) return "ao";
+    if (/(colou?r|albedo|diffuse|base)/.test(n)) return "base";
+    return null;
+  }
+
+  async function addMany(files){
+    const left = [];
+    for (const f of files){
+      const k = classify(f.name);
+      if (k) await loadInto(k, f); else left.push(f.name);
+    }
+    if (left.length) setStatus(`Couldn't tell what ${left.join(", ")} is. Use the Add button on the right slot.`, true);
+  }
+
+  function guessPrefix(name){
+    return name.replace(/\.[^.]+$/,"").replace(/[_\-. ]*(base_?colou?r|albedo|diffuse|colou?r)$/i,"").replace(/_+$/,"") || "item";
+  }
+
+  const drop = $("drop"), multi = $("multi");
+  drop.onclick = () => multi.click();
+  drop.onkeydown = e => { if (e.key==="Enter"||e.key===" "){ e.preventDefault(); multi.click(); } };
+  multi.onchange = () => { addMany([...multi.files]); multi.value=""; };
+  ["dragenter","dragover"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave","drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", e => addMany([...e.dataTransfer.files]));
+  document.addEventListener("dragover", e => e.preventDefault());
+  document.addEventListener("drop", e => { if (!drop.contains(e.target)){ e.preventDefault(); addMany([...e.dataTransfer.files]); } });
+
+  // ---------- helpers ----------
+  function resampleChannel(m, W, H, ch){
+    // returns Uint8Array W*H of channel ch, nearest-neighbour resampled
+    const out = new Uint8Array(W*H);
+    const sx = m.w / W, sy = m.h / H;
+    for (let y=0;y<H;y++){
+      const yy = Math.min(m.h-1, Math.floor((y+.5)*sy));
+      for (let x=0;x<W;x++){
+        const xx = Math.min(m.w-1, Math.floor((x+.5)*sx));
+        out[y*W+x] = m.data[(yy*m.w+xx)*4+ch];
+      }
+    }
+    return out;
+  }
+  function resampleRGBA(m, W, H){
+    if (m.w===W && m.h===H) return m.data;
+    const out = new Uint8ClampedArray(W*H*4);
+    const sx = m.w / W, sy = m.h / H;
+    for (let y=0;y<H;y++){
+      const yy = Math.min(m.h-1, Math.floor((y+.5)*sy));
+      for (let x=0;x<W;x++){
+        const xx = Math.min(m.w-1, Math.floor((x+.5)*sx));
+        const s=(yy*m.w+xx)*4, d=(y*W+x)*4;
+        out[d]=m.data[s]; out[d+1]=m.data[s+1]; out[d+2]=m.data[s+2]; out[d+3]=m.data[s+3];
+      }
+    }
+    return out;
+  }
+  const chOf = key => { const s = SLOTS.find(x=>x.key===key); const el = s.row && s.row.querySelector("[data-ch]"); return el ? +el.value : 0; };
+  const specMode = () => document.querySelector("input[name=mtype]:checked").value === "spec";
+  function setSpecMode(on){ document.querySelector(`input[name=mtype][value=${on?"spec":"metal"}]`).checked = true; }
+  const lum = (r,g,b) => 0.2126*r + 0.7152*g + 0.0722*b;
+
+  function guessGloss(){
+    const el = $("glossGuess");
+    if (!maps.metal || !maps.gloss){ el.textContent=""; return; }
+    const W = maps.gloss.w, H = maps.gloss.h;
+    if (specMode()){ el.textContent = ""; return; }
+    const m = resampleChannel(maps.metal, W, H, chOf("metal")), g = maps.gloss.data, gc = chOf("gloss");
+    let sm=0,nm=0,sn=0,nn=0;
+    for (let i=0;i<W*H;i+=7){ if (m[i]>127){ sm+=g[i*4+gc]; nm++; } else { sn+=g[i*4+gc]; nn++; } }
+    if (!nm || !nn){ el.textContent = "Couldn't guess: the metallic map has no metal (or no non-metal) areas."; el.className="hint"; return; }
+    const isGloss = (sm/nm) > (sn/nn);
+    document.querySelector(`input[name=gtype][value=${isGloss?"gloss":"rough"}]`).checked = true;
+    el.textContent = isGloss ? "Metal parts are brighter in this map, so it's gloss. Left as is." : "Metal parts are darker in this map, so it's roughness. It will be inverted.";
+    el.className = "hint good";
+  }
+
+  // ---------- processing ----------
+  let timer = null;
+  function schedule(){ clearTimeout(timer); timer = setTimeout(run, 60); }
+
+  function run(){
+    if (!maps.base || !maps.metal || !maps.gloss){ renderOutputs(false); return; }
+    const t0 = performance.now();
+    const B = maps.base, W = B.w, H = B.h, N = W*H;
+    const spec = specMode();
+    const metal = resampleChannel(maps.metal, W, H, chOf("metal"));
+    const glossSrc = resampleChannel(maps.gloss, W, H, chOf("gloss"));
+    const useAO = maps.ao && $("useAO").checked;
+    const ao = useAO ? resampleChannel(maps.ao, W, H, chOf("ao")) : null;
+    const aoS = (+$("aoStr").value)/100;
+    const specFloor = +$("spec").value;
+    const cover = document.querySelector("input[name=alpha]:checked").value === "cover";
+    const isRough = document.querySelector("input[name=gtype]:checked").value === "rough";
+
+    // base RGB, optional patch cover
+    const base = new Uint8ClampedArray(N*3);
+    let fr=0,fg=0,fb=0,fn=0;
+    for (let i=0;i<N;i++){
+      base[i*3]=B.data[i*4]; base[i*3+1]=B.data[i*4+1]; base[i*3+2]=B.data[i*4+2];
+      if (cover && B.data[i*4+3] <= 127){ fr+=B.data[i*4]; fg+=B.data[i*4+1]; fb+=B.data[i*4+2]; fn++; }
+    }
+    if (cover && fn){
+      fr/=fn; fg/=fn; fb/=fn;
+      for (let i=0;i<N;i++) if (B.data[i*4+3] > 127){ base[i*3]=fr; base[i*3+1]=fg; base[i*3+2]=fb; }
+    }
+
+    // diffuse before levels
+    const dif = new Float32Array(N*3);
+    const nonMetalLum = [];
+    for (let i=0;i<N;i++){
+      const km = spec ? 1 : 1 - metal[i]/255;
+      let a = 1;
+      if (ao) a = 1 - aoS*(1 - ao[i]/255);
+      const k = km*a;
+      const r = base[i*3]*k, g = base[i*3+1]*k, b = base[i*3+2]*k;
+      dif[i*3]=r; dif[i*3+1]=g; dif[i*3+2]=b;
+      if ((spec || metal[i] < 128) && (i % 5 === 0)) nonMetalLum.push(lum(r,g,b));
+    }
+
+    if ($("auto").checked){
+      let w = 255;
+      if (nonMetalLum.length){
+        nonMetalLum.sort((a,b)=>a-b);
+        const med = nonMetalLum[nonMetalLum.length>>1];
+        if (med < 40) w = Math.max(24, Math.min(255, Math.round(255*Math.max(med,1)/40)));
+      }
+      $("white").value = w; $("whiteVal").textContent = w;
+    }
+    const scale = 255 / (+$("white").value);
+
+    const diffuse = new Uint8Array(N*4);
+    for (let i=0;i<N;i++){
+      diffuse[i*4]   = Math.min(255, Math.round(dif[i*3]*scale));
+      diffuse[i*4+1] = Math.min(255, Math.round(dif[i*3+1]*scale));
+      diffuse[i*4+2] = Math.min(255, Math.round(dif[i*3+2]*scale));
+      if (spec){ diffuse[i*4+3] = metal[i]; continue; }
+      const s = lum(base[i*3],base[i*3+1],base[i*3+2]) * metal[i]/255;
+      diffuse[i*4+3] = Math.round(Math.max(s, specFloor));
+    }
+
+    const gloss = new Uint8Array(N*4);
+    for (let i=0;i<N;i++){
+      const v = isRough ? 255-glossSrc[i] : glossSrc[i];
+      gloss[i*4]=gloss[i*4+1]=gloss[i*4+2]=v; gloss[i*4+3]=255;
+    }
+    result.diffuse = {w:W,h:H,rgba:diffuse};
+    result.gloss = {w:W,h:H,rgba:gloss};
+
+    if (maps.normal){
+      const n = maps.normal, src = n.data;
+      const out = new Uint8Array(n.w*n.h*4);
+      const flip = $("flipG").checked;
+      for (let i=0;i<n.w*n.h;i++){
+        out[i*4]=src[i*4]; out[i*4+1]= flip ? 255-src[i*4+1] : src[i*4+1]; out[i*4+2]=src[i*4+2]; out[i*4+3]=255;
+      }
+      result.normal = {w:n.w,h:n.h,rgba:out};
+    } else delete result.normal;
+
+    renderOutputs(true);
+    setStatus(`Done in ${Math.round(performance.now()-t0)} ms at ${W}×${H}.`);
+  }
+
+  // ---------- rendering ----------
+  function drawThumb(canvas, m, size, opaque){
+    const tmp = document.createElement("canvas"); tmp.width=m.w; tmp.height=m.h;
+    const id = new ImageData(m.w, m.h);
+    for (let i=0;i<m.w*m.h;i++){ id.data[i*4]=m.data[i*4]; id.data[i*4+1]=m.data[i*4+1]; id.data[i*4+2]=m.data[i*4+2]; id.data[i*4+3]= opaque?255:m.data[i*4+3]; }
+    tmp.getContext("2d").putImageData(id,0,0);
+    const cx = canvas.getContext("2d"); cx.clearRect(0,0,size,size); cx.imageSmoothingEnabled = true;
+    cx.drawImage(tmp,0,0,size,size);
+  }
+  function drawView(canvas, r, mode){
+    const S = 512;
+    canvas.width = S; canvas.height = S;
+    const tmp = document.createElement("canvas"); tmp.width=r.w; tmp.height=r.h;
+    const id = new ImageData(r.w, r.h), d = r.rgba;
+    for (let i=0;i<r.w*r.h;i++){
+      if (mode==="alpha"){ const a=d[i*4+3]; id.data[i*4]=id.data[i*4+1]=id.data[i*4+2]=a; }
+      else { id.data[i*4]=d[i*4]; id.data[i*4+1]=d[i*4+1]; id.data[i*4+2]=d[i*4+2]; }
+      id.data[i*4+3]=255;
+    }
+    tmp.getContext("2d").putImageData(id,0,0);
+    canvas.getContext("2d").drawImage(tmp,0,0,S,S);
+  }
+
+  function renderOutputs(ready){
+    const wrap = $("outsWrap");
+    ["saveZip","saveD","saveG"].forEach(id => $(id).disabled = !ready || !canSave());
+    $("saveN").disabled = !ready || !result.normal || !canSave();
+    if (!ready){
+      const need = SLOTS.filter(s=>s.req && !maps[s.key]).map(s=>s.name.toLowerCase());
+      wrap.innerHTML = `<div class="empty">Add ${need.join(", ").replace(/, ([^,]*)$/," and $1")} to see the results.</div>`;
+      return;
+    }
+    wrap.innerHTML = `<div class="outs">
+      <div class="out"><canvas data-v="d"></canvas><div class="cap"><b>Diffuse colour</b><small>RGB</small></div></div>
+      <div class="out"><canvas data-v="s"></canvas><div class="cap"><b>Specular</b><small>diffuse alpha</small></div></div>
+      <div class="out"><canvas data-v="g"></canvas><div class="cap"><b>Gloss</b><small>white = shiny</small></div></div>
+      <div class="out"><canvas data-v="n"></canvas><div class="cap"><b>Normal</b><small>${result.normal ? ($("flipG").checked?"green flipped":"as ripped") : "not added"}</small></div></div>
+    </div>`;
+    drawView(wrap.querySelector("[data-v=d]"), result.diffuse, "rgb");
+    drawView(wrap.querySelector("[data-v=s]"), result.diffuse, "alpha");
+    drawView(wrap.querySelector("[data-v=g]"), result.gloss, "rgb");
+    if (result.normal) drawView(wrap.querySelector("[data-v=n]"), result.normal, "rgb");
+  }
+
+  // ---------- saving ----------
+  function canSave(){ return !!downloads || !claudeHost; }
+  function encode(r){ return UPNG.encode([r.rgba.buffer.slice(0)], r.w, r.h, 0); }
+  const cleanPrefix = () => ($("prefix").value.trim()||"item").replace(/[\\/:*?"<>|]+/g,"_");
+  const fname = suffix => `${cleanPrefix()}_${suffix}.png`;
+
+  async function save(filename, data){
+    try {
+      if (downloads){
+        setStatus(`Confirm the save for ${filename} in the prompt that just opened.`);
+        await downloads.save({filename, data});
+        setStatus(`Saved ${filename}.`); return;
+      }
+      const url = URL.createObjectURL(new Blob([data]));
+      const a = document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    } catch(e){
+      const code = e && e.code;
+      if (code==="declined") setStatus("Save cancelled.");
+      else if (code==="rate_limited") setStatus("A save prompt is already open. Finish that one first.", true);
+      else setStatus("Saving isn't available here.", true);
+    }
+  }
+  $("saveD").onclick = () => save(fname("diffuse"), encode(result.diffuse));
+  $("saveG").onclick = () => save(fname("gloss"), encode(result.gloss));
+  $("saveN").onclick = () => result.normal && save(fname("normal"), encode(result.normal));
+  $("saveZip").onclick = async () => {
+    if (!window.JSZip){ setStatus("The zip library didn't load. Reload the page, or use the single-file buttons.", true); return; }
+    $("saveZip").disabled = true;
+    try {
+      setStatus("Packing zip: encoding textures…");
+      await new Promise(r => setTimeout(r, 30));
+      const p = cleanPrefix();
+      const zip = new JSZip();
+      const ready = zip.folder(`${p} tarkov ready`);
+      ready.file(fname("diffuse"), new Uint8Array(encode(result.diffuse)));
+      ready.file(fname("gloss"), new Uint8Array(encode(result.gloss)));
+      if (result.normal) ready.file(fname("normal"), new Uint8Array(encode(result.normal)));
+      const imp = zip.folder(`${p} import`);
+      const names = {base:"color", metal: specMode() ? "specular" : "metallic", gloss:"roughness", normal:"normal", ao:"ao"};
+      for (const k of Object.keys(names)){
+        const m = maps[k]; if (!m || !m.raw) continue;
+        const ext = (m.file.match(/\.[^.]+$/) || [".png"])[0].toLowerCase();
+        imp.file(`${p}_${names[k]}${ext}`, new Uint8Array(await m.raw.arrayBuffer()));
+      }
+      const data = await zip.generateAsync({type:"uint8array", compression:"STORE"},
+        meta => setStatus(`Packing zip: ${Math.round(meta.percent)}%`));
+      await save(`${p}_textures.zip`, data);
+    } catch(e){
+      setStatus(`Couldn't build the zip (${(e && e.message) || e}). Use the single-file buttons instead.`, true);
+    } finally {
+      $("saveZip").disabled = false;
+    }
+  };
+
+  // ---------- controls ----------
+  function setStatus(t, err){ const s=$("status"); s.textContent=t; s.className = "status" + (err?" err":""); }
+  $("white").oninput = () => { $("auto").checked=false; $("whiteVal").textContent=$("white").value; schedule(); };
+  $("spec").oninput = () => { $("specVal").textContent=$("spec").value; schedule(); };
+  $("aoStr").oninput = () => { $("aoVal").textContent=$("aoStr").value+"%"; schedule(); };
+  ["auto","useAO","flipG"].forEach(id => $(id).onchange = schedule);
+  document.querySelectorAll("input[name=gtype],input[name=alpha]").forEach(r => r.onchange = schedule);
+  document.querySelectorAll("input[name=mtype]").forEach(r => r.onchange = () => { guessGloss(); schedule(); });
+
+  if (claudeHost && window.claude.use){
+    window.claude.use("downloads").then(ns => { downloads = ns; renderOutputs(!!result.diffuse && !!maps.base && !!maps.metal && !!maps.gloss);
+      if (!ns) setStatus("Downloads aren't available in this view. Open the page in claude.ai to save files.", true); });
+  }
+  if (!window.UPNG) setStatus("The PNG library didn't load. Reload the page.", true);
+  renderOutputs(false);
+})();
+</script>
+</body>
+</html>
