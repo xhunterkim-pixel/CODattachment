@@ -2,7 +2,9 @@
   "manifest": [
     {
       "key": "assets/content/items/mods/foregrips/houndgrip.bundle",
-      "dependencyKeys": []
+      "dependencyKeys": [
+        "shaders"
+      ]
     }
   ]
 }
