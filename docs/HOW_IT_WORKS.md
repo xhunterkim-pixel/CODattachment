@@ -110,6 +110,12 @@ like `CAB-56d919bd5479d38f741da52a6beef92f`), each holding objects identified by
   `Assets/Systems/Effects/ParticleSystems/Cubemap/`) aren't in the table, so they'd have to be built
   into your bundle; avoid them. If you ever need your own cubemap, put it in one shared bundle of
   your own (one label, e.g. `cod_cubemaps`, shipped once) instead of a copy per attachment.
+- **More game cubemaps than the SDK's six.** The game's `cubemaps` bundle may hold more. To use one:
+  rip it from the game's `cubemaps` file, import it into `Assets/Cubemaps/` with label `cubemaps`,
+  then add a **PathID Replacer** entry (the PathID your build gives it → the game's PathID for it),
+  exactly like the SMap entry. Without the entry the material points at a PathID the game doesn't
+  have. First check which cubemaps vanilla attachments actually use (`dump_material_values.py`,
+  column `cubemap`); they may all be among the six.
 - **Tools:** `tools/inspect_bundle.py` prints everything above for any bundle. UnityPy (Python)
   can read and edit bundles; AssetStudio and UABEA are Windows GUI tools for the same.
 
