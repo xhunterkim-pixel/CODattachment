@@ -244,6 +244,12 @@ icon upside down/end-on). Bounds Scale 0.9.
     4870518337489161011 → -2064706391146893937 (`patron_cubemap_metall`, rail). To confirm in the
     materials' Reflection Cubemap fields before adding.
 
+41. Cubemap Replacer entries added. Grip: `_Cube` 972550011776207695 ✔. Rail: came out as
+    **2064706391146893937, without the minus sign**; the game's is -2064706391146893937, so the rail's
+    cubemap still isn't found. Fix the EFT PathID in the Replacer entry to include the "-". The
+    manifest doesn't change when only the Replacer changes: Unity writes it before the SDK patches
+    the bundle, so check the bundle with `inspect_bundle.py`, not the manifest.
+
 **Open** (cleaned up; solved items removed):
 - Rebuild with the cubemaps left on label `cubemaps` (history 33) and check: manifest `Dependencies:`
   `shaders`, `cubemaps`, no cubemap under `Assets:`; `inspect_bundle.py` shows `_Cube: CAB-4d8a...`.
@@ -257,12 +263,12 @@ icon upside down/end-on). Bounds Scale 0.9.
   `patron_cubemap_metall`. Not changed yet.
 - Not sold by any trader (`addtoTraders: false`); only `spt give` / flea.
 
-## dlgrip (second side grip, name to come)
+## DI-Grip 4.5 (bundle `dlgrip`)
 
 | | |
 |---|---|
 | Item ID | `6abedf70d13bed42e615da72` (`db/CustomItems/DLGrip.json`) |
-| Name | **placeholder** "DL Side Grip" / "DL Side" until the user names it |
+| Name | "DI-Grip 4.5", short name "DI-Grip" |
 | Cloned from | RK-1 B-25U `5c1cd46f2e22164bef5cfedb` (assumed, like the Hound 9G) |
 | Bundle | `assets/content/items/mods/foregrips/dlgrip.bundle`, dependencies `shaders`, `cubemaps` |
 | Unity prefab | `Assets/Content/Weapons/Tarkov Double Sidegrip/dlgrip/dlgrip.prefab` |
@@ -308,6 +314,9 @@ icon upside down/end-on). Bounds Scale 0.9.
    129/128, Main 221, Specular 255. Still Vals 1, 0.5, 0, 0 and the cubemap PathID
    4963929626472855650 (not remapped). `Base HumanLPalm 1` at 0.090, 0.049, -0.095.
 
-**Open:** cubemap PathID entry, Vals 1, 1, 0, 0, → Hands, icon rotation 0, 245, 180; fit the palms (`Base HumanLPalm 1` first); material values
+9. Cubemap PathID Replacer entry worked: `_Cube` now object 972550011776207695 (the game's
+   `patron_cubemap_metall_matte`). Vals 1, 1, 0, 0 set. Named DI-Grip 4.5.
+
+**Open:** → Hands, icon rotation 0, 245, 180; fit the palms (`Base HumanLPalm 1` first); material values
 (foregrip row in `MATERIALS.md`, Specular Color 255); size vs RK-1 after build; server item (name,
 clone, trader).

@@ -4,9 +4,9 @@
     "parentId": "55818af64bdc2d5b648b4570",
     "handbookParentId": "5b5f71de86f774093f2ecf13",
     "overrideProperties": {
-      "Name": "foregrip_all_dl_sidegrip",
-      "ShortName": "foregrip_all_dl_sidegrip",
-      "Description": "foregrip_all_dl_sidegrip",
+      "Name": "foregrip_all_di_grip_45",
+      "ShortName": "foregrip_all_di_grip_45",
+      "Description": "foregrip_all_di_grip_45",
       "Prefab": {
         "path": "assets/content/items/mods/foregrips/dlgrip.bundle",
         "rcid": ""
@@ -14,9 +14,9 @@
     },
     "locales": {
       "en": {
-        "name": "DL Side Grip",
-        "shortName": "DL Side",
-        "description": "A side-mounted grip for rail-equipped handguards. (Placeholder name and text.)"
+        "name": "DI-Grip 4.5",
+        "shortName": "DI-Grip",
+        "description": "A side-mounted grip for rail-equipped handguards."
       }
     },
     "addtoInventorySlots": [],

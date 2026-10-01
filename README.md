@@ -5,7 +5,7 @@ Adds attachments ported from Call of Duty: Modern Warfare III (2023). One mod fo
 | Item | ID | Cloned from |
 |---|---|---|
 | Hound 9G Side Grip | `6abe08f14fea21b38607a868` | Zenit RK-1 on B-25U mount |
-| DL Side Grip (placeholder name) | `6abedf70d13bed42e615da72` | Zenit RK-1 on B-25U mount |
+| DI-Grip 4.5 (bundle `dlgrip`) | `6abedf70d13bed42e615da72` | Zenit RK-1 on B-25U mount |
 
 Each has the same stats as the item it's cloned from and fits the same weapons.
 
