@@ -144,7 +144,12 @@ icon upside down/end-on). Bounds Scale 0.9.
     looking right in Unity. Unity shows "Anisotropic filtering is enabled for all textures in
     Quality Settings" when setting Aniso 5: just an editor note (the project forces aniso); keep 5.
 
-**Open:** try the Blender normal flip (then Normals: Import) and check with `inspect_bundle.py`.
+24. Normals fixed in Blender by hand: Face Orientation overlay on, flipping faces until none were
+    red, then re-exporting. Lets the FBX go back to Normals: Import (keeps the original smoothing,
+    no Calculate artifacts). Not yet verified.
+
+**Open:** with the hand-flipped FBX on Normals: Import, check for see-through holes or dark patches
+and run `inspect_bundle.py` (normals agree with faces ~100%).
 Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
 Confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right
 in game), confirm in game the recalculated normals, the halfway hand poses, the icon rotation,
