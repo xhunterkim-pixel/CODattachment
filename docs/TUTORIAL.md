@@ -44,7 +44,8 @@ The page warns if a file goes in the wrong slot.
 3. **NOG** slot: the purple-ish "normals" DDS. It fills **Roughness** (gloss), **Normal** and **AO**
    by itself and turns on **Flip green** and **AO**.
 4. Settings:
-   - **Metal keeps diffuse: 25%** (20–35%). At 0% metal parts show as black patches.
+   - **Metal keeps diffuse: 75%**. Tarkov paints metal with a fairly bright diffuse; low values
+     give dark or black metal.
    - **Diffuse brightness:** leave **Auto** on.
    - **Flip green:** leave it on (COD normals are DirectX, Unity wants OpenGL).
 5. Check the four previews: Normal must be **lavender-blue with visible relief** (never teal or pink);
@@ -116,7 +117,7 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
    |---|---|---|
    | Main Color | 193, 193, 193 | 193, 193, 193 |
    | Specular Color | 217, 217, 217 | 217, 217, 217 |
-   | "Specularness" | **1** (converted COD polymer is twice as shiny as Tarkov's; 2 glows) | 2 |
+   | "Specularness" | **1** (converted COD polymer is twice as shiny as Tarkov's; 2 glows) | **~1.2** |
    | "Glossness" | 1.08 | 1.08 |
    | Reflection Color | 80, 80, 80, alpha 128 | 154, 154, 154, alpha 128 |
    | Specular Vals / Diffuse Vals | 1, 0.5, 0, 0 | 1, 0.5, 0, 0 |

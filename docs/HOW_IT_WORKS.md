@@ -210,6 +210,11 @@ also lower than Tarkov's (94 vs 156 on the grips compared), which spreads the hi
 they make converted polymer look like it glows. Compensate on the material: "Specularness" about 1
 instead of 2, "Glossness" at vanilla's 1.08.
 
+**Tarkov paints metal brighter than PBR does.** On the vanilla RK-1 the shiniest 10% of the texture
+(its metal) has diffuse ~101, specular ~77, gloss ~170; its polymer 37 / 22 / 155. So metal keeps a
+fairly bright diffuse rather than going near black: use "Metal keeps diffuse" around 75%, and
+"Specularness" around 1.2 on metal materials.
+
 **MW3 (2023)**, checked on the Hound 9G's files: same packing as MW2022. Its rip had three BC7 DDS per
 material: the fused colour; a NOG named "normals" (it looks purple-ish raw because R gloss ≈ 94,
 G ≈ 127, B occlusion ≈ 249, but the normal is still packed in G and A); and a "green" image whose B

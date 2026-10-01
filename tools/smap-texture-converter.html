@@ -132,7 +132,7 @@ details.howto .tablewrap{overflow-x:auto}
       <li>Drop the <b>colour</b> DDS on the <b>Color</b> slot.</li>
       <li>Under <b>Base color alpha</b>, pick <b>MW fused colour (spec/albedo)</b>. The Metallic slot then says "Not needed".</li>
       <li>Drop the purple-ish <b>"normals"</b> DDS on the <b>NOG</b> slot. It fills Roughness, Normal and AO for you and turns on Flip green.</li>
-      <li>Leave <b>Metal keeps diffuse</b> at about 25% and <b>Diffuse brightness</b> on Auto.</li>
+      <li>Leave <b>Metal keeps diffuse</b> at about 75% and <b>Diffuse brightness</b> on Auto.</li>
       <li>Check the previews: <b>Normal</b> must be lavender-blue with visible relief (never teal or pink). The page warns you if a file is in the wrong slot.</li>
       <li>Type a name under <b>Output name</b> (e.g. <i>houndgrip_rail</i>) and click <b>Download all (zip)</b>.</li>
       <li>In Unity, on the <b>p0/Reflective/Bumped Specular SMap</b> material: <b>_diffuse</b> → Base (RGB) Specular (A), <b>_gloss</b> → GlossMap, <b>_normal</b> → Normalmap. Import settings: _normal as Normal map with <b>Flip Green Channel off</b> (already flipped here); all Aniso 5.</li>
@@ -197,8 +197,8 @@ details.howto .tablewrap{overflow-x:auto}
 
         <fieldset>
           <legend>Metal keeps diffuse</legend>
-          <div class="row"><input type="range" id="metalKeep" min="0" max="100" value="25"><span class="num" id="metalKeepVal">25%</span></div>
-          <p class="hint">Physically metal has no diffuse colour, but SMap only has a grey shine value and a dim reflection, so fully black metal shows as black patches. Tarkov's own metal is dark grey; 20 to 35% keeps it looking like metal.</p>
+          <div class="row"><input type="range" id="metalKeep" min="0" max="100" value="75"><span class="num" id="metalKeepVal">75%</span></div>
+          <p class="hint">Physically metal has no diffuse colour, but Tarkov paints metal with a fairly bright diffuse (the vanilla RK-1's metal averages about 100/255, brighter than its polymer) and a moderate shine. Low values give dark or black metal; about 75% matches Tarkov's style.</p>
         </fieldset>
 
         <fieldset>

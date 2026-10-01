@@ -48,7 +48,8 @@ Get from it:
    Roughness (gloss), Normal (reconstructed, Flip green on) and AO, using GameImageUtil's own
    "CoD Specular/Albedo (IW/MW)" and "CoD Normal/Gloss/Occlusion (IW/MW)" math.
    (Already-split maps still work through the individual slots.)
-3. Keep "Metal keeps diffuse" around 20–35%: fully black metal shows as black patches in SMap.
+3. Keep "Metal keeps diffuse" around 75%: Tarkov's metal diffuse is fairly bright (vanilla RK-1
+   ~101/255); low values give dark or black metal.
 4. Use the outputs: diffuse → `_MainTex`, gloss → `_SpecMap`, normal → `_BumpMap`.
 
 ## 3. Materials
