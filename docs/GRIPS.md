@@ -93,5 +93,10 @@ icon upside down/end-on). Bounds Scale 0.9.
     and "Metal keeps diffuse" (default 25%), tested on sample images. Re-split the DDS files with
     GameImageUtil's MW modes (see `HOW_IT_WORKS.md`) and re-convert.
 
+14. Ported GameImageUtil's two MW modes into the converter ("MW fused colour" + NOG slot), so
+    the split happens in the page. Checked pixel-for-pixel against a Python port of GameImageUtil's
+    formulas; that check caught a bug where specular above 255 wrapped around to near black
+    (bright metal would have gone dark), now clamped like GameImageUtil does.
+
 **Open:** confirm in game the recalculated normals, the halfway hand poses, the icon rotation,
 and the re-converted rail texture.

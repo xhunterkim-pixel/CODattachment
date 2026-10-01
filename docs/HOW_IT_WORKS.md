@@ -197,6 +197,17 @@ How MW2019/MW2022 pack their textures (as split by Scobalula's GameImageUtil):
 
 The WW2 mode splits a different layout and puts the wrong data into "AO" and "roughness".
 
+GameImageUtil's formulas (ported into `tools/smap-texture-converter.html`), with channels 0–1:
+
+- **Fused colour:** metal `m = clamp((A − 0.1) / 0.9)`, insulator reflectance `r = min(A, 0.1)`;
+  albedo = RGB × (1 − m); specular = max(r + m × RGB, 0.21) per channel (0.21 ≈ 54/255). The
+  specular can exceed 1 and must be clamped.
+- **NOG:** gloss = R, occlusion = B; normal from G and A (hemi-octahedron):
+  `nx = 2G − 1, ny = 2A − 1; x = (nx + ny)/2, y = (nx − ny)/2, z = 1 − |x| − |y|`, then normalise.
+
+GameImageUtil reads DDS through DirectXTex (a native Windows library), so its "Direct Convert"
+mode is the way to turn COD DDS files into PNGs for the browser converter.
+
 Converting to SMap (specular/gloss): metal has (almost) no diffuse colour and gets its colour as
 specular; non-metal gets a low specular around 56/255 (4% reflectance). COD stores **gloss**, which is
 what SMap wants (roughness = 1 − gloss). AO is multiplied into the diffuse. COD normals are DirectX,

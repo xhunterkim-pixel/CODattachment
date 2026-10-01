@@ -1,4 +1,9 @@
 <!doctype html>
+<!--
+  SMap Texture Converter. The "MW fused colour" and "NOG" processing is ported from Scobalula's
+  GameImageUtil (CoDFusedCSProcessor, CoDNOGImageProcessor), https://github.com/Scobalula/GameImageUtil,
+  licensed under the GNU General Public License v3.0; this file is distributed under the same license.
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -104,7 +109,7 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
 <body>
 <main>
   <h1>SMap Texture Converter</h1>
-  <p class="lede">Drop in your ripped base color, metallic and roughness/gloss maps. You get the three textures Tarkov's Bumped Specular SMap shader wants: diffuse with specular in its alpha, gloss, and normal.</p>
+  <p class="lede">Drop in your ripped maps, or for MW2019/MW2022 rips just the colour PNG (pick "MW fused colour") and the NOG image. You get the three textures Tarkov's Bumped Specular SMap shader wants: diffuse with specular in its alpha, gloss, and normal.</p>
 
   <div class="grid">
     <div>
@@ -148,9 +153,9 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
           <legend>Base color alpha</legend>
           <div class="seg">
             <label><input type="radio" name="alpha" value="ignore" checked> Ignore it</label>
-            <label><input type="radio" name="alpha" value="metal"> It's the metal mask</label>
+            <label><input type="radio" name="alpha" value="metal"> MW fused colour (spec/albedo)</label>
           </div>
-          <p class="hint">MW2019 / MW2022 colour images store the metal mask in their alpha, and the metal's shine colour in the RGB there. Pick this and the Metallic slot isn't needed. Use a PNG colour file: other formats lose the colour wherever the alpha is 0.</p>
+          <p class="hint">For MW2019 / MW2022 / IW colour images: the alpha is metalness (up to 10% it's the non-metal reflectance), split exactly like GameImageUtil's "CoD Specular/Albedo (IW/MW)". The Metallic slot isn't needed. Use a PNG: convert the DDS with GameImageUtil's "Direct Convert" mode first.</p>
         </fieldset>
 
         <fieldset>
@@ -211,6 +216,7 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
     {key:"gloss", name:"Roughness", alt:"Gloss / glosso / smoothness",    req:true,  chan:true},
     {key:"normal",name:"Normal",    alt:"Normal map / nrm",               req:false},
     {key:"ao",    name:"AO",        alt:"Ambient occlusion / occlusion",  req:false, chan:true},
+    {key:"nog",   name:"NOG",       alt:"MW/IW green image: fills Roughness, Normal and AO", req:false},
   ];
   const maps = {};       // key -> {w,h,data:Uint8ClampedArray RGBA, file}
   const result = {};     // diffuse, gloss, normal -> {w,h,rgba:Uint8Array}
@@ -282,6 +288,7 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
     try {
       const d = await decode(file);
       maps[key] = {...d, file:file.name, raw:file};
+      if (key==="nog") splitNOG(d, file.name);
       if (key==="base") $("prefix").value = guessPrefix(file.name);
       if (key==="ao"){ $("useAO").disabled=false; $("aoStr").disabled=false; }
       refreshSlot(key);
@@ -292,11 +299,36 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
     }
   }
 
+  // GameImageUtil CoDNOGImageProcessor: R = gloss, B = occlusion, G/A = hemi-octahedron normal.
+  function splitNOG(d, name){
+    const N = d.w*d.h, g = new Uint8ClampedArray(N*4), o = new Uint8ClampedArray(N*4), n = new Uint8ClampedArray(N*4);
+    for (let i=0;i<N;i++){
+      const p = i*4;
+      g[p]=g[p+1]=g[p+2]=d.data[p]; g[p+3]=255;
+      o[p]=o[p+1]=o[p+2]=d.data[p+2]; o[p+3]=255;
+      const nx = d.data[p+1]/255*2-1, ny = d.data[p+3]/255*2-1;
+      const x = (nx+ny)*0.5, y = (nx-ny)*0.5, z = 1 - Math.abs(x) - Math.abs(y);
+      const len = Math.hypot(x,y,z) || 1;
+      n[p]=Math.round((x/len*0.5+0.5)*255); n[p+1]=Math.round((y/len*0.5+0.5)*255); n[p+2]=Math.round((z/len*0.5+0.5)*255); n[p+3]=255;
+    }
+    const from = `from ${name}`;
+    maps.gloss  = {w:d.w,h:d.h,data:g,file:from};
+    maps.ao     = {w:d.w,h:d.h,data:o,file:from};
+    maps.normal = {w:d.w,h:d.h,data:n,file:from};
+    ["gloss","ao"].forEach(k => { const el = SLOTS.find(x=>x.key===k).row.querySelector("[data-ch]"); if (el) el.value = "0"; });
+    document.querySelector("input[name=gtype][value=gloss]").checked = true;
+    $("useAO").disabled = false; $("aoStr").disabled = false; $("useAO").checked = true;
+    $("flipG").checked = true;
+    ["gloss","ao","normal"].forEach(refreshSlot);
+    setStatus(`Split ${name}: gloss (R), occlusion (B) and the normal (G/A) filled in. Flip green is on; check engravings look cut in.`);
+  }
+
   function classify(name){
     const n = name.toLowerCase();
     if (/metal/.test(n)) return "metal";
     if (/spec/.test(n)) { setSpecMode(true); return "metal"; }
     if (/(rough|gloss|smooth)/.test(n)) return "gloss";
+    if (/(^|[_\-. ])nog([_\-. ]|$)|_ng([_\-. ]|$)/.test(n)) return "nog";
     if (/(normal|nrm)/.test(n)) return "normal";
     if (/(^|[_\-. ])ao([_\-. ]|$)|occlusion|cavity/.test(n)) return "ao";
     if (/(colou?r|albedo|diffuse|base)/.test(n)) return "base";
@@ -359,7 +391,11 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
   const inputsReady = () => !!maps.base && !!maps.gloss && (!needsMetal() || !!maps.metal);
   function metalChannel(W, H){
     // Metal mask at W x H: the base colour's alpha in metal-mask mode, else the Metallic slot.
-    return alphaIsMetal() ? resampleChannel(maps.base, W, H, 3) : resampleChannel(maps.metal, W, H, chOf("metal"));
+    if (!alphaIsMetal()) return resampleChannel(maps.metal, W, H, chOf("metal"));
+    // GameImageUtil CoDFusedCSProcessor: alpha <= 0.1 is insulator reflectance, above it ramps to full metal.
+    const a = resampleChannel(maps.base, W, H, 3);
+    for (let i=0;i<a.length;i++) a[i] = Math.round(Math.min(1, Math.max(0, (a[i]/255 - 0.1)/0.9))*255);
+    return a;
   }
   const chOf = key => { const s = SLOTS.find(x=>x.key===key); const el = s.row && s.row.querySelector("[data-ch]"); return el ? +el.value : 0; };
   const specMode = () => !alphaIsMetal() && document.querySelector("input[name=mtype]:checked").value === "spec";
@@ -392,6 +428,7 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
     const spec = specMode();
     const metal = metalChannel(W, H);
     const keep = (+$("metalKeep").value)/100;
+    const fused = alphaIsMetal() && B.w===W && B.h===H;
     const glossSrc = resampleChannel(maps.gloss, W, H, chOf("gloss"));
     const useAO = maps.ao && $("useAO").checked;
     const ao = useAO ? resampleChannel(maps.ao, W, H, chOf("ao")) : null;
@@ -434,8 +471,15 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
       diffuse[i*4+1] = Math.min(255, Math.round(dif[i*3+1]*scale));
       diffuse[i*4+2] = Math.min(255, Math.round(dif[i*3+2]*scale));
       if (spec){ diffuse[i*4+3] = metal[i]; continue; }
+      if (fused){
+        // GameImageUtil: specular = max(r + m * colour, 0.21) per channel, r = min(alpha, 0.1).
+        const m = metal[i]/255, r = Math.min(B.data[i*4+3]/255, 0.1);
+        const sr = Math.max(r + m*base[i*3]/255, 0.21), sg = Math.max(r + m*base[i*3+1]/255, 0.21), sb = Math.max(r + m*base[i*3+2]/255, 0.21);
+        diffuse[i*4+3] = Math.min(255, Math.round(lum(sr,sg,sb)*255));  // can exceed 1; clamp, don't wrap
+        continue;
+      }
       const s = lum(base[i*3],base[i*3+1],base[i*3+2]) * metal[i]/255;
-      diffuse[i*4+3] = Math.round(Math.max(s, specFloor));
+      diffuse[i*4+3] = Math.min(255, Math.round(Math.max(s, specFloor)));
     }
 
     const gloss = new Uint8Array(N*4);

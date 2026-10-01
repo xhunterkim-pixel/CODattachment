@@ -37,13 +37,13 @@ Get from it:
 
 ## 2. Textures (COD rips)
 
-1. Split the DDS files with **GameImageUtil**, choosing the modes by hand (Automatic was only
-   tested on MW2019/IW): colour DDS → **CoD Specular/Albedo (Infinite Warfare/Modern Warfare)**;
-   "green" DDS → **CoD Normal/Gloss/Occlusion (Infinite Warfare/Modern Warfare)**. Not the WW2 mode.
-2. Open `tools/smap-texture-converter.html` in a browser. Put the colour PNG in Color, the gloss in
-   Roughness (it detects gloss vs roughness), the normal in Normal (tick Flip green), AO in AO.
-   Either set "Base color alpha" to **It's the metal mask** (the colour image's alpha), or use the
-   split specular map with "Metallic slot holds: Specular map".
+1. Convert each DDS to PNG with **GameImageUtil → "Direct Convert (Global)"** (browsers can't read
+   DDS). Don't split them; the converter does that.
+2. Open `tools/smap-texture-converter.html` in a browser. Put the colour PNG in **Color** and set
+   "Base color alpha" to **MW fused colour (spec/albedo)**; put the green image in **NOG**. That fills
+   Roughness (gloss), Normal (reconstructed, Flip green on) and AO, using GameImageUtil's own
+   "CoD Specular/Albedo (IW/MW)" and "CoD Normal/Gloss/Occlusion (IW/MW)" math.
+   (Already-split maps still work through the individual slots.)
 3. Keep "Metal keeps diffuse" around 20–35%: fully black metal shows as black patches in SMap.
 4. Use the outputs: diffuse → `_MainTex`, gloss → `_SpecMap`, normal → `_BumpMap`.
 
