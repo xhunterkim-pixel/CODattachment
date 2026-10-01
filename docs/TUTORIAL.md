@@ -8,6 +8,12 @@ goes wrong, check the troubleshooting table in `ADDING_A_GRIP.md`.
 EscapeFromTushonka-SDK in Unity 2022.3.43f1, this repo, and (for the checks) Python 3 with
 `pip install UnityPy`.
 
+**Running the Python tools on Windows:** open Command Prompt, `cd` to the folder the `.py` files are
+in (e.g. `cd %USERPROFILE%\Desktop`), and write the script name without `tools/` if it's not in a
+`tools` folder. Replace `<game>` with your SPT folder, the one that contains `EscapeFromTarkov.exe`
+(click the address bar in Explorer there and copy it). Keep the quotes around paths. If it says
+`No module named UnityPy`, run `pip install UnityPy` once.
+
 ---
 
 ## Part 1: Pick the vanilla item to imitate
