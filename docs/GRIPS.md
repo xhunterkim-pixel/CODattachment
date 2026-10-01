@@ -232,6 +232,9 @@ icon upside down/end-on). Bounds Scale 0.9.
 
 1. Hand poses added under the `dlgrip` root (`Base HumanLPalm`, `Base HumanLPalm 1`). The prefab
    had no mesh child yet in the user's screenshot; the grip mesh still has to go under the root.
+2. Single part (one mesh, one material, folder `dlgrip/grip`), unlike the Hound 9G's grip + rail.
+   Fine: the prefab just needs that one mesh child. The RK-1 it replaces includes its B-25U rail
+   mount, so check in game that the grip doesn't float off the rail without a mount part.
 
 **Open:** grip mesh under the root (rotation as the Hound 9G: 0, 0, 0, Scale 100), material, PreviewPivot,
 fit the palms, AssetBundle label `dlgrip` + `bundle` on the `dlgrip` folder only, server item.
