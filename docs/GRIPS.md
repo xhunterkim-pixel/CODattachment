@@ -241,6 +241,13 @@ icon upside down/end-on). Bounds Scale 0.9.
    set Rotation 0, 0, 0, keep Scale 100) and remove the root's MeshFilter, Mesh Renderer and Box
    Collider. Its material's Specular Color also looked black in the screenshot (kills all shine);
    asked to set 255.
+4. Fixed (user screenshots): root `dlgrip` now has only Transform + PreviewPivot; child `grip` holds
+   the mesh (`DLGRIP`), Mesh Renderer, a disabled Box Collider, the `grip` material; Position and
+   Rotation 0, Scale **1** (this FBX shows at the right size at Scale 1, unlike the Hound's 100; check
+   the size against the RK-1 after the build: RK-1 is about 0.109 × 0.047 × 0.091 m). Prefab label
+   `dlgrip` / `bundle`. PreviewPivot icon Rotation still 0, 245, 0: set 0, 245, 180. The palms still
+   sit at the RK-1 values and don't wrap the grip yet.
 
-**Open:** grip mesh under the root (rotation as the Hound 9G: 0, 0, 0, Scale 100), material, PreviewPivot,
-fit the palms, AssetBundle label `dlgrip` + `bundle` on the `dlgrip` folder only, server item.
+**Open:** icon rotation 0, 245, 180; fit the palms (`Base HumanLPalm 1` first); material values
+(foregrip row in `MATERIALS.md`, Specular Color 255); size vs RK-1 after build; server item (name,
+clone, trader).
