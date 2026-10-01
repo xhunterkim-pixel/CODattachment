@@ -64,6 +64,8 @@ Get from it:
    in the Unity scene. Remember the swapped labels: "Specularness" = strength, "Glossness" =
    tightness. To see what other vanilla items of the same material use (polymer, metal, rubber),
    run `tools/dump_material_values.py` on a game folder and open the CSV (see TUTORIAL Part 5).
+   `docs/material_library.csv` (from `tools/build_material_library.py`) has the typical values per
+   material kind.
 
 ## 4. Prefab components
 

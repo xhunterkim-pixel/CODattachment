@@ -60,6 +60,7 @@ Python 3 with `pip install UnityPy`:
 |---|---|
 | `tools/inspect_bundle.py` | Show what's in a bundle (shader references, hierarchy, hand poses, material values). Compare yours with the vanilla item. |
 | `tools/dump_material_values.py` | Table (CSV) of the game's own material values for every item in a folder, to copy into Unity. |
+| `tools/build_material_library.py` | Small material library (rubber, polymer, coated metal, bare metal): the game's typical texture and slider values for each. |
 | `tools/fix_eft_shaders.py` | Point materials at the game's shaders when an item is purple or white. |
 | `tools/make_handpose_script.py` | Turn a vanilla item's hand poses into a Unity editor script. |
 | `tools/blender_flip_custom_normals.py` | Blender script that reverses inverted normals without losing the original smoothing. |

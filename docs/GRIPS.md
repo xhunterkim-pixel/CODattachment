@@ -181,6 +181,10 @@ icon upside down/end-on). Bounds Scale 0.9.
     0.7547 = **192** (the 193 above is a rounding; either is fine). RK-1 averages: diffuse 48,
     specular 27, gloss 156.
 
+32. Added `tools/build_material_library.py` (material library by kind). Tested on the RK-1 only:
+    polymer pixels median diffuse 47 / spec 24 / gloss 162; its metal (coated class) 81 / 55 / 169.
+    Needs a run over the game's `mods` folder for real numbers (asked the user).
+
 **Open:** edge/facet look in dark light (history 30). In game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
 RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).
 Optional: `inspect_bundle.py` on the new bundle (normals agree with faces ~100%).

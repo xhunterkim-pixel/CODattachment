@@ -145,6 +145,13 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
    --game-shaders` once to cache the names). Start with one folder (e.g. `mods/foregrips`); the
    whole `mods` folder takes a while.
 
+   **Material library.** `python tools/build_material_library.py "<game>/.../assets/content/items/mods" material_library.csv`
+   sums this up per kind of material (rubber, polymer, coated metal, bare metal). In Tarkov one
+   material covers a whole item, so plastic vs metal is decided by the **textures**: use the
+   library's diffuse/specular/gloss targets to check your converted textures (compare with
+   `dump_material_values.py --textures` on your bundle), and its "most used" slider values as the
+   starting point. The repo's copy is `docs/material_library.csv`.
+
 5. **Leave the shader file's AssetBundle label alone.** It belongs in the SDK's `shaders` bundle;
    building it into yours makes the item white.
 
