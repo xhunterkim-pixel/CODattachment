@@ -12,6 +12,8 @@ can't run either, so work from the files they upload and the tools below.
   pitfall found so far.
 - `docs/ADDING_A_GRIP.md`: the step-by-step checklist and troubleshooting table.
 - `docs/GRIPS.md`: per-grip record (IDs, values that worked, history, open items).
+- `docs/MATERIALS.md` + `docs/material_library.csv`: measured vanilla SMap values per material kind
+  (rubber, polymer, coated metal, bare metal). Use these for material values, not memory.
 
 ## Keep the docs current (required)
 

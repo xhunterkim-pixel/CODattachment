@@ -192,6 +192,11 @@ icon upside down/end-on). Bounds Scale 0.9.
     `cubemaps` (no variant), grip `dots small` (not a game cubemap) → `patron_cubemap_metall_matte`
     (the RK-1's), `bundles.json` dependencies `shaders`, `cubemaps`. Not yet built and checked.
 
+34. Material library built from the game's `mods` folder (1743 SMap materials): see `MATERIALS.md`.
+    Tarkov polymer averages specular 29 / gloss 137 at "Specularness" 2; our grip's texture is
+    54 / 94, so "Specularness" 1 matches it in strength (history 27 confirmed by the data). The
+    common cubemap for polymer and coated metal is `patron_cubemap_metall`, already in the SDK.
+
 **Open:** edge/facet look in dark light (history 30). In game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
 RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).
 Optional: `inspect_bundle.py` on the new bundle (normals agree with faces ~100%).

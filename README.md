@@ -50,6 +50,7 @@ that takes the RK-1 B-25U.
 - [`docs/TUTORIAL.md`](docs/TUTORIAL.md): every step from a COD rip to a working attachment in game.
 - [`docs/HOW_IT_WORKS.md`](docs/HOW_IT_WORKS.md): how SPT, Unity, bundles, the SDK and shaders fit together.
 - [`docs/ADDING_A_GRIP.md`](docs/ADDING_A_GRIP.md): step-by-step checklist for a new grip, and a troubleshooting table.
+- [`docs/MATERIALS.md`](docs/MATERIALS.md): material library (Tarkov's values for rubber, polymer, coated and bare metal), with the spreadsheet `docs/material_library.csv`.
 - [`docs/GRIPS.md`](docs/GRIPS.md): what each grip is based on, the values that worked, and its history.
 
 ## Tools

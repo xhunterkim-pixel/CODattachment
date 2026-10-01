@@ -120,7 +120,8 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
      `patron_cubemap_metall_matte` like the RK-1, or `patron_cubemap_metall` for shinier metal).
      **Never leave it empty**, or the item turns white. Don't use others (e.g. `dots small`): they
      aren't in the game, so they'd be copied into every bundle.
-4. Values. Start from the vanilla item's (your inspect output). The SDK's labels "Specularness" and
+4. Values. Start from `docs/MATERIALS.md` (Tarkov's typical values per material kind) or the vanilla
+   item's (your inspect output). The SDK's labels "Specularness" and
    "Glossness" are swapped: "Specularness" is shine strength, "Glossness" is highlight tightness.
    What the Hound 9G uses:
 
