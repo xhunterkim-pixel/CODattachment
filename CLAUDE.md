@@ -6,6 +6,8 @@ can't run either, so work from the files they upload and the tools below.
 
 ## Read first
 
+- `docs/TUTORIAL.md`: the full step-by-step workflow (rip → textures → Unity → bundle → game). Keep it
+  in sync when a step changes.
 - `docs/HOW_IT_WORKS.md`: how SPT, Unity, bundles, the SDK and shaders fit together, and every
   pitfall found so far.
 - `docs/ADDING_A_GRIP.md`: the step-by-step checklist and troubleshooting table.
@@ -17,7 +19,8 @@ After **every** fix or new finding, before you finish your turn, update the docs
 
 - the grip's section in `docs/GRIPS.md` (values that changed, a line in its history, open items),
 - the checklist or troubleshooting table in `docs/ADDING_A_GRIP.md` if the fix applies to future grips,
-- `docs/HOW_IT_WORKS.md` if you learned how something works.
+- `docs/HOW_IT_WORKS.md` if you learned how something works,
+- `docs/TUTORIAL.md` if a step of the workflow changed.
 
 Write down what was wrong, how it showed up, and what fixed it, so it never has to be rediscovered.
 

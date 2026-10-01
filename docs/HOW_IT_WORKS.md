@@ -214,9 +214,11 @@ what SMap wants (roughness = 1 − gloss). AO is multiplied into the diffuse. CO
 so flip green. SMap's specular is a single grey value (diffuse alpha) and its reflections are dim, so
 fully black metal looks like black patches; keep 20–35% of the colour on metal.
 
-- Normal maps: set Texture Type to **Normal map**. COD uses the DirectX convention, so try
-  **Flip Green Channel** if dents look like bumps.
-- Data textures (gloss, metal/roughness): untick **sRGB**.
+- Normal maps: set Texture Type to **Normal map**. COD uses the DirectX convention, so the green
+  channel must be flipped exactly once: either in the converter (its Flip green, on by default for
+  NOG) or with Unity's **Flip Green Channel**, never both.
+- The vanilla RK-1's textures: diffuse sRGB, normal linear (Normal map type), **gloss sRGB**. Keep
+  gloss on sRGB to match.
 - Set **Aniso Level 5** like vanilla, and click Apply after changing import settings.
 - COD's packed metal/roughness maps don't map one-to-one onto SMap's specular/gloss inputs; tune
   the material values in game, starting from a vanilla part made of similar material.

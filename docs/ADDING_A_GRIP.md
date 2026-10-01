@@ -25,9 +25,10 @@ Get from it:
    says the normals are fine. After Calculate, adjust Smoothing Angle if curved parts crease (raise)
    or sharp edges look rounded (lower). Inverted normals also kill the shine, so re-tune material
    values afterwards.
-3. Texture import settings: normal maps → Texture Type **Normal map** (try **Flip Green Channel**
-   for COD textures); data textures (gloss etc.) → untick **sRGB**; all → **Aniso Level 5**.
-   Click **Apply**.
+3. Texture import settings, matching the vanilla RK-1: normal → Texture Type **Normal map**, with
+   **Flip Green Channel off** if it came from the converter (the converter already flipped it; tick
+   it only for a raw COD normal); diffuse and gloss → Default with **sRGB on** (vanilla's gloss is
+   sRGB too); all → **Aniso Level 5**. Click **Apply**.
 4. Build the prefab: an empty root GameObject (rotation 0, scale 1) named after the grip, with the
    mesh objects as children. Imported meshes usually come in at Rotation X -90, Scale 100.
 5. **Orientation:** the root's origin is where the grip clamps onto the rail. Compare your mesh

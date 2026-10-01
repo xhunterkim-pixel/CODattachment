@@ -98,5 +98,9 @@ icon upside down/end-on). Bounds Scale 0.9.
     formulas; that check caught a bug where specular above 255 wrapped around to near black
     (bright metal would have gone dark), now clamped like GameImageUtil does.
 
+15. Docs corrected: the converter already flips the normal's green channel, so Unity's Flip Green
+    Channel must stay off; and vanilla's gloss texture is sRGB, so gloss keeps sRGB on.
+    Full workflow written up in `docs/TUTORIAL.md`.
+
 **Open:** confirm in game the recalculated normals, the halfway hand poses, the icon rotation,
 and the re-converted rail texture.
