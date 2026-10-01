@@ -45,3 +45,27 @@ that takes the RK-1 B-25U.
   RK-1 B-25U bundle in AssetStudio and copy its hierarchy and components.
 - **Stats/price.** To change stats, add fields such as `"Ergonomics"`, `"Recoil"` or `"Weight"`
   to `overrideProperties`. Any field you leave out is copied from the RK-1.
+
+## White or purple items: point materials at the game's shaders
+
+Bundles built with the SDK either embed the SDK's copy of an EFT shader (the item renders
+**white** in game) or point at the SDK's own `shaders` bundle (it renders **purple**). Vanilla
+items point at the game's `shaders` bundle. `tools/fix_eft_shaders.py` rewrites your materials to
+do the same.
+
+One-time setup: install Python 3, then `pip install UnityPy`.
+
+```
+python tools/fix_eft_shaders.py "<path>\houndgrip.bundle" --game-shaders "C:\SPT\EscapeFromTarkov_Data\StreamingAssets\Windows\shaders"
+```
+
+`--game-shaders` is only needed the first time and after a game update; the shader list is cached
+in `tools/game_shaders.json`. After that, run it on each bundle you build:
+
+```
+python tools/fix_eft_shaders.py "<path>\houndgrip.bundle"
+```
+
+Run it on the bundle in the SDK's output folder, so it can also resolve references to the SDK's
+`shaders` bundle sitting next to it. It keeps the original as `.bak`. The mod's `bundles.json` must
+list `"shaders"` in `dependencyKeys`.
