@@ -209,6 +209,11 @@ icon upside down/end-on). Bounds Scale 0.9.
     variant None, as the SDK ships them. The Console's "custom UI ... FresnelMaterialEditor" warning
     for SMap is harmless.
 
+38. First build with two grips failed: "AssetBundle names "cubemaps.bundle" and "cubemaps" can't
+    exist in the same build". Something was still labelled `cubemaps` + variant `bundle` (left over
+    from relabelling cubemaps, history 33). Fix: find it in the AssetBundles window → Configure →
+    `cubemaps.bundle` and set its variant to None.
+
 **Open** (cleaned up; solved items removed):
 - Rebuild with the cubemaps left on label `cubemaps` (history 33) and check: manifest `Dependencies:`
   `shaders`, `cubemaps`, no cubemap under `Assets:`; `inspect_bundle.py` shows `_Cube: CAB-4d8a...`.
