@@ -247,6 +247,9 @@ icon upside down/end-on). Bounds Scale 0.9.
 **Open** (cleaned up; solved items removed):
 - Rebuild with the cubemaps left on label `cubemaps` (history 33) and check: manifest `Dependencies:`
   `shaders`, `cubemaps`, no cubemap under `Assets:`; `inspect_bundle.py` shows `_Cube: CAB-4d8a...`.
+- **Hound normals deferred by the user** (still 0%: lit inside-out, likely part of the glow and the
+  visible edges). Fix later: Blender, select grip + rail, `tools/blender_flip_custom_normals.py` once,
+  export, rebuild (worked on the DL grip, its history 6 and 8).
 - In game: hand poses (halfway values; `Base HumanLPalm 1`), icon rotation 0, 245, 180, shine next
   to the RK-1 with the new grip values (history 36), edges in dark light (history 30).
 - Rail material still has the old values (Main 193, "Specularness" 1.5, Vals 1, 0.5, 0, 0). Vanilla
