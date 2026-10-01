@@ -54,7 +54,9 @@ Write down what was wrong, how it showed up, and what fixed it, so it never has 
 - Server mod: C# on .NET 10, NuGet `SPTushonka.*` 4.1.6 + `WTT-ServerCommonLib` 3.0.6, load order
   `OnLoadOrder.Preload + 2`. Items are JSON in `db/CustomItems/`, cloned from vanilla.
 - `Prefab.path` in the item JSON = `key` in `bundles.json` = file path under `bundles/`.
-- Every bundle that uses SMap needs `"dependencyKeys": ["shaders"]`.
+- Every bundle needs `"dependencyKeys": ["shaders", "cubemaps"]`. Cubemaps come from the game, not our
+  bundles: use the SDK's `Assets/Cubemaps/` with their label left as `cubemaps` (game CAB
+  `4d8a4131cf377709ee7c7e960f65d349`; the SDK remaps it like the shader).
 - Game SMap shader: `CAB-56d919bd5479d38f741da52a6beef92f`, PathID `6014991791773097075`.
 - SDK: <https://github.com/S3RAPH-1M/EscapeFromTushonka-SDK> (Unity 2022.3.43f1). Its replacer
   needs a relative output path and a table entry for every shader PathID the build produces.

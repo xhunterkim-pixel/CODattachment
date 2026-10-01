@@ -9,7 +9,7 @@ Add a section for every new grip.
 |---|---|
 | Item ID | `6abe08f14fea21b38607a868` |
 | Cloned from | Zenit RK-1 tactical foregrip on B-25U mount, `5c1cd46f2e22164bef5cfedb` (vanilla bundle `foregrip_all_zenit_b25u_rk_1.bundle`) |
-| Bundle | `assets/content/items/mods/foregrips/houndgrip.bundle`, dependency `shaders` |
+| Bundle | `assets/content/items/mods/foregrips/houndgrip.bundle`, dependencies `shaders`, `cubemaps` |
 | Source | Call of Duty: Modern Warfare III (2023), ported via Blender → FBX |
 | Unity prefab | `Assets/Content/Weapons/Tarkov Double Sidegrip/houndgrip/houndgrip.prefab` |
 
@@ -32,7 +32,7 @@ about 23° shallower.
 | "Specularness" | 1 (was 2: glowed, history 27) | 1.5 set (~1.2 suggested; was 2, history 28) |
 | "Glossness" | 1.08 (was 0.6) | 1.08 |
 | Reflection Color | 80, 80, 80, alpha 128 | 154, 154, 154, alpha 128 |
-| Reflection Cubemap | `dots small` | `patron_cubemap_metall` |
+| Reflection Cubemap | `patron_cubemap_metall_matte` (was `dots small`, history 33) | `patron_cubemap_metall` |
 | Spec / Diffuse Vals | 1, 0.5, 0, 0 | 1, 0.5, 0, 0 |
 
 **Hand poses** (from `unity/AddSideGripHandPoses.cs`, then moved to fit the grip at rotation
@@ -184,6 +184,13 @@ icon upside down/end-on). Bounds Scale 0.9.
 32. Added `tools/build_material_library.py` (material library by kind). Tested on the RK-1 only:
     polymer pixels median diffuse 47 / spec 24 / gloss 162; its metal (coated class) 81 / 55 / 169.
     Needs a run over the game's `mods` folder for real numbers (asked the user).
+
+33. Cubemaps moved to the game's shared bundle, so they aren't copied into each grip. Found in
+    the SDK: its `Assets/Cubemaps/` are the game's six item cubemaps, labelled `cubemaps`, and its CAB
+    and PathID tables map them to the game's `cubemaps` bundle (`CAB-4d8a...`), same as the shader.
+    We had relabelled them `houndgrip`/`bundle`, which built a copy in. Fix: labels back to
+    `cubemaps` (no variant), grip `dots small` (not a game cubemap) → `patron_cubemap_metall_matte`
+    (the RK-1's), `bundles.json` dependencies `shaders`, `cubemaps`. Not yet built and checked.
 
 **Open:** edge/facet look in dark light (history 30). In game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
 RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).

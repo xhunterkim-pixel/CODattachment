@@ -96,8 +96,20 @@ like `CAB-56d919bd5479d38f741da52a6beef92f`), each holding objects identified by
   | `cubemaps` | `CAB-4d8a4131cf377709ee7c7e960f65d349` | cubemap used by the RK-1 = PathID `972550011776207695` |
 
   These are from the SPT 4.1.6 game files and may change after a game update.
-- **Textures, materials and cubemaps** can safely be built into your own bundle.
-  **Shaders must point at the game's own copy**; see "Shaders" below.
+- **Textures and materials** go in your own bundle. **Shaders must point at the game's own copy**
+  (see "Shaders" below), and **cubemaps should too**, like BSG does: 948 of the game's 1185 bundles
+  list `"dependencyKeys": ["shaders", "cubemaps"]`.
+- **How the SDK points cubemaps at the game.** It works exactly like shaders. The SDK ships the
+  game's six item cubemaps with AssetBundle label `cubemaps` (no variant):
+  `patron_cubemap_metall`, `patron_cubemap_metall_matte`, `patron_cubemap_brass`,
+  `patron_cubemap_brass_matte`, `patron_cubemap_full`, `patron_cubemap_red` (in the SDK's `Assets/Cubemaps/`).
+  Its CAB table maps the SDK's `cubemaps` bundle (`bbf13a8cb4c78fcb606eec94701adda6`) to the game's
+  (`4d8a4131cf377709ee7c7e960f65d349`), and its PathID table lists those six with the **same** PathIDs
+  as the game. So if you leave their label alone, your bundle ends up referencing the game's
+  cubemaps, ships no copy, and every attachment shares them. Other cubemaps (e.g. `dots small` in
+  `Assets/Systems/Effects/ParticleSystems/Cubemap/`) aren't in the table, so they'd have to be built
+  into your bundle; avoid them. If you ever need your own cubemap, put it in one shared bundle of
+  your own (one label, e.g. `cod_cubemaps`, shipped once) instead of a copy per attachment.
 - **Tools:** `tools/inspect_bundle.py` prints everything above for any bundle. UnityPy (Python)
   can read and edit bundles; AssetStudio and UABEA are Windows GUI tools for the same.
 

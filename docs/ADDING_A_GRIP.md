@@ -57,9 +57,12 @@ Get from it:
 1. Shader: **p0/Reflective/Bumped Specular SMap** (unless the vanilla item uses another).
 2. Textures: `_MainTex` = diffuse (its alpha is the specular mask), `_SpecMap` = gloss,
    `_BumpMap` = normal.
-3. Assign a **Reflection Cubemap**. Without one the item renders white/washed out. Cubemaps from
-   the SDK (`Assets/Cubemaps/`, `Assets/Systems/Effects/ParticleSystems/Cubemap/`) are fine; give
-   the cubemap file the same AssetBundle label as the grip so it's built in.
+3. Assign a **Reflection Cubemap**. Without one the item renders white/washed out. Use one of the
+   game's six in the SDK's `Assets/Cubemaps/` (`patron_cubemap_metall`, `_metall_matte`, `_brass`,
+   `_brass_matte`, `_full`, `_red`; the RK-1 uses `patron_cubemap_metall_matte`) and **leave its
+   AssetBundle label as `cubemaps`** (no variant). The SDK then points it at the game's own copy,
+   like the shader, so no grip bundle carries a cubemap. `bundles.json` needs
+   `"dependencyKeys": ["shaders", "cubemaps"]`.
 4. Start from the vanilla item's material values (from the inspect output), then tune in game, not
    in the Unity scene. Remember the swapped labels: "Specularness" = strength, "Glossness" =
    tightness. To see what other vanilla items of the same material use (polymer, metal, rubber),
@@ -97,10 +100,12 @@ Get from it:
 3. Output path: a **relative** folder like `AssetBundles` (absolute paths crash the replacer), not
    named the same as any bundle.
 4. Build. The Console must show no `DirectoryNotFoundException` from the replacer.
-5. Check `<grip>.bundle.manifest`: `Assets:` lists your prefab, materials, textures, cubemap;
-   `Dependencies:` lists only `shaders` (or nothing).
+5. Check `<grip>.bundle.manifest`: `Assets:` lists your prefab, materials, textures (no cubemap);
+   `Dependencies:` lists only `shaders` and `cubemaps`. Don't copy the built `shaders`/`cubemaps`
+   files into the mod; the game has its own.
 6. Check the bundle itself: `python tools/inspect_bundle.py AssetBundles/StandaloneWindows/<grip>.bundle`.
-   Every SMap material must show `shader = CAB-56d919bd5479d38f741da52a6beef92f object 6014991791773097075`.
+   Every SMap material must show `shader = CAB-56d919bd5479d38f741da52a6beef92f object 6014991791773097075`
+   and `_Cube: CAB-4d8a4131cf377709ee7c7e960f65d349 object <PathID>` (the game's cubemaps).
    If it shows another CAB or "inside this bundle", either add a PathID Replacer entry or run
    `python tools/fix_eft_shaders.py <bundle>`. Also check every mesh says "normals agree with
    faces" near 100%.
@@ -113,7 +118,7 @@ Get from it:
    `itemTplToClone` to the vanilla ID, `Prefab.path` to
    `assets/content/items/mods/foregrips/<grip>.bundle`, names in `locales`, prices.
    Leave out stats you want copied from vanilla.
-3. Add the bundle to `bundles.json` with `"dependencyKeys": ["shaders"]`.
+3. Add the bundle to `bundles.json` with `"dependencyKeys": ["shaders", "cubemaps"]`.
 4. Put the `.bundle` at `bundles/assets/content/items/mods/foregrips/<grip>.bundle`.
 5. The DLL only needs rebuilding when C# changes. JSON and bundles are read at server start.
 
@@ -137,6 +142,7 @@ Get from it:
 | Doge box in game | Game can't load the prefab: path mismatch, or a dependency missing from `bundles.json` | Check `Prefab.path` = `bundles.json` key = file location; add `"shaders"` |
 | Purple | Shader still points at the SDK's `shaders` bundle | PathID Replacer entry for the PathID your build used, or `fix_eft_shaders.py` |
 | White / washed out | SDK shader built into the bundle, or no Reflection Cubemap | Don't label the shader; assign a cubemap |
+| Cubemap built into every grip bundle (manifest `Assets:` lists it) | Cubemap relabelled with the grip's name, or one not in the SDK's table (e.g. `dots small`) | Use one from `Assets/Cubemaps/`, set its label back to `cubemaps` (no variant), add `"cubemaps"` to `dependencyKeys` |
 | Icon spins forever | No PreviewPivot | Add it, Apply Default Settings |
 | Inspect view off-centre | No PreviewPivot / not re-applied after moving the model | Apply Default Settings again |
 | Icon renders but faces the wrong way | SDK default icon rotation | Copy the vanilla item's Icon rotation; delete the icon cache |

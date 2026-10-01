@@ -116,9 +116,10 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
    - **Base (RGB) Specular (A):** `_diffuse`
    - **GlossMap:** `_gloss`
    - **Normalmap:** `_normal`
-   - **Reflection Cubemap:** pick one from the SDK (`Assets/Cubemaps/` or
-     `Assets/Systems/Effects/ParticleSystems/Cubemap/`). **Never leave it empty**, or the item turns
-     white.
+   - **Reflection Cubemap:** pick one from the SDK's `Assets/Cubemaps/` (the game's own:
+     `patron_cubemap_metall_matte` like the RK-1, or `patron_cubemap_metall` for shinier metal).
+     **Never leave it empty**, or the item turns white. Don't use others (e.g. `dots small`): they
+     aren't in the game, so they'd be copied into every bundle.
 4. Values. Start from the vanilla item's (your inspect output). The SDK's labels "Specularness" and
    "Glossness" are swapped: "Specularness" is shine strength, "Glossness" is highlight tightness.
    What the Hound 9G uses:
@@ -191,7 +192,11 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
 1. Label the attachment's folder (or prefab): AssetBundle name `<attachment>` + variant `bundle`.
    Every asset you label for it needs the same name **and** variant. Move other prefabs, and any
    scene, out of that folder.
-2. Give the cubemap file(s) you used the same label, so they're built in.
+2. **Don't label the cubemaps.** Leave each `Assets/Cubemaps/` file on AssetBundle `cubemaps`, no
+   variant (how the SDK ships it). The build then points your materials at the game's cubemaps
+   instead of copying them, the same way it handles the shader. If you relabelled one for an
+   earlier grip, set it back. Unity also builds a `cubemaps` (and `shaders`) file; ignore them, the
+   game has its own.
 3. AssetBundles window → **Build**:
    - **Output Path: relative**, e.g. `AssetBundles` (click Reset). An absolute path crashes the
      shader replacer, giving purple items.
@@ -201,9 +206,10 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
 5. Build. The Console should show no `DirectoryNotFoundException`.
 6. Check the result:
    - `AssetBundles/StandaloneWindows/<attachment>.bundle.manifest`: `Dependencies:` shows only
-     `shaders` (or nothing).
+     `shaders` and `cubemaps`, and `Assets:` lists no cubemap.
    - `python tools/inspect_bundle.py AssetBundles/StandaloneWindows/<attachment>.bundle`: each
-     material's shader = `CAB-56d919bd5479d38f741da52a6beef92f object 6014991791773097075`, and each
+     material's shader = `CAB-56d919bd5479d38f741da52a6beef92f object 6014991791773097075`, its
+     `_Cube` = `CAB-4d8a4131cf377709ee7c7e960f65d349 object ...`, and each
      mesh "normals agree with faces" close to 100%. "triangles" should be in the same range as the
      vanilla item or above (not low poly); "flat-shaded" near 100% means the smoothing was lost.
 
@@ -211,7 +217,7 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
 
 1. Copy `<attachment>.bundle` (only that file) into the mod at
    `bundles/assets/content/items/mods/foregrips/<attachment>.bundle`.
-2. `bundles.json` has that path as `key` with `"dependencyKeys": ["shaders"]`; the item JSON's
+2. `bundles.json` has that path as `key` with `"dependencyKeys": ["shaders", "cubemaps"]`; the item JSON's
    `Prefab.path` is the same path.
 3. Delete `%TEMP%\Battlestate Games\EscapeFromTarkov\Icon Cache`, restart the server and game.
 4. `spt give <item id> 1` in the SPT bot chat. Check: textured (not purple/white/doge), icon,
