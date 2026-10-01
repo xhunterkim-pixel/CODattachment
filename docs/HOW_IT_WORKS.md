@@ -188,6 +188,21 @@ Vanilla RK-1 B-25U: Main Color 0.755 grey, Specular Color 0.849 grey, "Specularn
 
 ## Ripped textures (MW2022 / COD)
 
+How MW2019/MW2022 pack their textures (as split by Scobalula's GameImageUtil):
+
+| COD image | What's in it | GameImageUtil mode |
+|---|---|---|
+| Colour DDS (looks partly transparent) | Albedo and specular colour fused; **alpha = metal mask**, and in metal areas the RGB is the metal's shine colour | CoD Specular/Albedo (Infinite Warfare/Modern Warfare) |
+| "Green" DDS (NOG) | Normal (hemi-octahedron encoded), gloss, occlusion | CoD Normal/Gloss/Occlusion (Infinite Warfare/Modern Warfare) |
+
+The WW2 mode splits a different layout and puts the wrong data into "AO" and "roughness".
+
+Converting to SMap (specular/gloss): metal has (almost) no diffuse colour and gets its colour as
+specular; non-metal gets a low specular around 56/255 (4% reflectance). COD stores **gloss**, which is
+what SMap wants (roughness = 1 − gloss). AO is multiplied into the diffuse. COD normals are DirectX,
+so flip green. SMap's specular is a single grey value (diffuse alpha) and its reflections are dim, so
+fully black metal looks like black patches; keep 20–35% of the colour on metal.
+
 - Normal maps: set Texture Type to **Normal map**. COD uses the DirectX convention, so try
   **Flip Green Channel** if dents look like bumps.
 - Data textures (gloss, metal/roughness): untick **sRGB**.

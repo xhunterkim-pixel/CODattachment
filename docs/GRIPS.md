@@ -19,7 +19,9 @@ Rotation **0, 0, 0**, Scale 100.
 **FBX import:** Normals **Calculate** (Smoothing Angle 60), Tangents **Calculate Mikktspace**. The
 ported mesh's normals all pointed inward (see history 11). In Unity the grip went from dull with no
 shine (Import) to shiny (Calculate); material values were tuned before this and may need lowering.
-Not yet confirmed in game. The imported -90 left the grip running back along the gun
+Not yet confirmed in game.
+
+Mesh children at Rotation 0, 0, 0: the imported -90 left the grip running back along the gun
 instead of out to the side like the RK-1. At 0, 0, 0 it lies in the same plane as the RK-1,
 about 23° shallower.
 
@@ -37,15 +39,16 @@ about 23° shallower.
 
 **Hand poses** (from `unity/AddSideGripHandPoses.cs`, then moved to fit the grip at rotation
 0, 0, 0). The first positions (0.176, -0.023, 0.003 and 0.139, 0.038, -0.100) put the hand past
-the end of the grip in game; they were moved 3.5 cm back along the grip axis (0.939, 0.343, 0).
-Current values, **not yet confirmed in game**:
+the end of the grip in game. Moving them 3.5 cm back along the grip axis (0.939, 0.343, 0) put
+the hand slightly too close, so they now sit halfway (1.9 cm back). Current values, **not yet
+confirmed in game**:
 
 | Object | Position | Rotation |
 |---|---|---|
-| `Base HumanLPalm` (Alternative) | 0.143, -0.035, 0.003 | 51.9, 268.0, 250.2 |
-| `Base HumanLPalm 1` (Common) | 0.106, 0.026, -0.100 | 12.3, 242.7, 157.7 |
+| `Base HumanLPalm` (Alternative) | 0.157, -0.030, 0.003 | 51.9, 268.0, 250.2 |
+| `Base HumanLPalm 1` (Common) | 0.120, 0.031, -0.100 | 12.3, 242.7, 157.7 |
 
-If that overshoots, the halfway values are 0.157, -0.030, 0.003 and 0.120, 0.031, -0.100.
+`unity/GripPoseGizmos.cs` draws these hands in the Scene view, so they can be lined up by eye.
 
 **PreviewPivot:** Apply Default Settings (pivot centred correctly in the inspect view, confirmed),
 then Icon → Rotation **0, 245, 180** (vanilla RK-1's value; the SDK default 0, 245, 0 renders the
@@ -80,5 +83,15 @@ icon upside down/end-on). Bounds Scale 0.9.
     Normals → Calculate. Remember Apply Default Settings on PreviewPivot resets the icon rotation;
     set it to 0, 245, 180 again afterwards.
 
-**Open:** confirm in game the recalculated normals, the moved hand poses and the icon rotation. Optional: convert the COD
-textures for SMap (diffuse alpha is a flat specular mask right now, so the gloss detail isn't used).
+12. Hand at 3.5 cm back was slightly too close → halfway values. Added `unity/GripPoseGizmos.cs`
+    to see the hand in Unity instead of rebuilding to check.
+13. Black patches on the rail. The rail diffuse was 28% pure black with no extra specular there
+    (diffuse alpha a flat 56). Cause: the textures were converted as metal → black diffuse, but
+    the metal's shine never reached the specular mask, so metal rendered as flat black. MW2022
+    stores the metal mask in the colour image's **alpha**, with the metal's shine colour in the RGB
+    there. Fix: `tools/smap-texture-converter.html` gained "Base color alpha: It's the metal mask"
+    and "Metal keeps diffuse" (default 25%), tested on sample images. Re-split the DDS files with
+    GameImageUtil's MW modes (see `HOW_IT_WORKS.md`) and re-convert.
+
+**Open:** confirm in game the recalculated normals, the halfway hand poses, the icon rotation,
+and the re-converted rail texture.

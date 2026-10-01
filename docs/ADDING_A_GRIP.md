@@ -35,7 +35,19 @@ Get from it:
    point the same way as vanilla's. For the Hound 9G that meant mesh rotation **0, 0, 0** instead
    of the imported -90.
 
-## 2. Materials
+## 2. Textures (COD rips)
+
+1. Split the DDS files with **GameImageUtil**, choosing the modes by hand (Automatic was only
+   tested on MW2019/IW): colour DDS → **CoD Specular/Albedo (Infinite Warfare/Modern Warfare)**;
+   "green" DDS → **CoD Normal/Gloss/Occlusion (Infinite Warfare/Modern Warfare)**. Not the WW2 mode.
+2. Open `tools/smap-texture-converter.html` in a browser. Put the colour PNG in Color, the gloss in
+   Roughness (it detects gloss vs roughness), the normal in Normal (tick Flip green), AO in AO.
+   Either set "Base color alpha" to **It's the metal mask** (the colour image's alpha), or use the
+   split specular map with "Metallic slot holds: Specular map".
+3. Keep "Metal keeps diffuse" around 20–35%: fully black metal shows as black patches in SMap.
+4. Use the outputs: diffuse → `_MainTex`, gloss → `_SpecMap`, normal → `_BumpMap`.
+
+## 3. Materials
 
 1. Shader: **p0/Reflective/Bumped Specular SMap** (unless the vanilla item uses another).
 2. Textures: `_MainTex` = diffuse (its alpha is the specular mask), `_SpecMap` = gloss,
@@ -47,7 +59,7 @@ Get from it:
    in the Unity scene. Remember the swapped labels: "Specularness" = strength, "Glossness" =
    tightness.
 
-## 3. Prefab components
+## 4. Prefab components
 
 1. **PreviewPivot** on the root: Add Component → PreviewPivot, then ⋮ → **Apply Default Settings**
    (ignore the NullReferenceException it logs before that). Redo it whenever the model moves.
@@ -61,12 +73,14 @@ Get from it:
 
    Copy it into the SDK's `Assets/Editor/`, select the prefab root, run
    **Tools → Add <ShortName> Hand Poses**. The RK-1 B-25U one is already in `unity/AddSideGripHandPoses.cs`.
-3. Move each `Base HumanLPalm` object so the hand sits where vanilla's sits relative to its grip.
+3. Copy `unity/GripPoseGizmos.cs` into `Assets/Editor/` too: it draws each hand in the Scene view
+   (green = Common, orange = Alternative). Move each `Base HumanLPalm` object so the hand sits
+   where vanilla's sits relative to its grip.
    Move or rotate the palm object, not the finger bones (adjust fingers only for much thicker or
    thinner grips). Compare positions with the vanilla inspect output.
 4. **Overrides → Apply All** on the prefab.
 
-## 4. Build the bundle
+## 5. Build the bundle
 
 1. Label the grip's folder (or prefab) with AssetBundle name `<grip>` + variant `bundle`. Every
    asset you label for it needs the same name *and* variant.
@@ -83,7 +97,7 @@ Get from it:
    `python tools/fix_eft_shaders.py <bundle>`. Also check every mesh says "normals agree with
    faces" near 100%.
 
-## 5. Server mod entry
+## 6. Server mod entry
 
 1. New item ID: 24 random hex characters, e.g.
    `python -c "import secrets,time;print('%08x'%int(time.time())+secrets.token_hex(8))"`.
@@ -95,7 +109,7 @@ Get from it:
 4. Put the `.bundle` at `bundles/assets/content/items/mods/foregrips/<grip>.bundle`.
 5. The DLL only needs rebuilding when C# changes. JSON and bundles are read at server start.
 
-## 6. Test
+## 7. Test
 
 1. Copy the mod folder to `SPT/user/mods/`, delete
    `%TEMP%\Battlestate Games\EscapeFromTarkov\Icon Cache`, restart the server and game.
@@ -119,6 +133,7 @@ Get from it:
 | Inspect view off-centre | No PreviewPivot / not re-applied after moving the model | Apply Default Settings again |
 | Icon renders but faces the wrong way | SDK default icon rotation | Copy the vanilla item's Icon rotation; delete the icon cache |
 | Hand in the right pose but beside/past the grip | Palm markers offset along the grip | Move both palms along the grip axis (a few cm at a time) |
+| Black patches on metal parts | Metal converted to black diffuse without the metal's shine in the specular mask | Converter: alpha is the metal mask, Metal keeps diffuse 20–35% |
 | Ripped texture looks grainy/low-res | Source texture (check it in the original game) or a low-res rip | Re-rip with high-res images; lower Normal intensity |
 | Default hand grip instead of side grip | No GripPose objects | Add hand poses (step 3) |
 | Hand grips oddly/backwards | Palm markers don't match where the model is | Fix model orientation vs vanilla first, then move the palms |

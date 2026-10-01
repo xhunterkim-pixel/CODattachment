@@ -148,9 +148,15 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
           <legend>Base color alpha</legend>
           <div class="seg">
             <label><input type="radio" name="alpha" value="ignore" checked> Ignore it</label>
-            <label><input type="radio" name="alpha" value="cover"> Cover patches</label>
+            <label><input type="radio" name="alpha" value="metal"> It's the metal mask</label>
           </div>
-          <p class="hint">Use Cover patches when the rip shows light grey blotches where the alpha was solid (like the rail). They get filled with the part's own average colour.</p>
+          <p class="hint">MW2019 / MW2022 colour images store the metal mask in their alpha, and the metal's shine colour in the RGB there. Pick this and the Metallic slot isn't needed. Use a PNG colour file: other formats lose the colour wherever the alpha is 0.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Metal keeps diffuse</legend>
+          <div class="row"><input type="range" id="metalKeep" min="0" max="100" value="25"><span class="num" id="metalKeepVal">25%</span></div>
+          <p class="hint">Physically metal has no diffuse colour, but SMap only has a grey shine value and a dim reflection, so fully black metal shows as black patches. Tarkov's own metal is dark grey; 20 to 35% keeps it looking like metal.</p>
         </fieldset>
 
         <fieldset>
@@ -245,7 +251,8 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
   function refreshSlot(key){
     const s = SLOTS.find(x=>x.key===key), m = maps[key];
     const f = s.row.querySelector("[data-f]"), c = s.row.querySelector("canvas");
-    if (!m){ f.textContent = "Click or drop"; f.classList.toggle("need", s.req); s.row.classList.remove("filled"); c.getContext("2d").clearRect(0,0,160,160); return; }
+    if (!m){ f.textContent = (key==="metal" && !needsMetal()) ? "Not needed: alpha is the metal mask" : "Click or drop";
+      f.classList.toggle("need", s.req && (key!=="metal" || needsMetal())); s.row.classList.remove("filled"); c.getContext("2d").clearRect(0,0,160,160); return; }
     f.textContent = m.file;
     f.title = `${m.file} (${m.w}×${m.h})`;
     f.classList.remove("need");
@@ -347,17 +354,24 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
     }
     return out;
   }
+  const alphaIsMetal = () => document.querySelector("input[name=alpha]:checked").value === "metal";
+  const needsMetal = () => !alphaIsMetal();
+  const inputsReady = () => !!maps.base && !!maps.gloss && (!needsMetal() || !!maps.metal);
+  function metalChannel(W, H){
+    // Metal mask at W x H: the base colour's alpha in metal-mask mode, else the Metallic slot.
+    return alphaIsMetal() ? resampleChannel(maps.base, W, H, 3) : resampleChannel(maps.metal, W, H, chOf("metal"));
+  }
   const chOf = key => { const s = SLOTS.find(x=>x.key===key); const el = s.row && s.row.querySelector("[data-ch]"); return el ? +el.value : 0; };
-  const specMode = () => document.querySelector("input[name=mtype]:checked").value === "spec";
+  const specMode = () => !alphaIsMetal() && document.querySelector("input[name=mtype]:checked").value === "spec";
   function setSpecMode(on){ document.querySelector(`input[name=mtype][value=${on?"spec":"metal"}]`).checked = true; }
   const lum = (r,g,b) => 0.2126*r + 0.7152*g + 0.0722*b;
 
   function guessGloss(){
     const el = $("glossGuess");
-    if (!maps.metal || !maps.gloss){ el.textContent=""; return; }
+    if (!maps.gloss || (needsMetal() ? !maps.metal : !maps.base)){ el.textContent=""; return; }
     const W = maps.gloss.w, H = maps.gloss.h;
     if (specMode()){ el.textContent = ""; return; }
-    const m = resampleChannel(maps.metal, W, H, chOf("metal")), g = maps.gloss.data, gc = chOf("gloss");
+    const m = metalChannel(W, H), g = maps.gloss.data, gc = chOf("gloss");
     let sm=0,nm=0,sn=0,nn=0;
     for (let i=0;i<W*H;i+=7){ if (m[i]>127){ sm+=g[i*4+gc]; nm++; } else { sn+=g[i*4+gc]; nn++; } }
     if (!nm || !nn){ el.textContent = "Couldn't guess: the metallic map has no metal (or no non-metal) areas."; el.className="hint"; return; }
@@ -372,36 +386,29 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
   function schedule(){ clearTimeout(timer); timer = setTimeout(run, 60); }
 
   function run(){
-    if (!maps.base || !maps.metal || !maps.gloss){ renderOutputs(false); return; }
+    if (!inputsReady()){ renderOutputs(false); return; }
     const t0 = performance.now();
     const B = maps.base, W = B.w, H = B.h, N = W*H;
     const spec = specMode();
-    const metal = resampleChannel(maps.metal, W, H, chOf("metal"));
+    const metal = metalChannel(W, H);
+    const keep = (+$("metalKeep").value)/100;
     const glossSrc = resampleChannel(maps.gloss, W, H, chOf("gloss"));
     const useAO = maps.ao && $("useAO").checked;
     const ao = useAO ? resampleChannel(maps.ao, W, H, chOf("ao")) : null;
     const aoS = (+$("aoStr").value)/100;
     const specFloor = +$("spec").value;
-    const cover = document.querySelector("input[name=alpha]:checked").value === "cover";
     const isRough = document.querySelector("input[name=gtype]:checked").value === "rough";
 
-    // base RGB, optional patch cover
+    // base RGB
     const base = new Uint8ClampedArray(N*3);
-    let fr=0,fg=0,fb=0,fn=0;
-    for (let i=0;i<N;i++){
-      base[i*3]=B.data[i*4]; base[i*3+1]=B.data[i*4+1]; base[i*3+2]=B.data[i*4+2];
-      if (cover && B.data[i*4+3] <= 127){ fr+=B.data[i*4]; fg+=B.data[i*4+1]; fb+=B.data[i*4+2]; fn++; }
-    }
-    if (cover && fn){
-      fr/=fn; fg/=fn; fb/=fn;
-      for (let i=0;i<N;i++) if (B.data[i*4+3] > 127){ base[i*3]=fr; base[i*3+1]=fg; base[i*3+2]=fb; }
-    }
+    for (let i=0;i<N;i++){ base[i*3]=B.data[i*4]; base[i*3+1]=B.data[i*4+1]; base[i*3+2]=B.data[i*4+2]; }
 
     // diffuse before levels
     const dif = new Float32Array(N*3);
     const nonMetalLum = [];
     for (let i=0;i<N;i++){
-      const km = spec ? 1 : 1 - metal[i]/255;
+      // Metal keeps a share of its colour: SMap can't make fully black metal read as metal.
+      const km = spec ? 1 : 1 - (metal[i]/255)*(1 - keep);
       let a = 1;
       if (ao) a = 1 - aoS*(1 - ao[i]/255);
       const k = km*a;
@@ -481,7 +488,7 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
     ["saveZip","saveD","saveG"].forEach(id => $(id).disabled = !ready || !canSave());
     $("saveN").disabled = !ready || !result.normal || !canSave();
     if (!ready){
-      const need = SLOTS.filter(s=>s.req && !maps[s.key]).map(s=>s.name.toLowerCase());
+      const need = SLOTS.filter(s=>s.req && !maps[s.key] && (s.key!=="metal" || needsMetal())).map(s=>s.name.toLowerCase());
       wrap.innerHTML = `<div class="empty">Add ${need.join(", ").replace(/, ([^,]*)$/," and $1")} to see the results.</div>`;
       return;
     }
@@ -556,13 +563,16 @@ input[type=text]{width:100%;font:500 1rem var(--body);background:var(--panel-2);
   function setStatus(t, err){ const s=$("status"); s.textContent=t; s.className = "status" + (err?" err":""); }
   $("white").oninput = () => { $("auto").checked=false; $("whiteVal").textContent=$("white").value; schedule(); };
   $("spec").oninput = () => { $("specVal").textContent=$("spec").value; schedule(); };
+  $("metalKeep").oninput = () => { $("metalKeepVal").textContent=$("metalKeep").value+"%"; schedule(); };
   $("aoStr").oninput = () => { $("aoVal").textContent=$("aoStr").value+"%"; schedule(); };
   ["auto","useAO","flipG"].forEach(id => $(id).onchange = schedule);
-  document.querySelectorAll("input[name=gtype],input[name=alpha]").forEach(r => r.onchange = schedule);
+  document.querySelectorAll("input[name=gtype]").forEach(r => r.onchange = schedule);
+  document.querySelectorAll("input[name=alpha]").forEach(r => r.onchange = () => {
+    SLOTS.forEach(sl => refreshSlot(sl.key)); guessGloss(); schedule(); });
   document.querySelectorAll("input[name=mtype]").forEach(r => r.onchange = () => { guessGloss(); schedule(); });
 
   if (claudeHost && window.claude.use){
-    window.claude.use("downloads").then(ns => { downloads = ns; renderOutputs(!!result.diffuse && !!maps.base && !!maps.metal && !!maps.gloss);
+    window.claude.use("downloads").then(ns => { downloads = ns; renderOutputs(!!result.diffuse && inputsReady());
       if (!ns) setStatus("Downloads aren't available in this view. Open the page in claude.ai to save files.", true); });
   }
   if (!window.UPNG) setStatus("The PNG library didn't load. Reload the page.", true);
