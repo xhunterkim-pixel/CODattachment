@@ -108,6 +108,14 @@ icon upside down/end-on). Bounds Scale 0.9.
     Source corrected to MW3 (2023); its texture packing is assumed to match MW2022 (same engine),
     not yet confirmed.
 
-**Open:** confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right
+17. First real test of the converter on the MW3 rail DDS files: GameImageUtil's NOG split gave a
+    proper normal map, the converter gave a flat teal one (and a different gloss). The bug is in
+    the converter, most likely its DDS reading of this file's format; tests had only used
+    self-made DDS files. Until fixed, use GameImageUtil's outputs. Also fixed: loading the colour
+    image after the NOG could re-guess the NOG's gloss as roughness and invert it; NOG gloss is now
+    always gloss. The NOG slot now warns when a file doesn't look like a packed NOG.
+
+**Open:** fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
+Confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right
 in game), confirm in game the recalculated normals, the halfway hand poses, the icon rotation,
 and the re-converted rail texture.

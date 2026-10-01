@@ -412,7 +412,7 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
     try {
       const d = await decode(file);
       maps[key] = {...d, file:file.name, raw:file};
-      if (key==="nog") splitNOG(d, file.name);
+      if (key==="nog" && !splitNOG(d, file.name)) return;
       if (key==="base") $("prefix").value = guessPrefix(file.name);
       if (key==="ao"){ $("useAO").disabled=false; $("aoStr").disabled=false; }
       refreshSlot(key);
@@ -424,7 +424,20 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
   }
 
   // GameImageUtil CoDNOGImageProcessor: R = gloss, B = occlusion, G/A = hemi-octahedron normal.
+  // A packed NOG has real data in alpha (half the normal). Catch files that aren't one.
+  function nogProblem(d){
+    const N = d.w*d.h; let a=0, b=0, opaque=0;
+    for (let i=0;i<N;i++){ const A=d.data[i*4+3]; a+=A; b+=d.data[i*4+2]; if (A===255) opaque++; }
+    a/=N; b/=N;
+    if (opaque/N > 0.98 && b > 190) return "This looks like an already-decoded normal map (blue/purple). Put it in the Normal slot, not NOG.";
+    if (opaque/N > 0.98) return "This image has no alpha data, so it can't be a packed NOG image (the normal is half in alpha). Use the individual slots instead.";
+    if (a < 8) return "This image's alpha is almost empty, so it isn't a packed NOG image. Use the individual slots instead.";
+    return null;
+  }
+
   function splitNOG(d, name){
+    const problem = nogProblem(d);
+    if (problem){ delete maps.nog; refreshSlot("nog"); setStatus(`${name}: ${problem}`, true); return false; }
     const N = d.w*d.h, g = new Uint8ClampedArray(N*4), o = new Uint8ClampedArray(N*4), n = new Uint8ClampedArray(N*4);
     for (let i=0;i<N;i++){
       const p = i*4;
@@ -436,7 +449,7 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
       n[p]=Math.round((x/len*0.5+0.5)*255); n[p+1]=Math.round((y/len*0.5+0.5)*255); n[p+2]=Math.round((z/len*0.5+0.5)*255); n[p+3]=255;
     }
     const from = `from ${name}`;
-    maps.gloss  = {w:d.w,h:d.h,data:g,file:from};
+    maps.gloss  = {w:d.w,h:d.h,data:g,file:from,fromNOG:true};
     maps.ao     = {w:d.w,h:d.h,data:o,file:from};
     maps.normal = {w:d.w,h:d.h,data:n,file:from};
     ["gloss","ao"].forEach(k => { const el = SLOTS.find(x=>x.key===k).row.querySelector("[data-ch]"); if (el) el.value = "0"; });
@@ -445,6 +458,7 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
     $("flipG").checked = true;
     ["gloss","ao","normal"].forEach(refreshSlot);
     setStatus(`Split ${name}: gloss (R), occlusion (B) and the normal (G/A) filled in. Flip green is on; check engravings look cut in.`);
+    return true;
   }
 
   function classify(name){
@@ -528,6 +542,11 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
 
   function guessGloss(){
     const el = $("glossGuess");
+    if (maps.gloss && maps.gloss.fromNOG){
+      // NOG's red channel is gloss by definition (GameImageUtil); never guess or invert it.
+      document.querySelector("input[name=gtype][value=gloss]").checked = true;
+      el.textContent = "From the NOG image: it's gloss, left as is."; el.className = "hint good"; return;
+    }
     if (!maps.gloss || (needsMetal() ? !maps.metal : !maps.base)){ el.textContent=""; return; }
     const W = maps.gloss.w, H = maps.gloss.h;
     if (specMode()){ el.textContent = ""; return; }

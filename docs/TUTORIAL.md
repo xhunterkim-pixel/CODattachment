@@ -26,7 +26,9 @@ Your attachment copies a vanilla item's stats, hand pose, icon framing and mater
 COD packs several maps into each image, and Tarkov's SMap shader wants a different packing. The
 converter page does the whole translation, including GameImageUtil's MW splits.
 
-1. Open `tools/smap-texture-converter.html` in your browser. It reads the ripped **DDS files
+1. **Known issue:** on the Hound 9G's MW3 DDS files the converter's normal map came out wrong
+   (flat teal). Until fixed, compare with GameImageUtil's output; a correct normal map is
+   lavender-blue. Open `tools/smap-texture-converter.html` in your browser. It reads the ripped **DDS files
    directly** (if one uses an unusual format it tells you; then convert that one to PNG with
    GameImageUtil's **Direct Convert (Global)**).
 2. You need two images per material: the **colour** image and the **green (NOG)** image. This works

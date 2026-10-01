@@ -38,8 +38,10 @@ Get from it:
 
 ## 2. Textures (COD rips)
 
-1. No pre-conversion needed: the converter opens DDS directly (BC1–BC5, BC7, uncompressed). If a
-   DDS uses another format it says so; then convert it to PNG with GameImageUtil's "Direct Convert".
+1. The converter opens DDS directly (BC1–BC5, BC7, uncompressed), **but on the Hound 9G's MW3 DDS
+   its normal came out wrong (see `GRIPS.md` history 17)**. Until that's fixed, split with
+   GameImageUtil's MW modes and give the converter the split PNGs, or compare its output with
+   GameImageUtil's: the normal map must look lavender-blue, never teal/green.
 2. Open `tools/smap-texture-converter.html` in a browser. Put the colour PNG in **Color** and set
    "Base color alpha" to **MW fused colour (spec/albedo)**; put the green image in **NOG**. That fills
    Roughness (gloss), Normal (reconstructed, Flip green on) and AO, using GameImageUtil's own
@@ -134,6 +136,7 @@ Get from it:
 | Inspect view off-centre | No PreviewPivot / not re-applied after moving the model | Apply Default Settings again |
 | Icon renders but faces the wrong way | SDK default icon rotation | Copy the vanilla item's Icon rotation; delete the icon cache |
 | Hand in the right pose but beside/past the grip | Palm markers offset along the grip | Move both palms along the grip axis (a few cm at a time) |
+| Normal map comes out teal/green instead of lavender-blue | The image wasn't decoded as a real NOG (wrong file, or the converter misread the DDS) | Compare with GameImageUtil's NOG split; send the DDS for checking |
 | Black patches on metal parts | Metal converted to black diffuse without the metal's shine in the specular mask | Converter: alpha is the metal mask, Metal keeps diffuse 20–35% |
 | Ripped texture looks grainy/low-res | Source texture (check it in the original game) or a low-res rip | Re-rip with high-res images; lower Normal intensity |
 | Default hand grip instead of side grip | No GripPose objects | Add hand poses (step 3) |
