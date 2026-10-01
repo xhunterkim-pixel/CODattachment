@@ -62,7 +62,8 @@ Get from it:
    the cubemap file the same AssetBundle label as the grip so it's built in.
 4. Start from the vanilla item's material values (from the inspect output), then tune in game, not
    in the Unity scene. Remember the swapped labels: "Specularness" = strength, "Glossness" =
-   tightness.
+   tightness. To see what other vanilla items of the same material use (polymer, metal, rubber),
+   run `tools/dump_material_values.py` on a game folder and open the CSV (see TUTORIAL Part 5).
 
 ## 4. Prefab components
 

@@ -127,6 +127,24 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
    | Specular Vals / Diffuse Vals | 1, 0.5, 0, 0 | 1, 0.5, 0, 0 |
    | _StencilType | Hands | Hands |
 
+   **Your own reference table of the game's values.** There's no public database of these; the
+   accurate source is the game's own bundles. Run, on your PC:
+
+   ```
+   python tools/dump_material_values.py "<game>/EscapeFromTarkov_Data/StreamingAssets/Windows/assets/content/items/mods" mods.csv --textures
+   ```
+
+   It writes one row per vanilla material with every value above, written the way Unity shows
+   them (colours 0–255 with alpha last; columns `inspector_Specularness` / `inspector_Glossness`
+   use the Inspector's labels, already un-swapped), plus the cubemap and, with `--textures`, the
+   average diffuse colour, specular (diffuse alpha) and gloss of its textures. Open it in Excel,
+   filter the material name (e.g. a polymer grip, a steel mount) and copy that row. Compare the
+   texture averages with your converted textures (same columns from your own bundle) to see if
+   yours are brighter or shinier. Only rows with shader `p0/Reflective/Bumped Specular SMap` apply
+   to an SMap material; "unknown <number>" is another game shader (run `fix_eft_shaders.py
+   --game-shaders` once to cache the names). Start with one folder (e.g. `mods/foregrips`); the
+   whole `mods` folder takes a while.
+
 5. **Leave the shader file's AssetBundle label alone.** It belongs in the SDK's `shaders` bundle;
    building it into yours makes the item white.
 

@@ -177,6 +177,10 @@ icon upside down/end-on). Bounds Scale 0.9.
     share of flat-shaded triangles (vanilla RK-1: 40%). Test asked: Fix Now, then Normals → Calculate
     (angle 60) to see whether the facets vanish; upload the new bundle to measure. Not yet resolved.
 
+31. Added `tools/dump_material_values.py`: tested on the RK-1 bundle. Its Main Color reads
+    0.7547 = **192** (the 193 above is a rounding; either is fine). RK-1 averages: diffuse 48,
+    specular 27, gloss 156.
+
 **Open:** edge/facet look in dark light (history 30). In game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
 RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).
 Optional: `inspect_bundle.py` on the new bundle (normals agree with faces ~100%).
