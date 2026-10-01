@@ -67,7 +67,9 @@ Vanilla attachment prefabs (inspect one with `tools/inspect_bundle.py`) contain 
 **Hand poses are not baked animations.** The game reads the palm markers while it runs and pulls
 the left hand there with IK (inverse kinematics), bending the fingers to the finger bones'
 rotations. Move the palm marker and the hand moves with it. Each vanilla grip has two:
-`GripType` **Common** (0) and **Alternative** (1). The arm can only reach so far, so markers must
+`GripType` **Common** (0) and **Alternative** (1). Common is the normal hold (on the Hound 9G the
+visible hand follows `Base HumanLPalm 1`, the Common one); when the game uses Alternative isn't
+confirmed, so keep both like vanilla and tune Common first. The arm can only reach so far, so markers must
 stay where a real hand could be.
 
 **The prefab's origin is the attachment point.** For a foregrip, (0, 0, 0) is where it clamps to

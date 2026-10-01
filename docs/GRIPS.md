@@ -149,7 +149,10 @@ icon upside down/end-on). Bounds Scale 0.9.
 25. Hand-flipped FBX on Normals: Import looks right in Unity together with the re-converted
     textures (user check in the editor).
 
-**Open:** in game: hand poses (halfway values), icon rotation 0, 245, 180, and shine vs the vanilla
+26. In game the hand uses `Base HumanLPalm 1` (GripType Common), the normal hold. `Base HumanLPalm`
+    (Alternative) is kept like vanilla; when the game switches to it is not known yet.
+
+**Open:** in game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
 RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).
 Optional: `inspect_bundle.py` on the new bundle (normals agree with faces ~100%).
 Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
