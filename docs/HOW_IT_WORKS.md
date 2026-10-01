@@ -197,6 +197,11 @@ How MW2019/MW2022 pack their textures (as split by Scobalula's GameImageUtil):
 
 The WW2 mode splits a different layout and puts the wrong data into "AO" and "roughness".
 
+Where COD's PBR data ends up in SMap (which has no metallic or roughness slots): metalness →
+darker diffuse plus strong specular in the diffuse's alpha; specular colour → that specular value;
+gloss → `_gloss` (COD already stores gloss, the inverse of roughness); normal → `_normal`;
+occlusion → multiplied into the diffuse.
+
 **MW3 (2023)**, checked on the Hound 9G's files: same packing as MW2022. Its rip had three BC7 DDS per
 material: the fused colour; a NOG named "normals" (it looks purple-ish raw because R gloss ≈ 94,
 G ≈ 127, B occlusion ≈ 249, but the normal is still packed in G and A); and a "green" image whose B

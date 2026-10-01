@@ -140,6 +140,10 @@ icon upside down/end-on). Bounds Scale 0.9.
     the teal normal. With color.dds → Color (MW fused) and normals.dds → NOG, all outputs are correct.
     MW3 packing confirmed same as MW2022. The page now warns about both mix-ups.
 
+23. Re-converted textures (color.dds → Color with MW fused colour, normals.dds → NOG) confirmed
+    looking right in Unity. Unity shows "Anisotropic filtering is enabled for all textures in
+    Quality Settings" when setting Aniso 5: just an editor note (the project forces aniso); keep 5.
+
 **Open:** try the Blender normal flip (then Normals: Import) and check with `inspect_bundle.py`.
 Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
 Confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right

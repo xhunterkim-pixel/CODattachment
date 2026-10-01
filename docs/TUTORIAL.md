@@ -90,6 +90,10 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
    | `_gloss` | Default | on (like vanilla) | n/a | 5 |
    | `_normal` | **Normal map** | n/a | **off** (the converter already flipped it) | 5 |
 
+   If Unity says "Anisotropic filtering is enabled for all textures in Quality Settings", that's only
+   an editor note (the SDK project forces it); keep Aniso 5, it's saved into the bundle. Always click
+   **Apply** (or **Save** in the "Unapplied import settings" popup).
+
 ## Part 5: Materials
 
 1. Create a material per part (Project window → right-click → Create → Material).
