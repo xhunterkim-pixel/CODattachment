@@ -16,10 +16,8 @@ Add a section for every new grip.
 **Prefab:** root `houndgrip` (rotation 0, scale 1) with children `grip` and `rail`,
 Rotation **0, 0, 0**, Scale 100.
 
-**FBX import:** Normals **Calculate** (Smoothing Angle 60), Tangents **Calculate Mikktspace**. The
-ported mesh's normals all pointed inward (see history 11). In Unity the grip went from dull with no
-shine (Import) to shiny (Calculate); material values were tuned before this and may need lowering.
-Not yet confirmed in game.
+**FBX import:** Normals **Import**, Tangents **Calculate Mikktspace**, after flipping the inverted
+normals by hand in Blender (history 11, 18, 24). Calculate also worked but gave artifacts.
 
 Mesh children at Rotation 0, 0, 0: the imported -90 left the grip running back along the gun
 instead of out to the side like the RK-1. At 0, 0, 0 it lies in the same plane as the RK-1,
@@ -148,8 +146,12 @@ icon upside down/end-on). Bounds Scale 0.9.
     red, then re-exporting. Lets the FBX go back to Normals: Import (keeps the original smoothing,
     no Calculate artifacts). Not yet verified.
 
-**Open:** with the hand-flipped FBX on Normals: Import, check for see-through holes or dark patches
-and run `inspect_bundle.py` (normals agree with faces ~100%).
+25. Hand-flipped FBX on Normals: Import looks right in Unity together with the re-converted
+    textures (user check in the editor).
+
+**Open:** in game: hand poses (halfway values), icon rotation 0, 245, 180, and shine vs the vanilla
+RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).
+Optional: `inspect_bundle.py` on the new bundle (normals agree with faces ~100%).
 Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
 Confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right
 in game), confirm in game the recalculated normals, the halfway hand poses, the icon rotation,
