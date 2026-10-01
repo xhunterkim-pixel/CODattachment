@@ -43,6 +43,8 @@ Get from it:
 
 1. **PreviewPivot** on the root: Add Component → PreviewPivot, then ⋮ → **Apply Default Settings**
    (ignore the NullReferenceException it logs before that). Redo it whenever the model moves.
+   Then set **Icon → Rotation** to the vanilla item's value from the inspect output (the SDK
+   default can render the icon flipped; the RK-1 B-25U uses 0, 245, 180).
 2. **Hand poses:** generate a script from the vanilla bundle:
 
    ```
@@ -106,6 +108,9 @@ Get from it:
 | White / washed out | SDK shader built into the bundle, or no Reflection Cubemap | Don't label the shader; assign a cubemap |
 | Icon spins forever | No PreviewPivot | Add it, Apply Default Settings |
 | Inspect view off-centre | No PreviewPivot / not re-applied after moving the model | Apply Default Settings again |
+| Icon renders but faces the wrong way | SDK default icon rotation | Copy the vanilla item's Icon rotation; delete the icon cache |
+| Hand in the right pose but beside/past the grip | Palm markers offset along the grip | Move both palms along the grip axis (a few cm at a time) |
+| Ripped texture looks grainy/low-res | Source texture (check it in the original game) or a low-res rip | Re-rip with high-res images; lower Normal intensity |
 | Default hand grip instead of side grip | No GripPose objects | Add hand poses (step 3) |
 | Hand grips oddly/backwards | Palm markers don't match where the model is | Fix model orientation vs vanilla first, then move the palms |
 | Grip points the wrong way on the gun | Mesh rotation differs from vanilla | Compare bounds with vanilla, rotate the mesh children |

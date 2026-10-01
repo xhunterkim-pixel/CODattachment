@@ -31,12 +31,20 @@ about 23° shallower.
 | Spec / Diffuse Vals | 1, 0.5, 0, 0 | 1, 0.5, 0, 0 |
 
 **Hand poses** (from `unity/AddSideGripHandPoses.cs`, then moved to fit the grip at rotation
-0, 0, 0; computed from the meshes, not yet confirmed in game):
+0, 0, 0). The first positions (0.176, -0.023, 0.003 and 0.139, 0.038, -0.100) put the hand past
+the end of the grip in game; they were moved 3.5 cm back along the grip axis (0.939, 0.343, 0).
+Current values, **not yet confirmed in game**:
 
 | Object | Position | Rotation |
 |---|---|---|
-| `Base HumanLPalm` (Alternative) | 0.176, -0.023, 0.003 | 51.9, 268.0, 250.2 |
-| `Base HumanLPalm 1` (Common) | 0.139, 0.038, -0.100 | 12.3, 242.7, 157.7 |
+| `Base HumanLPalm` (Alternative) | 0.143, -0.035, 0.003 | 51.9, 268.0, 250.2 |
+| `Base HumanLPalm 1` (Common) | 0.106, 0.026, -0.100 | 12.3, 242.7, 157.7 |
+
+If that overshoots, the halfway values are 0.157, -0.030, 0.003 and 0.120, 0.031, -0.100.
+
+**PreviewPivot:** Apply Default Settings (pivot centred correctly in the inspect view, confirmed),
+then Icon → Rotation **0, 245, 180** (vanilla RK-1's value; the SDK default 0, 245, 0 renders the
+icon upside down/end-on). Bounds Scale 0.9.
 
 **SDK fix needed for this project:** PathID Replacer entry `3868700100545724512 → 6014991791773097075`
 (SMap), because this project's SMap builds with a different PathID than the SDK's table expects.
@@ -54,6 +62,12 @@ about 23° shallower.
 7. Default hand grip → no GripPose hand poses; then hand held it oddly because the mesh
    orientation differed from the RK-1.
 
-**Open:** confirm in game that the hand poses above sit right, and that the icon renders with
-PreviewPivot. Optional: convert the COD textures for SMap (diffuse alpha is a flat specular mask
-right now, so the gloss detail isn't used).
+8. PreviewPivot added → inspect view centred (confirmed) and icon renders, but the icon faced the
+   wrong way → Icon Rotation set to vanilla's 0, 245, 180.
+9. Hand in the side-grip pose but too far out past the grip end → palms moved 3.5 cm toward the gun.
+10. Grip texture looks grainy/concrete-like. Same in MW3 itself, so it's the source texture.
+    Options: re-rip with high-res/streamed images, lower Normal intensity (~0.5), lower
+    "Specularness" (~1.5).
+
+**Open:** confirm the moved hand poses and the icon rotation in game. Optional: convert the COD
+textures for SMap (diffuse alpha is a flat specular mask right now, so the gloss detail isn't used).

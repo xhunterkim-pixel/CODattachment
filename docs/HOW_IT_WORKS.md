@@ -145,6 +145,9 @@ Quirks we hit:
   shows the PathID your build used.
 - **Adding PreviewPivot logs a NullReferenceException** (`PreviewPivot.OnValidate`) until you run
   its **Apply Default Settings**. Harmless.
+- **PreviewPivot's Apply Default Settings** centres the pivot correctly but sets the icon camera to
+  Euler 0, 245, 0. The vanilla RK-1 uses 0, 245, 180 (same angle, rolled 180°). Copy the vanilla
+  item's icon rotation. Icons are cached in `%TEMP%\Battlestate Games\EscapeFromTarkov\Icon Cache`.
 - The SDK's SMap has its slider labels swapped: Inspector **"Specularness"** is `_Glossness`
   (shine strength) and **"Glossness"** is `_Specularness` (highlight tightness).
 
