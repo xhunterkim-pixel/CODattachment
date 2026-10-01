@@ -139,6 +139,7 @@ Get from it:
 | Inspect view off-centre | No PreviewPivot / not re-applied after moving the model | Apply Default Settings again |
 | Icon renders but faces the wrong way | SDK default icon rotation | Copy the vanilla item's Icon rotation; delete the icon cache |
 | Hand in the right pose but beside/past the grip | Palm markers offset along the grip | Move both palms along the grip axis (a few cm at a time) |
+| Normal preview is pink/green/teal | The raw green (NOG) image is in the Normal slot | Put it in NOG, or use GameImageUtil's `_n` (the slot now warns) |
 | Normal map comes out teal/green instead of lavender-blue | The image wasn't decoded as a real NOG (wrong file, or the converter misread the DDS) | Compare with GameImageUtil's NOG split; send the DDS for checking |
 | Converted colour is very dark | AO from a misread NOG multiplied in, or the colour alpha wrongly treated as metal | Untick AO; set Base color alpha to Ignore; use the tutorial's safe route |
 | Black patches on metal parts | Metal converted to black diffuse without the metal's shine in the specular mask | Converter: alpha is the metal mask, Metal keeps diffuse 20–35% |

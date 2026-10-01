@@ -420,6 +420,7 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
       const d = await decode(file);
       maps[key] = {...d, file:file.name, raw:file};
       if (key==="nog" && !splitNOG(d, file.name)) return;
+      if (key==="normal"){ const w = normalProblem(d); if (w){ refreshSlot(key); schedule(); setStatus(`${file.name}: ${w}`, true); return; } }
       if (key==="base") $("prefix").value = guessPrefix(file.name);
       if (key==="ao"){ $("useAO").disabled=false; $("aoStr").disabled=false; if (gameImageUtilNames) $("useAO").checked = true; }
       refreshSlot(key);
@@ -431,6 +432,16 @@ const BC7_P3 = new Uint8Array([128,0,1,129,0,0,1,1,0,2,2,1,2,2,2,130,128,0,0,129
   }
 
   // GameImageUtil CoDNOGImageProcessor: R = gloss, B = occlusion, G/A = hemi-octahedron normal.
+  // A tangent-space normal map is mostly lavender-blue: blue high, red and green around the middle.
+  function normalProblem(d){
+    const N = d.w*d.h; let r=0, g=0, b=0;
+    for (let i=0;i<N;i++){ r+=d.data[i*4]; g+=d.data[i*4+1]; b+=d.data[i*4+2]; }
+    r/=N; g/=N; b/=N;
+    if (b < 170 || Math.abs(r-128) > 50 || Math.abs(g-128) > 50)
+      return `this doesn't look like a normal map (average colour ${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}; a normal map is mostly lavender-blue, about 128, 128, 255). If it's the green/NOG image, put it in the NOG slot, or use GameImageUtil's _n.`;
+    return null;
+  }
+
   // A packed NOG has real data in alpha (half the normal). Catch files that aren't one.
   function nogProblem(d){
     const N = d.w*d.h; let a=0, b=0, opaque=0;

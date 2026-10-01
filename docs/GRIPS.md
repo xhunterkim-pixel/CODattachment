@@ -128,6 +128,11 @@ icon upside down/end-on). Bounds Scale 0.9.
     click sets all options, and GameImageUtil's `_c/_s/_g/_n/_o` files route to the right slots.
     Tested: routing, settings and all outputs correct.
 
+21. The converter's Normal preview showed pink/green/teal: the raw green (NOG) image had gone into
+    the Normal slot (its red is gloss, the normal is packed in green/alpha). The Normal slot now
+    warns when an image isn't mostly lavender-blue. The earlier teal normal may have had the same
+    cause. The chat won't accept .dds attachments; rename to .bin, zip, or upload to `samples/`.
+
 **Open:** try the Blender normal flip (then Normals: Import) and check with `inspect_bundle.py`.
 Fix the converter on the real MW3 DDS (need the user's NOG/colour DDS files to compare).
 Confirm MW3 uses the same fused-colour/NOG packing (the converted textures look right
