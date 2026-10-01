@@ -237,6 +237,13 @@ icon upside down/end-on). Bounds Scale 0.9.
     - Grip material in the bundle still has Main Color 192 and Vals 1, 0.5, 0, 0 (the 221 / 1, 1, 0, 0
       edit wasn't saved or was on the other grip).
 
+40. Second two-grip build: the Hound bundle is unchanged (normals still 0%, grip Main 192, Vals
+    1, 0.5): its Blender normal fix and grip material edits are still to do. Cubemap PathIDs still
+    the project's own. Planned Replacer entries (by which cubemap each material uses):
+    4963929626472855650 → 972550011776207695 (`patron_cubemap_metall_matte`, both grips),
+    4870518337489161011 → -2064706391146893937 (`patron_cubemap_metall`, rail). To confirm in the
+    materials' Reflection Cubemap fields before adding.
+
 **Open** (cleaned up; solved items removed):
 - Rebuild with the cubemaps left on label `cubemaps` (history 33) and check: manifest `Dependencies:`
   `shaders`, `cubemaps`, no cubemap under `Assets:`; `inspect_bundle.py` shows `_Cube: CAB-4d8a...`.
@@ -294,6 +301,10 @@ icon upside down/end-on). Bounds Scale 0.9.
    Overrides → Apply All. Rebuilt from scratch means the palms are back at the RK-1 values and the
    PreviewPivot icon rotation, material and stencil need setting again.
 
-**Open:** cubemap PathID entry, rebuild to confirm normals, Stencil → Hands, icon rotation 0, 245, 180; fit the palms (`Base HumanLPalm 1` first); material values
+8. Rebuild checked: **normals agree with faces 100%** (fixed), `_StencilType` 2 (Hands), Reflection
+   129/128, Main 221, Specular 255. Still Vals 1, 0.5, 0, 0 and the cubemap PathID
+   4963929626472855650 (not remapped). `Base HumanLPalm 1` at 0.090, 0.049, -0.095.
+
+**Open:** cubemap PathID entry, Vals 1, 1, 0, 0, → Hands, icon rotation 0, 245, 180; fit the palms (`Base HumanLPalm 1` first); material values
 (foregrip row in `MATERIALS.md`, Specular Color 255); size vs RK-1 after build; server item (name,
 clone, trader).
