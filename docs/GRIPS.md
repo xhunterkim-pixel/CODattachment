@@ -61,7 +61,6 @@ icon upside down/end-on). Bounds Scale 0.9.
 6. Off-centre inspect, spinning icon → no PreviewPivot.
 7. Default hand grip → no GripPose hand poses; then hand held it oddly because the mesh
    orientation differed from the RK-1.
-
 8. PreviewPivot added → inspect view centred (confirmed) and icon renders, but the icon faced the
    wrong way → Icon Rotation set to vanilla's 0, 245, 180.
 9. Hand in the side-grip pose but too far out past the grip end → palms moved 3.5 cm toward the gun.
