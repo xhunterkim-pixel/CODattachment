@@ -142,6 +142,7 @@ Get from it:
 | Normal preview is pink or the raw purple file | A NOG went into the Normal slot | Put it in NOG instead; the page warns |
 | Converted colour is very dark | AO from a misread NOG multiplied in, or the colour alpha wrongly treated as metal | Untick AO; set Base color alpha to Ignore; use the tutorial's safe route |
 | Polymer looks like it glows / doesn't react to light | Converted non-metal specular is ~2× Tarkov's and COD gloss is lower (broad sheen) | "Specularness" ~1, "Glossness" 1.08; Main Color lower if still bright |
+| Material shows "This texture is not marked as a normal map" | The new `_normal` PNG was imported as a plain texture (happens every time you replace it) | Click **Fix Now** (or Texture Type: Normal map), then check Flip Green Channel is off |
 | Black patches on metal parts | Metal converted to black diffuse without the metal's shine in the specular mask | Converter: alpha is the metal mask, Metal keeps diffuse 20–35% |
 | Ripped texture looks grainy/low-res | Source texture (check it in the original game) or a low-res rip | Re-rip with high-res images; lower Normal intensity |
 | Default hand grip instead of side grip | No GripPose objects | Add hand poses (step 3) |

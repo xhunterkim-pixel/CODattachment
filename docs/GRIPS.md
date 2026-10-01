@@ -29,7 +29,7 @@ about 23° shallower.
 |---|---|---|
 | Main Color | 193, 193, 193 | 193, 193, 193 |
 | Specular Color | 217, 217, 217 | 217, 217, 217 |
-| "Specularness" | 1 (was 2: glowed, history 27) | ~1.2 (was 2, history 28) |
+| "Specularness" | 1 (was 2: glowed, history 27) | 1.5 set (~1.2 suggested; was 2, history 28) |
 | "Glossness" | 1.08 (was 0.6) | 1.08 |
 | Reflection Color | 80, 80, 80, alpha 128 | 154, 154, 154, alpha 128 |
 | Reflection Cubemap | `dots small` | `patron_cubemap_metall` |
@@ -163,6 +163,11 @@ icon upside down/end-on). Bounds Scale 0.9.
     ~101 and gloss ~170, against its polymer's 22 / 37 / 155. Tarkov keeps metal diffuse fairly
     bright, so the converter's "Metal keeps diffuse" 25% was too dark; default now 75%. Rail: re-convert
     at ~75% and set "Specularness" 2 → ~1.2. Not yet measured on the rail's own textures (need its DDS).
+
+29. Material check (user's Inspector screenshots): grip Specularness 1 / Glossness 1.08 and rail
+    Specularness 1.5 / Glossness 1.08 set. The grip's new `_normal` texture showed "This texture is
+    not marked as a normal map": imported as a plain texture, so the shader read the bumps wrongly
+    (likely part of the flat/glowing look). Fix Now, then keep Flip Green Channel off.
 
 **Open:** in game: hand poses (halfway values; tune `Base HumanLPalm 1` first), icon rotation 0, 245, 180, and shine vs the vanilla
 RK-1 (material values were tuned while the normals were broken; lower "Specularness" if too shiny).

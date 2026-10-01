@@ -94,6 +94,10 @@ preset and drop all five files (`_c`, `_s`, `_g`, `_n`, `_o`) at once. Same resu
    | `_gloss` | Default | on (like vanilla) | n/a | 5 |
    | `_normal` | **Normal map** | n/a | **off** (the converter already flipped it) | 5 |
 
+   Every time you replace `_normal` with a new PNG, Unity imports it as a plain texture again; the
+   material then says "This texture is not marked as a normal map". Click **Fix Now** and check
+   Flip Green Channel is still off.
+
    If Unity says "Anisotropic filtering is enabled for all textures in Quality Settings", that's only
    an editor note (the SDK project forces it); keep Aniso 5, it's saved into the bundle. Always click
    **Apply** (or **Save** in the "Unapplied import settings" popup).
