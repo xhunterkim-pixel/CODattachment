@@ -114,4 +114,6 @@ Get from it:
 | Default hand grip instead of side grip | No GripPose objects | Add hand poses (step 3) |
 | Hand grips oddly/backwards | Palm markers don't match where the model is | Fix model orientation vs vanilla first, then move the palms |
 | Grip points the wrong way on the gun | Mesh rotation differs from vanilla | Compare bounds with vanilla, rotate the mesh children |
+| Grip points the right way but looks "reversed" (its back/seam faces the player) | Model is flipped over around its own length | Half-turn the mesh children around the grip's long axis; re-check the clamp |
+| Icon rotation reverts | PreviewPivot Apply Default Settings resets it | Set the vanilla Icon rotation again after every Apply Default |
 | Wrong stats or animation | Wrong `itemTplToClone` | Look the ID up, don't guess |
