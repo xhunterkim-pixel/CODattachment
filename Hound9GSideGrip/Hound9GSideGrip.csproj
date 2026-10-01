@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Hound9GSideGrip</AssemblyName>
+    <RootNamespace>Hound9GSideGrip</RootNamespace>
+    <Version>1.0.0</Version>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <!-- Folder that contains SPTarkov.Server.Core.dll (your SPT server folder).
+         Override on the command line: dotnet build -p:SptPath="D:\Games\SPT\SPT" -->
+    <SptPath Condition="'$(SptPath)' == ''">C:\SPT\SPT</SptPath>
+    <CommonLibPath>$(SptPath)\user\mods\WTT-ServerCommonLib\WTT-ServerCommonLib.dll</CommonLibPath>
+  </PropertyGroup>
+
+  <!-- Referenced from your SPT install, never copied: SPT and CommonLib load them at runtime. -->
+  <ItemGroup>
+    <Reference Include="SPTarkov.Server.Core"><HintPath>$(SptPath)\SPTarkov.Server.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="SPTarkov.DI"><HintPath>$(SptPath)\SPTarkov.DI.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="SPTarkov.Common"><HintPath>$(SptPath)\SPTarkov.Common.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="SemanticVersioning"><HintPath>$(SptPath)\SemanticVersioning.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="WTT-ServerCommonLib"><HintPath>$(CommonLibPath)</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="db\**\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="bundles.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="bundles\**\*.bundle" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- After building, lay the mod out ready to drop into SPT: dist\user\mods\Hound9GSideGrip -->
+  <Target Name="PackageMod" AfterTargets="Build">
+    <PropertyGroup>
+      <ModOut>$(MSBuildProjectDirectory)\..\dist\user\mods\$(AssemblyName)\</ModOut>
+    </PropertyGroup>
+    <ItemGroup>
+      <ModRootFiles Include="$(OutDir)$(AssemblyName).dll;$(OutDir)bundles.json" />
+      <ModDbFiles Include="$(OutDir)db\**\*" />
+      <ModBundleFiles Include="$(OutDir)bundles\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ModRootFiles)" DestinationFolder="$(ModOut)" />
+    <Copy SourceFiles="@(ModDbFiles)" DestinationFiles="@(ModDbFiles->'$(ModOut)db\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(ModBundleFiles)" DestinationFiles="@(ModBundleFiles->'$(ModOut)bundles\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
+</Project>

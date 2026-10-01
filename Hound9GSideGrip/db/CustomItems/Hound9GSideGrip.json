@@ -1,0 +1,50 @@
+{
+  "6abe08f14fea21b38607a868": {
+    "itemTplToClone": "5c1bc5612e221602b5429350",
+    "parentId": "55818af64bdc2d5b648b4570",
+    "handbookParentId": "5b5f71de86f774093f2ecf13",
+    "overrideProperties": {
+      "Name": "foregrip_all_hound_9g_sidegrip",
+      "ShortName": "foregrip_all_hound_9g_sidegrip",
+      "Description": "foregrip_all_hound_9g_sidegrip",
+      "Prefab": {
+        "path": "assets/content/items/mods/foregrips/hound9gsidegrip.bundle",
+        "rcid": ""
+      }
+    },
+    "locales": {
+      "en": {
+        "name": "Hound 9G Side Grip",
+        "shortName": "9G Side",
+        "description": "A compact side-mounted grip for rail-equipped handguards."
+      }
+    },
+    "addtoInventorySlots": [],
+    "addtoModSlots": true,
+    "modSlot": [
+      "mod_foregrip"
+    ],
+    "fleaPriceRoubles": 6500,
+    "handbookPriceRoubles": 5400,
+    "addtoBots": false,
+    "addtoStaticLootContainers": false,
+    "staticLootContainers": [],
+    "addtoHallOfFame": false,
+    "hallOfFameSlots": [],
+    "addtoSpecialSlots": false,
+    "addtoHideoutPosterSlots": false,
+    "addPosterToMaps": false,
+    "posterSpawnProbability": 0,
+    "addtoStatuetteSlots": false,
+    "addCaliberToAllCloneLocations": false,
+    "addtoStaticAmmo": false,
+    "staticAmmoProbability": 0,
+    "addtoSecureFilters": false,
+    "masteries": false,
+    "masterySections": [],
+    "addWeaponPreset": false,
+    "weaponPresets": [],
+    "addtoTraders": false,
+    "traders": {}
+  }
+}
