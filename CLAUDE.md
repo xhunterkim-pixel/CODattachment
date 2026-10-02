@@ -12,6 +12,8 @@ can't run either, so work from the files they upload and the tools below.
   pitfall found so far.
 - `docs/ADDING_A_GRIP.md`: the step-by-step checklist and troubleshooting table.
 - `docs/GRIPS.md`: per-grip record (IDs, values that worked, history, open items).
+- `docs/ROADMAP.md`: the user's path from grips to a full MW2023 gun (animations, sounds). Keep it
+  ticked and corrected as levels get done.
 - `docs/MATERIALS.md` + `docs/material_library.csv`: measured vanilla SMap values per material kind
   (rubber, polymer, coated metal, bare metal) and by attachment type; every vanilla item's values in
   `docs/data/vanilla_materials.csv`. Use these for material values, not memory.

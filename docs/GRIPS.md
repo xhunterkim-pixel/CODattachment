@@ -250,9 +250,10 @@ icon upside down/end-on). Bounds Scale 0.9.
     manifest doesn't change when only the Replacer changes: Unity writes it before the SDK patches
     the bundle, so check the bundle with `inspect_bundle.py`, not the manifest.
 
+42. **Working in game** (user test): both grips load in `MW2023Attachment`, textured, with icons,
+    after the rail's Replacer entry got its minus sign back.
+
 **Open** (cleaned up; solved items removed):
-- Rebuild with the cubemaps left on label `cubemaps` (history 33) and check: manifest `Dependencies:`
-  `shaders`, `cubemaps`, no cubemap under `Assets:`; `inspect_bundle.py` shows `_Cube: CAB-4d8a...`.
 - **Hound normals deferred by the user** (still 0%: lit inside-out, likely part of the glow and the
   visible edges). Fix later: Blender, select grip + rail, `tools/blender_flip_custom_normals.py` once,
   export, rebuild (worked on the DL grip, its history 6 and 8).
