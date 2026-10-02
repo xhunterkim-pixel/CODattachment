@@ -1,5 +1,8 @@
 # Instructions for AI assistants
 
+**End goal:** port a complete MW2023 gun into SPT, with its animations and sounds, one level at a
+time (`docs/ROADMAP.md`). Attachments come first to learn each piece.
+
 This repo adds custom weapon attachments (ported from Call of Duty) to SPT 4.1.6 (single-player
 Escape from Tarkov). The user builds bundles in Unity on Windows and tests in game; you usually
 can't run either, so work from the files they upload and the tools below.

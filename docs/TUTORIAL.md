@@ -59,6 +59,26 @@ The page warns if a file goes in the wrong slot.
 6. **Download all (zip)**. You get `<name>_diffuse.png`, `<name>_gloss.png`, `<name>_normal.png`.
 7. Do this once per material (e.g. once for the grip, once for the rail).
 
+**Alternative for parts where the fused colour shows no metal (the user's method): metal mask from
+`green.dds`.** On the Hound grip's MW3 files the colour alpha never passes GameImageUtil's metal
+threshold (99.9% of pixels ≤ 20/255, metal starts at 26), so the "MW fused colour" split treats
+everything as non-metal. `green.dds`'s **blue channel** is a clean black/white mask (9 values) whose
+white areas are exactly the parts where the colour alpha is higher (mean 16 vs 8): the round
+parts and the clamp. The user's tip is that this mask is the metal. Not confirmed against MW3's
+own shaders. No GIMP needed:
+
+1. **Color** slot: `color.dds`, **Base color alpha: Ignore**.
+2. **Metallic** slot: `green.dds`, **Channel: B** (the picker under the tile). Leave "Metallic slot
+   holds" on Metallic.
+3. **NOG** slot: `normals.dds` as before. Then **untick AO**: the colour already has the AO baked
+   in, so multiplying it in again darkens it twice.
+4. **Specular on non-metal:** ~**29** (Tarkov polymer's median, `MATERIALS.md`) instead of 56. GameImageUtil's
+   0.21 floor is why our grips came out twice as shiny as Tarkov's.
+5. Metal keeps diffuse 75% as before.
+
+(GIMP route, same result: Colors → Components → Extract Component → Blue on `green.dds`, export PNG,
+put that in the Metallic slot.)
+
 **Alternative: GameImageUtil first.** Split the colour DDS with **CoD Specular/Albedo
 (Infinite Warfare/Modern Warfare)** and the NOG with **CoD Normal/Gloss/Occlusion (Infinite
 Warfare/Modern Warfare)** (output PNG), click the converter's **MW3 / MW2022 (GameImageUtil PNGs)**

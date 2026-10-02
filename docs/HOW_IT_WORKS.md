@@ -119,6 +119,10 @@ like `CAB-56d919bd5479d38f741da52a6beef92f`), each holding objects identified by
   `inspect_bundle.py` on your grip bundle, `_Cube:` line). Game PathIDs: `patron_cubemap_metall`
   -2064706391146893937, `_metall_matte` 972550011776207695, `_brass` -8157818093283795528,
   `_brass_matte` -2724550323162632021, `_full` 2874837729527942464, `_red` 490386796788369950.
+- **MW3 `green.dds`** (texture note, see TUTORIAL Part 2): R/G are a greyscale map split by
+  complementary B/A masks; **B is a clean binary mask** matching the parts with higher colour
+  alpha. Used as the metal mask (Metallic slot, channel B) when the fused colour's alpha has no
+  metal. The colour image already contains AO, so the NOG's occlusion shouldn't be multiplied in.
 - **More game cubemaps than the SDK's six.** The game's `cubemaps` bundle may hold more. To use one:
   rip it from the game's `cubemaps` file, import it into `Assets/Cubemaps/` with label `cubemaps`,
   then add a **PathID Replacer** entry (the PathID your build gives it → the game's PathID for it),
